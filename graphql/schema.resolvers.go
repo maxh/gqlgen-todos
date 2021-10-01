@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/maxh/gqlgen-todos/graphql/generated"
+	"github.com/maxh/gqlgen-todos/graphql/gql"
 	"github.com/maxh/gqlgen-todos/graphql/model"
 )
 
@@ -30,14 +30,14 @@ func (r *todoResolver) User(ctx context.Context, obj *model.Todo) (*model.User, 
 	return &model.User{ID: obj.UserID, Name: "user " + obj.UserID}, nil
 }
 
-// Mutation returns generated.MutationResolver implementation.
-func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
+// Mutation returns gql.MutationResolver implementation.
+func (r *Resolver) Mutation() gql.MutationResolver { return &mutationResolver{r} }
 
-// Query returns generated.QueryResolver implementation.
-func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
+// Query returns gql.QueryResolver implementation.
+func (r *Resolver) Query() gql.QueryResolver { return &queryResolver{r} }
 
-// Todo returns generated.TodoResolver implementation.
-func (r *Resolver) Todo() generated.TodoResolver { return &todoResolver{r} }
+// Todo returns gql.TodoResolver implementation.
+func (r *Resolver) Todo() gql.TodoResolver { return &todoResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

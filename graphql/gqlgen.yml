@@ -4,8 +4,8 @@ schema:
 
 # Where should the generated server code go?
 exec:
-  filename: generated/generated.go
-  package: generated
+  filename: gql/gql.go
+  package: gql
 
 # Uncomment to enable federation
 # federation:
