@@ -238,7 +238,7 @@ func (tq *TodoQuery) CountX(ctx context.Context) int {
 	return count
 }
 
-// Exist returns true if the query has elements in the graphql.
+// Exist returns true if the query has elements in the graph.
 func (tq *TodoQuery) Exist(ctx context.Context) (bool, error) {
 	if err := tq.prepareQuery(ctx); err != nil {
 		return false, err

@@ -17,12 +17,12 @@ type User struct {
 	ID int `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
-	// Edges holds the relations/edges for other nodes in the graphql.
+	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
 	Edges UserEdges `json:"edges"`
 }
 
-// UserEdges holds the relations/edges for other nodes in the graphql.
+// UserEdges holds the relations/edges for other nodes in the graph.
 type UserEdges struct {
 	// Todos holds the value of the todos edge.
 	Todos []*Todo `json:"todos,omitempty"`
