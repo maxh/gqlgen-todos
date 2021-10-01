@@ -7,7 +7,6 @@ import (
 
 	"entgo.io/ent/entc"
 	"entgo.io/ent/entc/gen"
-	"entgo.io/contrib/entgql"
 )
 
 func main() {
@@ -16,7 +15,8 @@ func main() {
 	//	log.Fatalf("creating entgql extension: %v", err)
 	//}
 	c := &gen.Config{
-		Target: "./orm/ent",
+		Target: "./ent",
+		Package: "github.com/maxh/gqlgen-todos/orm/ent",
 	}
 	if err := entc.Generate("./schema", c); err != nil {
 		log.Fatalf("running ent codegen: %v", err)
