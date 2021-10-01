@@ -8,11 +8,10 @@ import (
 	"fmt"
 
 	"github.com/maxh/gqlgen-todos/graphql/gql"
-	"github.com/maxh/gqlgen-todos/graphql/model"
 	"github.com/maxh/gqlgen-todos/orm/ent"
 )
 
-func (r *mutationResolver) CreateTodo(ctx context.Context, input model.CreateTodoInput) (*ent.Todo, error) {
+func (r *mutationResolver) CreateTodo(ctx context.Context, input gql.CreateTodoInput) (*ent.Todo, error) {
 	return nil, nil
 }
 
