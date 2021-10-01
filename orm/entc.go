@@ -16,7 +16,7 @@ func main() {
 	//	log.Fatalf("creating entgql extension: %v", err)
 	//}
 	c := &gen.Config{
-		Target: "ent",
+		Target: "./orm/ent",
 	}
 	if err := entc.Generate("./schema", c); err != nil {
 		log.Fatalf("running ent codegen: %v", err)
