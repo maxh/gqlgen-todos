@@ -238,7 +238,7 @@ func (uq *UserQuery) CountX(ctx context.Context) int {
 	return count
 }
 
-// Exist returns true if the query has elements in the graph.
+// Exist returns true if the query has elements in the graphql.
 func (uq *UserQuery) Exist(ctx context.Context) (bool, error) {
 	if err := uq.prepareQuery(ctx); err != nil {
 		return false, err

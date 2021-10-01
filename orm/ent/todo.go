@@ -20,13 +20,13 @@ type Todo struct {
 	Text string `json:"text,omitempty"`
 	// Done holds the value of the "done" field.
 	Done bool `json:"done,omitempty"`
-	// Edges holds the relations/edges for other nodes in the graph.
+	// Edges holds the relations/edges for other nodes in the graphql.
 	// The values are being populated by the TodoQuery when eager-loading is set.
 	Edges      TodoEdges `json:"edges"`
 	user_todos *int
 }
 
-// TodoEdges holds the relations/edges for other nodes in the graph.
+// TodoEdges holds the relations/edges for other nodes in the graphql.
 type TodoEdges struct {
 	// User holds the value of the user edge.
 	User *User `json:"user,omitempty"`

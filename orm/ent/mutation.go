@@ -27,7 +27,7 @@ const (
 	TypeUser = "User"
 )
 
-// TodoMutation represents an operation that mutates the Todo nodes in the graph.
+// TodoMutation represents an operation that mutates the Todo nodes in the graphql.
 type TodoMutation struct {
 	config
 	op            Op
@@ -442,7 +442,7 @@ func (m *TodoMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Todo edge %s", name)
 }
 
-// UserMutation represents an operation that mutates the User nodes in the graph.
+// UserMutation represents an operation that mutates the User nodes in the graphql.
 type UserMutation struct {
 	config
 	op            Op

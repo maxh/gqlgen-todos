@@ -1,4 +1,4 @@
-package graph
+package graphql
 
 // This file will be automatically regenerated based on the schema, any resolver implementations
 // will be copied through when generating and any unknown code will be moved to the end.
@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/maxh/gqlgen-todos/graph/generated"
-	"github.com/maxh/gqlgen-todos/graph/model"
+	"github.com/maxh/gqlgen-todos/graphql/generated"
+	"github.com/maxh/gqlgen-todos/graphql/model"
 )
 
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
