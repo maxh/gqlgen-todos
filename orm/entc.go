@@ -3,6 +3,7 @@
 package main
 
 import (
+	"entgo.io/ent/schema/field"
 	"log"
 
 	"entgo.io/contrib/entgql"
@@ -17,6 +18,7 @@ func main() {
 	}
 	extensions := entc.Extensions(ex)
 	config := &gen.Config{
+		IDType: &field.TypeInfo{Type: field.TypeInt},
 		Target: "./ent",
 		Package: "github.com/maxh/gqlgen-todos/orm/ent",
 	}

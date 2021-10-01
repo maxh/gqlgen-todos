@@ -3,14 +3,14 @@
 # https://gqlgen.com/getting-started/
 
 type Todo {
-  id: ID!
+  id: Int!
   text: String!
   done: Boolean!
   user: User!
 }
 
 type User {
-  id: ID!
+  id: Int!
   name: String!
 }
 
@@ -20,7 +20,7 @@ type Query {
 
 input CreateTodoInput {
   text: String!
-  userId: String!
+  userId: Int!
 }
 
 type Mutation {

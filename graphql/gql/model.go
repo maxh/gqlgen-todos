@@ -4,5 +4,5 @@ package gql
 
 type CreateTodoInput struct {
 	Text   string `json:"text"`
-	UserID string `json:"userId"`
+	UserID int    `json:"userId"`
 }

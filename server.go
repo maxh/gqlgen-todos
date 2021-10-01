@@ -1,6 +1,10 @@
 package main
 
 import (
+	"context"
+	"entgo.io/contrib/entgql"
+	"fmt"
+	"github.com/maxh/gqlgen-todos/orm/ent"
 	"log"
 	"net/http"
 	"os"
@@ -8,7 +12,8 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/maxh/gqlgen-todos/graphql"
-	"github.com/maxh/gqlgen-todos/graphql/gql"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 const defaultPort = "8080"
@@ -18,12 +23,34 @@ func main() {
 	if port == "" {
 		port = defaultPort
 	}
+	client, err := ent.Open(
+		"sqlite3",
+		"file:ent?mode=memory&cache=shared&_fk=1",
+	)
+	if err != nil {
+		log.Fatal("opening ent client", err)
+	}
+	if err := client.Schema.Create(context.Background()); err != nil {
+		log.Fatal("running schema migration", err)
+	}
+	srv := handler.NewDefaultServer(graphql.NewSchema(client))
+	srv.Use(entgql.Transactioner{TxOpener: client})
 
-	srv := handler.NewDefaultServer(gql.NewExecutableSchema(gql.Config{Resolvers: &graphql.Resolver{}}))
-
+	CreateUser(context.TODO(), client)
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
+}
+
+func CreateUser(ctx context.Context, client *ent.Client) (*ent.User, error) {
+	u, err := client.User.
+		Create().
+		Save(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed creating user: %w", err)
+	}
+	log.Println("user was created: ", u)
+	return u, nil
 }
