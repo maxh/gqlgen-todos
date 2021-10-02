@@ -26,6 +26,7 @@ func (Todo) Fields() []ent.Field {
 func (Todo) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		pulid.MixinWithPrefix("TD"),
+		TenantMixin{},
 	}
 }
 

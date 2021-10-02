@@ -31,5 +31,6 @@ func (Organization) Edges() []ent.Edge {
 func (Organization) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		pulid.MixinWithPrefix("OR"),
+		TenantMixin{},
 	}
 }

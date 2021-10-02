@@ -15,10 +15,19 @@ const (
 	FieldText = "text"
 	// FieldDone holds the string denoting the done field in the database.
 	FieldDone = "done"
+	// EdgeTenant holds the string denoting the tenant edge name in mutations.
+	EdgeTenant = "tenant"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// Table holds the table name of the todo in the database.
 	Table = "todos"
+	// TenantTable is the table that holds the tenant relation/edge.
+	TenantTable = "todos"
+	// TenantInverseTable is the table name for the Tenant entity.
+	// It exists in this package in order to avoid circular dependency with the "tenant" package.
+	TenantInverseTable = "tenants"
+	// TenantColumn is the table column denoting the tenant relation/edge.
+	TenantColumn = "todo_tenant"
 	// UserTable is the table that holds the user relation/edge.
 	UserTable = "todos"
 	// UserInverseTable is the table name for the User entity.
@@ -38,6 +47,7 @@ var Columns = []string{
 // ForeignKeys holds the SQL foreign-keys that are owned by the "todos"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
+	"todo_tenant",
 	"user_todos",
 }
 

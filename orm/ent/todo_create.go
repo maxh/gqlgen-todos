@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
 	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
@@ -61,6 +62,17 @@ func (tc *TodoCreate) SetNillableID(pu *pulid.ID) *TodoCreate {
 		tc.SetID(*pu)
 	}
 	return tc
+}
+
+// SetTenantID sets the "tenant" edge to the Tenant entity by ID.
+func (tc *TodoCreate) SetTenantID(id pulid.ID) *TodoCreate {
+	tc.mutation.SetTenantID(id)
+	return tc
+}
+
+// SetTenant sets the "tenant" edge to the Tenant entity.
+func (tc *TodoCreate) SetTenant(t *Tenant) *TodoCreate {
+	return tc.SetTenantID(t.ID)
 }
 
 // SetUserID sets the "user" edge to the User entity by ID.
@@ -175,6 +187,9 @@ func (tc *TodoCreate) check() error {
 	if _, ok := tc.mutation.Done(); !ok {
 		return &ValidationError{Name: "done", err: errors.New(`ent: missing required field "done"`)}
 	}
+	if _, ok := tc.mutation.TenantID(); !ok {
+		return &ValidationError{Name: "tenant", err: errors.New("ent: missing required edge \"tenant\"")}
+	}
 	return nil
 }
 
@@ -222,6 +237,26 @@ func (tc *TodoCreate) createSpec() (*Todo, *sqlgraph.CreateSpec) {
 			Column: todo.FieldDone,
 		})
 		_node.Done = value
+	}
+	if nodes := tc.mutation.TenantIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   todo.TenantTable,
+			Columns: []string{todo.TenantColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tenant.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.todo_tenant = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := tc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

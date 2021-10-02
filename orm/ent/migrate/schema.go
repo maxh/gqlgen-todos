@@ -12,12 +12,21 @@ var (
 	OrganizationsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString, Default: "unknown"},
+		{Name: "organization_tenant", Type: field.TypeString, Nullable: true},
 	}
 	// OrganizationsTable holds the schema information for the "organizations" table.
 	OrganizationsTable = &schema.Table{
 		Name:       "organizations",
 		Columns:    OrganizationsColumns,
 		PrimaryKey: []*schema.Column{OrganizationsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "organizations_tenants_tenant",
+				Columns:    []*schema.Column{OrganizationsColumns[2]},
+				RefColumns: []*schema.Column{TenantsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
 	}
 	// TenantsColumns holds the columns for the "tenants" table.
 	TenantsColumns = []*schema.Column{
@@ -35,6 +44,7 @@ var (
 		{Name: "id", Type: field.TypeString},
 		{Name: "text", Type: field.TypeString, Default: "unknown"},
 		{Name: "done", Type: field.TypeBool, Default: false},
+		{Name: "todo_tenant", Type: field.TypeString, Nullable: true},
 		{Name: "user_todos", Type: field.TypeString, Nullable: true},
 	}
 	// TodosTable holds the schema information for the "todos" table.
@@ -44,8 +54,14 @@ var (
 		PrimaryKey: []*schema.Column{TodosColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "todos_users_todos",
+				Symbol:     "todos_tenants_tenant",
 				Columns:    []*schema.Column{TodosColumns[3]},
+				RefColumns: []*schema.Column{TenantsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "todos_users_todos",
+				Columns:    []*schema.Column{TodosColumns[4]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -56,6 +72,7 @@ var (
 		{Name: "id", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString, Default: "unknown"},
 		{Name: "organization_users", Type: field.TypeString, Nullable: true},
+		{Name: "user_tenant", Type: field.TypeString, Nullable: true},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
@@ -67,6 +84,12 @@ var (
 				Symbol:     "users_organizations_users",
 				Columns:    []*schema.Column{UsersColumns[2]},
 				RefColumns: []*schema.Column{OrganizationsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "users_tenants_tenant",
+				Columns:    []*schema.Column{UsersColumns[3]},
+				RefColumns: []*schema.Column{TenantsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -81,6 +104,9 @@ var (
 )
 
 func init() {
-	TodosTable.ForeignKeys[0].RefTable = UsersTable
+	OrganizationsTable.ForeignKeys[0].RefTable = TenantsTable
+	TodosTable.ForeignKeys[0].RefTable = TenantsTable
+	TodosTable.ForeignKeys[1].RefTable = UsersTable
 	UsersTable.ForeignKeys[0].RefTable = OrganizationsTable
+	UsersTable.ForeignKeys[1].RefTable = TenantsTable
 }

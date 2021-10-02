@@ -55,18 +55,22 @@ func CreateUser(ctx context.Context, client *ent.Client) (*ent.User, error) {
 		return nil, fmt.Errorf("failed creating Tenant: %w", err)
 	}
 	log.Println("tenant was created: ", t)
-	return nil, nil
-	//o, err := client.Organization.Create().SetName("my organization").Save(ctx)
-	//if err != nil {
-	//	return nil, fmt.Errorf("failed creating organization: %w", err)
-	//}
-	//u, err := client.User.
-	//	Create().
-	//	SetOrganization(o).
-	//	Save(ctx)
-	//if err != nil {
-	//	return nil, fmt.Errorf("failed creating user: %w", err)
-	//}
-	//log.Println("user was created: ", u)
-	//return u, nil
+
+	o, err := client.Organization.Create().SetName("my organization").SetTenant(t).Save(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed creating organization: %w", err)
+	}
+	log.Println("organization was created: ", o)
+
+	u, err := client.User.
+		Create().
+		SetOrganization(o).
+		SetTenant(t).
+		Save(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed creating user: %w", err)
+	}
+
+	log.Println("user was created: ", u)
+	return u, nil
 }

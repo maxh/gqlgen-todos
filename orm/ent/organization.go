@@ -8,6 +8,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
+	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
 )
 
@@ -20,22 +21,39 @@ type Organization struct {
 	Name string `json:"name,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the OrganizationQuery when eager-loading is set.
-	Edges OrganizationEdges `json:"edges"`
+	Edges               OrganizationEdges `json:"edges"`
+	organization_tenant *pulid.ID
 }
 
 // OrganizationEdges holds the relations/edges for other nodes in the graph.
 type OrganizationEdges struct {
+	// Tenant holds the value of the tenant edge.
+	Tenant *Tenant `json:"tenant,omitempty"`
 	// Users holds the value of the users edge.
 	Users []*User `json:"users,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
+}
+
+// TenantOrErr returns the Tenant value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e OrganizationEdges) TenantOrErr() (*Tenant, error) {
+	if e.loadedTypes[0] {
+		if e.Tenant == nil {
+			// The edge tenant was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: tenant.Label}
+		}
+		return e.Tenant, nil
+	}
+	return nil, &NotLoadedError{edge: "tenant"}
 }
 
 // UsersOrErr returns the Users value or an error if the edge
 // was not loaded in eager-loading.
 func (e OrganizationEdges) UsersOrErr() ([]*User, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		return e.Users, nil
 	}
 	return nil, &NotLoadedError{edge: "users"}
@@ -50,6 +68,8 @@ func (*Organization) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(pulid.ID)
 		case organization.FieldName:
 			values[i] = new(sql.NullString)
+		case organization.ForeignKeys[0]: // organization_tenant
+			values[i] = &sql.NullScanner{S: new(pulid.ID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Organization", columns[i])
 		}
@@ -77,9 +97,21 @@ func (o *Organization) assignValues(columns []string, values []interface{}) erro
 			} else if value.Valid {
 				o.Name = value.String
 			}
+		case organization.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field organization_tenant", values[i])
+			} else if value.Valid {
+				o.organization_tenant = new(pulid.ID)
+				*o.organization_tenant = *value.S.(*pulid.ID)
+			}
 		}
 	}
 	return nil
+}
+
+// QueryTenant queries the "tenant" edge of the Organization entity.
+func (o *Organization) QueryTenant() *TenantQuery {
+	return (&OrganizationClient{config: o.config}).QueryTenant(o)
 }
 
 // QueryUsers queries the "users" edge of the Organization entity.

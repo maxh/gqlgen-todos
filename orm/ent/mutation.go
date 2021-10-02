@@ -40,6 +40,8 @@ type OrganizationMutation struct {
 	id            *pulid.ID
 	name          *string
 	clearedFields map[string]struct{}
+	tenant        *pulid.ID
+	clearedtenant bool
 	users         map[pulid.ID]struct{}
 	removedusers  map[pulid.ID]struct{}
 	clearedusers  bool
@@ -167,6 +169,45 @@ func (m *OrganizationMutation) OldName(ctx context.Context) (v string, err error
 // ResetName resets all changes to the "name" field.
 func (m *OrganizationMutation) ResetName() {
 	m.name = nil
+}
+
+// SetTenantID sets the "tenant" edge to the Tenant entity by id.
+func (m *OrganizationMutation) SetTenantID(id pulid.ID) {
+	m.tenant = &id
+}
+
+// ClearTenant clears the "tenant" edge to the Tenant entity.
+func (m *OrganizationMutation) ClearTenant() {
+	m.clearedtenant = true
+}
+
+// TenantCleared reports if the "tenant" edge to the Tenant entity was cleared.
+func (m *OrganizationMutation) TenantCleared() bool {
+	return m.clearedtenant
+}
+
+// TenantID returns the "tenant" edge ID in the mutation.
+func (m *OrganizationMutation) TenantID() (id pulid.ID, exists bool) {
+	if m.tenant != nil {
+		return *m.tenant, true
+	}
+	return
+}
+
+// TenantIDs returns the "tenant" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TenantID instead. It exists only for internal usage by the builders.
+func (m *OrganizationMutation) TenantIDs() (ids []pulid.ID) {
+	if id := m.tenant; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTenant resets all changes to the "tenant" edge.
+func (m *OrganizationMutation) ResetTenant() {
+	m.tenant = nil
+	m.clearedtenant = false
 }
 
 // AddUserIDs adds the "users" edge to the User entity by ids.
@@ -341,7 +382,10 @@ func (m *OrganizationMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *OrganizationMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.tenant != nil {
+		edges = append(edges, organization.EdgeTenant)
+	}
 	if m.users != nil {
 		edges = append(edges, organization.EdgeUsers)
 	}
@@ -352,6 +396,10 @@ func (m *OrganizationMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *OrganizationMutation) AddedIDs(name string) []ent.Value {
 	switch name {
+	case organization.EdgeTenant:
+		if id := m.tenant; id != nil {
+			return []ent.Value{*id}
+		}
 	case organization.EdgeUsers:
 		ids := make([]ent.Value, 0, len(m.users))
 		for id := range m.users {
@@ -364,7 +412,7 @@ func (m *OrganizationMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *OrganizationMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.removedusers != nil {
 		edges = append(edges, organization.EdgeUsers)
 	}
@@ -387,7 +435,10 @@ func (m *OrganizationMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *OrganizationMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.clearedtenant {
+		edges = append(edges, organization.EdgeTenant)
+	}
 	if m.clearedusers {
 		edges = append(edges, organization.EdgeUsers)
 	}
@@ -398,6 +449,8 @@ func (m *OrganizationMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *OrganizationMutation) EdgeCleared(name string) bool {
 	switch name {
+	case organization.EdgeTenant:
+		return m.clearedtenant
 	case organization.EdgeUsers:
 		return m.clearedusers
 	}
@@ -408,6 +461,9 @@ func (m *OrganizationMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *OrganizationMutation) ClearEdge(name string) error {
 	switch name {
+	case organization.EdgeTenant:
+		m.ClearTenant()
+		return nil
 	}
 	return fmt.Errorf("unknown Organization unique edge %s", name)
 }
@@ -416,6 +472,9 @@ func (m *OrganizationMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *OrganizationMutation) ResetEdge(name string) error {
 	switch name {
+	case organization.EdgeTenant:
+		m.ResetTenant()
+		return nil
 	case organization.EdgeUsers:
 		m.ResetUsers()
 		return nil
@@ -730,6 +789,8 @@ type TodoMutation struct {
 	text          *string
 	_done         *bool
 	clearedFields map[string]struct{}
+	tenant        *pulid.ID
+	clearedtenant bool
 	user          *pulid.ID
 	cleareduser   bool
 	done          bool
@@ -892,6 +953,45 @@ func (m *TodoMutation) OldDone(ctx context.Context) (v bool, err error) {
 // ResetDone resets all changes to the "done" field.
 func (m *TodoMutation) ResetDone() {
 	m._done = nil
+}
+
+// SetTenantID sets the "tenant" edge to the Tenant entity by id.
+func (m *TodoMutation) SetTenantID(id pulid.ID) {
+	m.tenant = &id
+}
+
+// ClearTenant clears the "tenant" edge to the Tenant entity.
+func (m *TodoMutation) ClearTenant() {
+	m.clearedtenant = true
+}
+
+// TenantCleared reports if the "tenant" edge to the Tenant entity was cleared.
+func (m *TodoMutation) TenantCleared() bool {
+	return m.clearedtenant
+}
+
+// TenantID returns the "tenant" edge ID in the mutation.
+func (m *TodoMutation) TenantID() (id pulid.ID, exists bool) {
+	if m.tenant != nil {
+		return *m.tenant, true
+	}
+	return
+}
+
+// TenantIDs returns the "tenant" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TenantID instead. It exists only for internal usage by the builders.
+func (m *TodoMutation) TenantIDs() (ids []pulid.ID) {
+	if id := m.tenant; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTenant resets all changes to the "tenant" edge.
+func (m *TodoMutation) ResetTenant() {
+	m.tenant = nil
+	m.clearedtenant = false
 }
 
 // SetUserID sets the "user" edge to the User entity by id.
@@ -1068,7 +1168,10 @@ func (m *TodoMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TodoMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.tenant != nil {
+		edges = append(edges, todo.EdgeTenant)
+	}
 	if m.user != nil {
 		edges = append(edges, todo.EdgeUser)
 	}
@@ -1079,6 +1182,10 @@ func (m *TodoMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *TodoMutation) AddedIDs(name string) []ent.Value {
 	switch name {
+	case todo.EdgeTenant:
+		if id := m.tenant; id != nil {
+			return []ent.Value{*id}
+		}
 	case todo.EdgeUser:
 		if id := m.user; id != nil {
 			return []ent.Value{*id}
@@ -1089,7 +1196,7 @@ func (m *TodoMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TodoMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	return edges
 }
 
@@ -1103,7 +1210,10 @@ func (m *TodoMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TodoMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.clearedtenant {
+		edges = append(edges, todo.EdgeTenant)
+	}
 	if m.cleareduser {
 		edges = append(edges, todo.EdgeUser)
 	}
@@ -1114,6 +1224,8 @@ func (m *TodoMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *TodoMutation) EdgeCleared(name string) bool {
 	switch name {
+	case todo.EdgeTenant:
+		return m.clearedtenant
 	case todo.EdgeUser:
 		return m.cleareduser
 	}
@@ -1124,6 +1236,9 @@ func (m *TodoMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *TodoMutation) ClearEdge(name string) error {
 	switch name {
+	case todo.EdgeTenant:
+		m.ClearTenant()
+		return nil
 	case todo.EdgeUser:
 		m.ClearUser()
 		return nil
@@ -1135,6 +1250,9 @@ func (m *TodoMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *TodoMutation) ResetEdge(name string) error {
 	switch name {
+	case todo.EdgeTenant:
+		m.ResetTenant()
+		return nil
 	case todo.EdgeUser:
 		m.ResetUser()
 		return nil
@@ -1150,6 +1268,8 @@ type UserMutation struct {
 	id                  *pulid.ID
 	name                *string
 	clearedFields       map[string]struct{}
+	tenant              *pulid.ID
+	clearedtenant       bool
 	todos               map[pulid.ID]struct{}
 	removedtodos        map[pulid.ID]struct{}
 	clearedtodos        bool
@@ -1279,6 +1399,45 @@ func (m *UserMutation) OldName(ctx context.Context) (v string, err error) {
 // ResetName resets all changes to the "name" field.
 func (m *UserMutation) ResetName() {
 	m.name = nil
+}
+
+// SetTenantID sets the "tenant" edge to the Tenant entity by id.
+func (m *UserMutation) SetTenantID(id pulid.ID) {
+	m.tenant = &id
+}
+
+// ClearTenant clears the "tenant" edge to the Tenant entity.
+func (m *UserMutation) ClearTenant() {
+	m.clearedtenant = true
+}
+
+// TenantCleared reports if the "tenant" edge to the Tenant entity was cleared.
+func (m *UserMutation) TenantCleared() bool {
+	return m.clearedtenant
+}
+
+// TenantID returns the "tenant" edge ID in the mutation.
+func (m *UserMutation) TenantID() (id pulid.ID, exists bool) {
+	if m.tenant != nil {
+		return *m.tenant, true
+	}
+	return
+}
+
+// TenantIDs returns the "tenant" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TenantID instead. It exists only for internal usage by the builders.
+func (m *UserMutation) TenantIDs() (ids []pulid.ID) {
+	if id := m.tenant; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTenant resets all changes to the "tenant" edge.
+func (m *UserMutation) ResetTenant() {
+	m.tenant = nil
+	m.clearedtenant = false
 }
 
 // AddTodoIDs adds the "todos" edge to the Todo entity by ids.
@@ -1492,7 +1651,10 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
+	if m.tenant != nil {
+		edges = append(edges, user.EdgeTenant)
+	}
 	if m.todos != nil {
 		edges = append(edges, user.EdgeTodos)
 	}
@@ -1506,6 +1668,10 @@ func (m *UserMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *UserMutation) AddedIDs(name string) []ent.Value {
 	switch name {
+	case user.EdgeTenant:
+		if id := m.tenant; id != nil {
+			return []ent.Value{*id}
+		}
 	case user.EdgeTodos:
 		ids := make([]ent.Value, 0, len(m.todos))
 		for id := range m.todos {
@@ -1522,7 +1688,7 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.removedtodos != nil {
 		edges = append(edges, user.EdgeTodos)
 	}
@@ -1545,7 +1711,10 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
+	if m.clearedtenant {
+		edges = append(edges, user.EdgeTenant)
+	}
 	if m.clearedtodos {
 		edges = append(edges, user.EdgeTodos)
 	}
@@ -1559,6 +1728,8 @@ func (m *UserMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *UserMutation) EdgeCleared(name string) bool {
 	switch name {
+	case user.EdgeTenant:
+		return m.clearedtenant
 	case user.EdgeTodos:
 		return m.clearedtodos
 	case user.EdgeOrganization:
@@ -1571,6 +1742,9 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *UserMutation) ClearEdge(name string) error {
 	switch name {
+	case user.EdgeTenant:
+		m.ClearTenant()
+		return nil
 	case user.EdgeOrganization:
 		m.ClearOrganization()
 		return nil
@@ -1582,6 +1756,9 @@ func (m *UserMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *UserMutation) ResetEdge(name string) error {
 	switch name {
+	case user.EdgeTenant:
+		m.ResetTenant()
+		return nil
 	case user.EdgeTodos:
 		m.ResetTodos()
 		return nil

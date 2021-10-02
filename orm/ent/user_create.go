@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
+	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
 	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
@@ -48,6 +49,17 @@ func (uc *UserCreate) SetNillableID(pu *pulid.ID) *UserCreate {
 		uc.SetID(*pu)
 	}
 	return uc
+}
+
+// SetTenantID sets the "tenant" edge to the Tenant entity by ID.
+func (uc *UserCreate) SetTenantID(id pulid.ID) *UserCreate {
+	uc.mutation.SetTenantID(id)
+	return uc
+}
+
+// SetTenant sets the "tenant" edge to the Tenant entity.
+func (uc *UserCreate) SetTenant(t *Tenant) *UserCreate {
+	return uc.SetTenantID(t.ID)
 }
 
 // AddTodoIDs adds the "todos" edge to the Todo entity by IDs.
@@ -162,6 +174,9 @@ func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
 	}
+	if _, ok := uc.mutation.TenantID(); !ok {
+		return &ValidationError{Name: "tenant", err: errors.New("ent: missing required edge \"tenant\"")}
+	}
 	if _, ok := uc.mutation.OrganizationID(); !ok {
 		return &ValidationError{Name: "organization", err: errors.New("ent: missing required edge \"organization\"")}
 	}
@@ -204,6 +219,26 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Column: user.FieldName,
 		})
 		_node.Name = value
+	}
+	if nodes := uc.mutation.TenantIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   user.TenantTable,
+			Columns: []string{user.TenantColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tenant.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.user_tenant = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := uc.mutation.TodosIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

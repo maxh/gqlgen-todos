@@ -49,7 +49,7 @@ func (o *Organization) Node(ctx context.Context) (node *Node, err error) {
 		ID:     o.ID,
 		Type:   "Organization",
 		Fields: make([]*Field, 1),
-		Edges:  make([]*Edge, 1),
+		Edges:  make([]*Edge, 2),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(o.Name); err != nil {
@@ -61,12 +61,22 @@ func (o *Organization) Node(ctx context.Context) (node *Node, err error) {
 		Value: string(buf),
 	}
 	node.Edges[0] = &Edge{
+		Type: "Tenant",
+		Name: "tenant",
+	}
+	err = o.QueryTenant().
+		Select(tenant.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
 		Type: "User",
 		Name: "users",
 	}
 	err = o.QueryUsers().
 		Select(user.FieldID).
-		Scan(ctx, &node.Edges[0].IDs)
+		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +107,7 @@ func (t *Todo) Node(ctx context.Context) (node *Node, err error) {
 		ID:     t.ID,
 		Type:   "Todo",
 		Fields: make([]*Field, 2),
-		Edges:  make([]*Edge, 1),
+		Edges:  make([]*Edge, 2),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(t.Text); err != nil {
@@ -117,12 +127,22 @@ func (t *Todo) Node(ctx context.Context) (node *Node, err error) {
 		Value: string(buf),
 	}
 	node.Edges[0] = &Edge{
+		Type: "Tenant",
+		Name: "tenant",
+	}
+	err = t.QueryTenant().
+		Select(tenant.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
 		Type: "User",
 		Name: "user",
 	}
 	err = t.QueryUser().
 		Select(user.FieldID).
-		Scan(ctx, &node.Edges[0].IDs)
+		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +154,7 @@ func (u *User) Node(ctx context.Context) (node *Node, err error) {
 		ID:     u.ID,
 		Type:   "User",
 		Fields: make([]*Field, 1),
-		Edges:  make([]*Edge, 2),
+		Edges:  make([]*Edge, 3),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(u.Name); err != nil {
@@ -146,22 +166,32 @@ func (u *User) Node(ctx context.Context) (node *Node, err error) {
 		Value: string(buf),
 	}
 	node.Edges[0] = &Edge{
-		Type: "Todo",
-		Name: "todos",
+		Type: "Tenant",
+		Name: "tenant",
 	}
-	err = u.QueryTodos().
-		Select(todo.FieldID).
+	err = u.QueryTenant().
+		Select(tenant.FieldID).
 		Scan(ctx, &node.Edges[0].IDs)
 	if err != nil {
 		return nil, err
 	}
 	node.Edges[1] = &Edge{
+		Type: "Todo",
+		Name: "todos",
+	}
+	err = u.QueryTodos().
+		Select(todo.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[2] = &Edge{
 		Type: "Organization",
 		Name: "organization",
 	}
 	err = u.QueryOrganization().
 		Select(organization.FieldID).
-		Scan(ctx, &node.Edges[1].IDs)
+		Scan(ctx, &node.Edges[2].IDs)
 	if err != nil {
 		return nil, err
 	}

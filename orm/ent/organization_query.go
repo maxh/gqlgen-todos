@@ -14,6 +14,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
 	"github.com/maxh/gqlgen-todos/orm/ent/predicate"
+	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
 	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
 )
@@ -28,7 +29,9 @@ type OrganizationQuery struct {
 	fields     []string
 	predicates []predicate.Organization
 	// eager-loading edges.
-	withUsers *UserQuery
+	withTenant *TenantQuery
+	withUsers  *UserQuery
+	withFKs    bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -63,6 +66,28 @@ func (oq *OrganizationQuery) Unique(unique bool) *OrganizationQuery {
 func (oq *OrganizationQuery) Order(o ...OrderFunc) *OrganizationQuery {
 	oq.order = append(oq.order, o...)
 	return oq
+}
+
+// QueryTenant chains the current query on the "tenant" edge.
+func (oq *OrganizationQuery) QueryTenant() *TenantQuery {
+	query := &TenantQuery{config: oq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := oq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := oq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(organization.Table, organization.FieldID, selector),
+			sqlgraph.To(tenant.Table, tenant.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, organization.TenantTable, organization.TenantColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(oq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryUsers chains the current query on the "users" edge.
@@ -268,11 +293,23 @@ func (oq *OrganizationQuery) Clone() *OrganizationQuery {
 		offset:     oq.offset,
 		order:      append([]OrderFunc{}, oq.order...),
 		predicates: append([]predicate.Organization{}, oq.predicates...),
+		withTenant: oq.withTenant.Clone(),
 		withUsers:  oq.withUsers.Clone(),
 		// clone intermediate query.
 		sql:  oq.sql.Clone(),
 		path: oq.path,
 	}
+}
+
+// WithTenant tells the query-builder to eager-load the nodes that are connected to
+// the "tenant" edge. The optional arguments are used to configure the query builder of the edge.
+func (oq *OrganizationQuery) WithTenant(opts ...func(*TenantQuery)) *OrganizationQuery {
+	query := &TenantQuery{config: oq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	oq.withTenant = query
+	return oq
 }
 
 // WithUsers tells the query-builder to eager-load the nodes that are connected to
@@ -350,11 +387,19 @@ func (oq *OrganizationQuery) prepareQuery(ctx context.Context) error {
 func (oq *OrganizationQuery) sqlAll(ctx context.Context) ([]*Organization, error) {
 	var (
 		nodes       = []*Organization{}
+		withFKs     = oq.withFKs
 		_spec       = oq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
+			oq.withTenant != nil,
 			oq.withUsers != nil,
 		}
 	)
+	if oq.withTenant != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, organization.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
 		node := &Organization{config: oq.config}
 		nodes = append(nodes, node)
@@ -373,6 +418,35 @@ func (oq *OrganizationQuery) sqlAll(ctx context.Context) ([]*Organization, error
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
+	}
+
+	if query := oq.withTenant; query != nil {
+		ids := make([]pulid.ID, 0, len(nodes))
+		nodeids := make(map[pulid.ID][]*Organization)
+		for i := range nodes {
+			if nodes[i].organization_tenant == nil {
+				continue
+			}
+			fk := *nodes[i].organization_tenant
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(tenant.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "organization_tenant" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Tenant = n
+			}
+		}
 	}
 
 	if query := oq.withUsers; query != nil {

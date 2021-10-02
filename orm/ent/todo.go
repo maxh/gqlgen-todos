@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
 	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
@@ -23,23 +24,40 @@ type Todo struct {
 	Done bool `json:"done,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TodoQuery when eager-loading is set.
-	Edges      TodoEdges `json:"edges"`
-	user_todos *pulid.ID
+	Edges       TodoEdges `json:"edges"`
+	todo_tenant *pulid.ID
+	user_todos  *pulid.ID
 }
 
 // TodoEdges holds the relations/edges for other nodes in the graph.
 type TodoEdges struct {
+	// Tenant holds the value of the tenant edge.
+	Tenant *Tenant `json:"tenant,omitempty"`
 	// User holds the value of the user edge.
 	User *User `json:"user,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
+}
+
+// TenantOrErr returns the Tenant value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e TodoEdges) TenantOrErr() (*Tenant, error) {
+	if e.loadedTypes[0] {
+		if e.Tenant == nil {
+			// The edge tenant was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: tenant.Label}
+		}
+		return e.Tenant, nil
+	}
+	return nil, &NotLoadedError{edge: "tenant"}
 }
 
 // UserOrErr returns the User value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e TodoEdges) UserOrErr() (*User, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		if e.User == nil {
 			// The edge user was loaded in eager-loading,
 			// but was not found.
@@ -61,7 +79,9 @@ func (*Todo) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case todo.FieldText:
 			values[i] = new(sql.NullString)
-		case todo.ForeignKeys[0]: // user_todos
+		case todo.ForeignKeys[0]: // todo_tenant
+			values[i] = &sql.NullScanner{S: new(pulid.ID)}
+		case todo.ForeignKeys[1]: // user_todos
 			values[i] = &sql.NullScanner{S: new(pulid.ID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Todo", columns[i])
@@ -98,6 +118,13 @@ func (t *Todo) assignValues(columns []string, values []interface{}) error {
 			}
 		case todo.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field todo_tenant", values[i])
+			} else if value.Valid {
+				t.todo_tenant = new(pulid.ID)
+				*t.todo_tenant = *value.S.(*pulid.ID)
+			}
+		case todo.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field user_todos", values[i])
 			} else if value.Valid {
 				t.user_todos = new(pulid.ID)
@@ -106,6 +133,11 @@ func (t *Todo) assignValues(columns []string, values []interface{}) error {
 		}
 	}
 	return nil
+}
+
+// QueryTenant queries the "tenant" edge of the Todo entity.
+func (t *Todo) QueryTenant() *TenantQuery {
+	return (&TodoClient{config: t.config}).QueryTenant(t)
 }
 
 // QueryUser queries the "user" edge of the Todo entity.

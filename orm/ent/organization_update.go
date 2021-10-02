@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"entgo.io/ent/dialect/sql"
@@ -11,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
 	"github.com/maxh/gqlgen-todos/orm/ent/predicate"
+	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
 	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
 )
@@ -42,6 +44,17 @@ func (ou *OrganizationUpdate) SetNillableName(s *string) *OrganizationUpdate {
 	return ou
 }
 
+// SetTenantID sets the "tenant" edge to the Tenant entity by ID.
+func (ou *OrganizationUpdate) SetTenantID(id pulid.ID) *OrganizationUpdate {
+	ou.mutation.SetTenantID(id)
+	return ou
+}
+
+// SetTenant sets the "tenant" edge to the Tenant entity.
+func (ou *OrganizationUpdate) SetTenant(t *Tenant) *OrganizationUpdate {
+	return ou.SetTenantID(t.ID)
+}
+
 // AddUserIDs adds the "users" edge to the User entity by IDs.
 func (ou *OrganizationUpdate) AddUserIDs(ids ...pulid.ID) *OrganizationUpdate {
 	ou.mutation.AddUserIDs(ids...)
@@ -60,6 +73,12 @@ func (ou *OrganizationUpdate) AddUsers(u ...*User) *OrganizationUpdate {
 // Mutation returns the OrganizationMutation object of the builder.
 func (ou *OrganizationUpdate) Mutation() *OrganizationMutation {
 	return ou.mutation
+}
+
+// ClearTenant clears the "tenant" edge to the Tenant entity.
+func (ou *OrganizationUpdate) ClearTenant() *OrganizationUpdate {
+	ou.mutation.ClearTenant()
+	return ou
 }
 
 // ClearUsers clears all "users" edges to the User entity.
@@ -90,12 +109,18 @@ func (ou *OrganizationUpdate) Save(ctx context.Context) (int, error) {
 		affected int
 	)
 	if len(ou.hooks) == 0 {
+		if err = ou.check(); err != nil {
+			return 0, err
+		}
 		affected, err = ou.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*OrganizationMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = ou.check(); err != nil {
+				return 0, err
 			}
 			ou.mutation = mutation
 			affected, err = ou.sqlSave(ctx)
@@ -137,6 +162,14 @@ func (ou *OrganizationUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (ou *OrganizationUpdate) check() error {
+	if _, ok := ou.mutation.TenantID(); ou.mutation.TenantCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"tenant\"")
+	}
+	return nil
+}
+
 func (ou *OrganizationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -161,6 +194,41 @@ func (ou *OrganizationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Value:  value,
 			Column: organization.FieldName,
 		})
+	}
+	if ou.mutation.TenantCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   organization.TenantTable,
+			Columns: []string{organization.TenantColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tenant.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ou.mutation.TenantIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   organization.TenantTable,
+			Columns: []string{organization.TenantColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tenant.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if ou.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -249,6 +317,17 @@ func (ouo *OrganizationUpdateOne) SetNillableName(s *string) *OrganizationUpdate
 	return ouo
 }
 
+// SetTenantID sets the "tenant" edge to the Tenant entity by ID.
+func (ouo *OrganizationUpdateOne) SetTenantID(id pulid.ID) *OrganizationUpdateOne {
+	ouo.mutation.SetTenantID(id)
+	return ouo
+}
+
+// SetTenant sets the "tenant" edge to the Tenant entity.
+func (ouo *OrganizationUpdateOne) SetTenant(t *Tenant) *OrganizationUpdateOne {
+	return ouo.SetTenantID(t.ID)
+}
+
 // AddUserIDs adds the "users" edge to the User entity by IDs.
 func (ouo *OrganizationUpdateOne) AddUserIDs(ids ...pulid.ID) *OrganizationUpdateOne {
 	ouo.mutation.AddUserIDs(ids...)
@@ -267,6 +346,12 @@ func (ouo *OrganizationUpdateOne) AddUsers(u ...*User) *OrganizationUpdateOne {
 // Mutation returns the OrganizationMutation object of the builder.
 func (ouo *OrganizationUpdateOne) Mutation() *OrganizationMutation {
 	return ouo.mutation
+}
+
+// ClearTenant clears the "tenant" edge to the Tenant entity.
+func (ouo *OrganizationUpdateOne) ClearTenant() *OrganizationUpdateOne {
+	ouo.mutation.ClearTenant()
+	return ouo
 }
 
 // ClearUsers clears all "users" edges to the User entity.
@@ -304,12 +389,18 @@ func (ouo *OrganizationUpdateOne) Save(ctx context.Context) (*Organization, erro
 		node *Organization
 	)
 	if len(ouo.hooks) == 0 {
+		if err = ouo.check(); err != nil {
+			return nil, err
+		}
 		node, err = ouo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*OrganizationMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = ouo.check(); err != nil {
+				return nil, err
 			}
 			ouo.mutation = mutation
 			node, err = ouo.sqlSave(ctx)
@@ -349,6 +440,14 @@ func (ouo *OrganizationUpdateOne) ExecX(ctx context.Context) {
 	if err := ouo.Exec(ctx); err != nil {
 		panic(err)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (ouo *OrganizationUpdateOne) check() error {
+	if _, ok := ouo.mutation.TenantID(); ouo.mutation.TenantCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"tenant\"")
+	}
+	return nil
 }
 
 func (ouo *OrganizationUpdateOne) sqlSave(ctx context.Context) (_node *Organization, err error) {
@@ -392,6 +491,41 @@ func (ouo *OrganizationUpdateOne) sqlSave(ctx context.Context) (_node *Organizat
 			Value:  value,
 			Column: organization.FieldName,
 		})
+	}
+	if ouo.mutation.TenantCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   organization.TenantTable,
+			Columns: []string{organization.TenantColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tenant.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ouo.mutation.TenantIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   organization.TenantTable,
+			Columns: []string{organization.TenantColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tenant.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if ouo.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{

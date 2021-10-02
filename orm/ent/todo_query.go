@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/maxh/gqlgen-todos/orm/ent/predicate"
+	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
 	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
@@ -27,8 +28,9 @@ type TodoQuery struct {
 	fields     []string
 	predicates []predicate.Todo
 	// eager-loading edges.
-	withUser *UserQuery
-	withFKs  bool
+	withTenant *TenantQuery
+	withUser   *UserQuery
+	withFKs    bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -63,6 +65,28 @@ func (tq *TodoQuery) Unique(unique bool) *TodoQuery {
 func (tq *TodoQuery) Order(o ...OrderFunc) *TodoQuery {
 	tq.order = append(tq.order, o...)
 	return tq
+}
+
+// QueryTenant chains the current query on the "tenant" edge.
+func (tq *TodoQuery) QueryTenant() *TenantQuery {
+	query := &TenantQuery{config: tq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(todo.Table, todo.FieldID, selector),
+			sqlgraph.To(tenant.Table, tenant.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, todo.TenantTable, todo.TenantColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryUser chains the current query on the "user" edge.
@@ -268,11 +292,23 @@ func (tq *TodoQuery) Clone() *TodoQuery {
 		offset:     tq.offset,
 		order:      append([]OrderFunc{}, tq.order...),
 		predicates: append([]predicate.Todo{}, tq.predicates...),
+		withTenant: tq.withTenant.Clone(),
 		withUser:   tq.withUser.Clone(),
 		// clone intermediate query.
 		sql:  tq.sql.Clone(),
 		path: tq.path,
 	}
+}
+
+// WithTenant tells the query-builder to eager-load the nodes that are connected to
+// the "tenant" edge. The optional arguments are used to configure the query builder of the edge.
+func (tq *TodoQuery) WithTenant(opts ...func(*TenantQuery)) *TodoQuery {
+	query := &TenantQuery{config: tq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tq.withTenant = query
+	return tq
 }
 
 // WithUser tells the query-builder to eager-load the nodes that are connected to
@@ -352,11 +388,12 @@ func (tq *TodoQuery) sqlAll(ctx context.Context) ([]*Todo, error) {
 		nodes       = []*Todo{}
 		withFKs     = tq.withFKs
 		_spec       = tq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
+			tq.withTenant != nil,
 			tq.withUser != nil,
 		}
 	)
-	if tq.withUser != nil {
+	if tq.withTenant != nil || tq.withUser != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -380,6 +417,35 @@ func (tq *TodoQuery) sqlAll(ctx context.Context) ([]*Todo, error) {
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
+	}
+
+	if query := tq.withTenant; query != nil {
+		ids := make([]pulid.ID, 0, len(nodes))
+		nodeids := make(map[pulid.ID][]*Todo)
+		for i := range nodes {
+			if nodes[i].todo_tenant == nil {
+				continue
+			}
+			fk := *nodes[i].todo_tenant
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(tenant.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "todo_tenant" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Tenant = n
+			}
+		}
 	}
 
 	if query := tq.withUser; query != nil {

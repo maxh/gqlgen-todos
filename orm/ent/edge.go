@@ -4,10 +4,26 @@ package ent
 
 import "context"
 
+func (o *Organization) Tenant(ctx context.Context) (*Tenant, error) {
+	result, err := o.Edges.TenantOrErr()
+	if IsNotLoaded(err) {
+		result, err = o.QueryTenant().Only(ctx)
+	}
+	return result, err
+}
+
 func (o *Organization) Users(ctx context.Context) ([]*User, error) {
 	result, err := o.Edges.UsersOrErr()
 	if IsNotLoaded(err) {
 		result, err = o.QueryUsers().All(ctx)
+	}
+	return result, err
+}
+
+func (t *Todo) Tenant(ctx context.Context) (*Tenant, error) {
+	result, err := t.Edges.TenantOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryTenant().Only(ctx)
 	}
 	return result, err
 }
@@ -18,6 +34,14 @@ func (t *Todo) User(ctx context.Context) (*User, error) {
 		result, err = t.QueryUser().Only(ctx)
 	}
 	return result, MaskNotFound(err)
+}
+
+func (u *User) Tenant(ctx context.Context) (*Tenant, error) {
+	result, err := u.Edges.TenantOrErr()
+	if IsNotLoaded(err) {
+		result, err = u.QueryTenant().Only(ctx)
+	}
+	return result, err
 }
 
 func (u *User) Todos(ctx context.Context) ([]*Todo, error) {

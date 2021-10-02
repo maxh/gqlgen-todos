@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
 	"github.com/maxh/gqlgen-todos/orm/ent/predicate"
+	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
 	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
@@ -44,6 +45,17 @@ func (uu *UserUpdate) SetNillableName(s *string) *UserUpdate {
 	return uu
 }
 
+// SetTenantID sets the "tenant" edge to the Tenant entity by ID.
+func (uu *UserUpdate) SetTenantID(id pulid.ID) *UserUpdate {
+	uu.mutation.SetTenantID(id)
+	return uu
+}
+
+// SetTenant sets the "tenant" edge to the Tenant entity.
+func (uu *UserUpdate) SetTenant(t *Tenant) *UserUpdate {
+	return uu.SetTenantID(t.ID)
+}
+
 // AddTodoIDs adds the "todos" edge to the Todo entity by IDs.
 func (uu *UserUpdate) AddTodoIDs(ids ...pulid.ID) *UserUpdate {
 	uu.mutation.AddTodoIDs(ids...)
@@ -73,6 +85,12 @@ func (uu *UserUpdate) SetOrganization(o *Organization) *UserUpdate {
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
+}
+
+// ClearTenant clears the "tenant" edge to the Tenant entity.
+func (uu *UserUpdate) ClearTenant() *UserUpdate {
+	uu.mutation.ClearTenant()
+	return uu
 }
 
 // ClearTodos clears all "todos" edges to the Todo entity.
@@ -164,6 +182,9 @@ func (uu *UserUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (uu *UserUpdate) check() error {
+	if _, ok := uu.mutation.TenantID(); uu.mutation.TenantCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"tenant\"")
+	}
 	if _, ok := uu.mutation.OrganizationID(); uu.mutation.OrganizationCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"organization\"")
 	}
@@ -194,6 +215,41 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Value:  value,
 			Column: user.FieldName,
 		})
+	}
+	if uu.mutation.TenantCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   user.TenantTable,
+			Columns: []string{user.TenantColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tenant.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.TenantIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   user.TenantTable,
+			Columns: []string{user.TenantColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tenant.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if uu.mutation.TodosCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -317,6 +373,17 @@ func (uuo *UserUpdateOne) SetNillableName(s *string) *UserUpdateOne {
 	return uuo
 }
 
+// SetTenantID sets the "tenant" edge to the Tenant entity by ID.
+func (uuo *UserUpdateOne) SetTenantID(id pulid.ID) *UserUpdateOne {
+	uuo.mutation.SetTenantID(id)
+	return uuo
+}
+
+// SetTenant sets the "tenant" edge to the Tenant entity.
+func (uuo *UserUpdateOne) SetTenant(t *Tenant) *UserUpdateOne {
+	return uuo.SetTenantID(t.ID)
+}
+
 // AddTodoIDs adds the "todos" edge to the Todo entity by IDs.
 func (uuo *UserUpdateOne) AddTodoIDs(ids ...pulid.ID) *UserUpdateOne {
 	uuo.mutation.AddTodoIDs(ids...)
@@ -346,6 +413,12 @@ func (uuo *UserUpdateOne) SetOrganization(o *Organization) *UserUpdateOne {
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
+}
+
+// ClearTenant clears the "tenant" edge to the Tenant entity.
+func (uuo *UserUpdateOne) ClearTenant() *UserUpdateOne {
+	uuo.mutation.ClearTenant()
+	return uuo
 }
 
 // ClearTodos clears all "todos" edges to the Todo entity.
@@ -444,6 +517,9 @@ func (uuo *UserUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (uuo *UserUpdateOne) check() error {
+	if _, ok := uuo.mutation.TenantID(); uuo.mutation.TenantCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"tenant\"")
+	}
 	if _, ok := uuo.mutation.OrganizationID(); uuo.mutation.OrganizationCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"organization\"")
 	}
@@ -491,6 +567,41 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Value:  value,
 			Column: user.FieldName,
 		})
+	}
+	if uuo.mutation.TenantCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   user.TenantTable,
+			Columns: []string{user.TenantColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tenant.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.TenantIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   user.TenantTable,
+			Columns: []string{user.TenantColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tenant.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if uuo.mutation.TodosCleared() {
 		edge := &sqlgraph.EdgeSpec{

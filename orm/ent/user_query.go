@@ -14,6 +14,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
 	"github.com/maxh/gqlgen-todos/orm/ent/predicate"
+	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
 	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
@@ -29,6 +30,7 @@ type UserQuery struct {
 	fields     []string
 	predicates []predicate.User
 	// eager-loading edges.
+	withTenant       *TenantQuery
 	withTodos        *TodoQuery
 	withOrganization *OrganizationQuery
 	withFKs          bool
@@ -66,6 +68,28 @@ func (uq *UserQuery) Unique(unique bool) *UserQuery {
 func (uq *UserQuery) Order(o ...OrderFunc) *UserQuery {
 	uq.order = append(uq.order, o...)
 	return uq
+}
+
+// QueryTenant chains the current query on the "tenant" edge.
+func (uq *UserQuery) QueryTenant() *TenantQuery {
+	query := &TenantQuery{config: uq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(tenant.Table, tenant.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, user.TenantTable, user.TenantColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryTodos chains the current query on the "todos" edge.
@@ -293,12 +317,24 @@ func (uq *UserQuery) Clone() *UserQuery {
 		offset:           uq.offset,
 		order:            append([]OrderFunc{}, uq.order...),
 		predicates:       append([]predicate.User{}, uq.predicates...),
+		withTenant:       uq.withTenant.Clone(),
 		withTodos:        uq.withTodos.Clone(),
 		withOrganization: uq.withOrganization.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
 		path: uq.path,
 	}
+}
+
+// WithTenant tells the query-builder to eager-load the nodes that are connected to
+// the "tenant" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithTenant(opts ...func(*TenantQuery)) *UserQuery {
+	query := &TenantQuery{config: uq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withTenant = query
+	return uq
 }
 
 // WithTodos tells the query-builder to eager-load the nodes that are connected to
@@ -389,12 +425,13 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 		nodes       = []*User{}
 		withFKs     = uq.withFKs
 		_spec       = uq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
+			uq.withTenant != nil,
 			uq.withTodos != nil,
 			uq.withOrganization != nil,
 		}
 	)
-	if uq.withOrganization != nil {
+	if uq.withTenant != nil || uq.withOrganization != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -418,6 +455,35 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
+	}
+
+	if query := uq.withTenant; query != nil {
+		ids := make([]pulid.ID, 0, len(nodes))
+		nodeids := make(map[pulid.ID][]*User)
+		for i := range nodes {
+			if nodes[i].user_tenant == nil {
+				continue
+			}
+			fk := *nodes[i].user_tenant
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(tenant.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "user_tenant" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Tenant = n
+			}
+		}
 	}
 
 	if query := uq.withTodos; query != nil {

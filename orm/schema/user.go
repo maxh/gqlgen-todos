@@ -24,6 +24,7 @@ func (User) Fields() []ent.Field {
 func (User) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		pulid.MixinWithPrefix("user"),
+		TenantMixin{},
 	}
 }
 
