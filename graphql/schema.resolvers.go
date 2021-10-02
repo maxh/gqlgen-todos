@@ -13,10 +13,19 @@ import (
 
 func (r *mutationResolver) CreateTodo(ctx context.Context, input gql.CreateTodoInput) (*ent.Todo, error) {
 	client := ent.FromContext(ctx)
+	user, err := client.User.Get(ctx, input.UserID)
+	if err != nil {
+		log.Fatal("unable to get user", err)
+	}
+	tenant, err := user.Tenant(ctx)
+	if err != nil {
+		log.Fatal("unable to get tenant", err)
+	}
 	created, err := client.Todo.
 		Create().
 		SetUserID(input.UserID).
 		SetText(input.Text).
+		SetTenant(tenant).
 		Save(ctx)
 	if err != nil {
 		log.Fatal("unable to create todo", err)

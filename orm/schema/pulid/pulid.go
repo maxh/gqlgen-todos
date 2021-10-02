@@ -18,8 +18,8 @@ type ID string
 // The default entropy source.
 var defaultEntropySource *ulid.MonotonicEntropy
 
-var qidPrefix = "qid"
-var serviceName = "qualligo"
+var qidPrefix = "qrn"
+var serviceName = "qgo"
 
 func init() {
 	// Seed the default entropy source.
