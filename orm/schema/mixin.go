@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/mixin"
@@ -53,8 +54,8 @@ func (TenantMixin) Edges() []ent.Edge {
 ////////////
 
 // QidMixinWithPrefix creates a Mixin that encodes the provided resourceType.
-func QidMixinWithPrefix(prefix string) *QidMixin {
-	return &QidMixin{resourceType: prefix}
+func QidMixinWithPrefix(resourceType string) *QidMixin {
+	return &QidMixin{resourceType: resourceType}
 }
 
 // QidMixin defines an ent Mixin that captures the QID resourceType for a type.
@@ -69,5 +70,12 @@ func (m QidMixin) Fields() []ent.Field {
 		field.String("id").
 			GoType(qid.ID("")).
 			DefaultFunc(func() qid.ID { return qid.MustNew(m.resourceType) }),
+	}
+}
+
+// Annotations returns the annotations for a Mixin instance.
+func (m QidMixin) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		QidAnnotation{ResourceType: m.resourceType},
 	}
 }

@@ -12,6 +12,11 @@ import (
 )
 
 func main() {
+	templates := entgql.AllTemplates
+	templates = append(templates, gen.MustParse(
+		gen.NewTemplate("qidmap.tmpl").
+			ParseFiles("./schema/template/qidmap.tmpl")),
+	)
 	ex, err := entgql.NewExtension()
 	if err != nil {
 		log.Fatalf("creating entgql extension: %v", err)
@@ -22,8 +27,9 @@ func main() {
 	}
 	config := &gen.Config{
 		// IDType: &field.TypeInfo{Type: field.TypeString},
-		Target:  "./ent",
-		Package: "github.com/maxh/gqlgen-todos/orm/ent",
+		Target:    "./ent",
+		Package:   "github.com/maxh/gqlgen-todos/orm/ent",
+		Templates: templates,
 	}
 	err = entc.Generate("./schema", config, options...)
 	if err != nil {
