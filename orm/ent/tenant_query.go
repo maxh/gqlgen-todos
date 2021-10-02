@@ -13,7 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/maxh/gqlgen-todos/orm/ent/predicate"
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
-	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
+	"github.com/maxh/gqlgen-todos/qrn"
 )
 
 // TenantQuery is the builder for querying Tenant entities.
@@ -85,8 +85,8 @@ func (tq *TenantQuery) FirstX(ctx context.Context) *Tenant {
 
 // FirstID returns the first Tenant ID from the query.
 // Returns a *NotFoundError when no Tenant ID was found.
-func (tq *TenantQuery) FirstID(ctx context.Context) (id pulid.ID, err error) {
-	var ids []pulid.ID
+func (tq *TenantQuery) FirstID(ctx context.Context) (id qrn.ID, err error) {
+	var ids []qrn.ID
 	if ids, err = tq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -98,7 +98,7 @@ func (tq *TenantQuery) FirstID(ctx context.Context) (id pulid.ID, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (tq *TenantQuery) FirstIDX(ctx context.Context) pulid.ID {
+func (tq *TenantQuery) FirstIDX(ctx context.Context) qrn.ID {
 	id, err := tq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -136,8 +136,8 @@ func (tq *TenantQuery) OnlyX(ctx context.Context) *Tenant {
 // OnlyID is like Only, but returns the only Tenant ID in the query.
 // Returns a *NotSingularError when exactly one Tenant ID is not found.
 // Returns a *NotFoundError when no entities are found.
-func (tq *TenantQuery) OnlyID(ctx context.Context) (id pulid.ID, err error) {
-	var ids []pulid.ID
+func (tq *TenantQuery) OnlyID(ctx context.Context) (id qrn.ID, err error) {
+	var ids []qrn.ID
 	if ids, err = tq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -153,7 +153,7 @@ func (tq *TenantQuery) OnlyID(ctx context.Context) (id pulid.ID, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (tq *TenantQuery) OnlyIDX(ctx context.Context) pulid.ID {
+func (tq *TenantQuery) OnlyIDX(ctx context.Context) qrn.ID {
 	id, err := tq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -179,8 +179,8 @@ func (tq *TenantQuery) AllX(ctx context.Context) []*Tenant {
 }
 
 // IDs executes the query and returns a list of Tenant IDs.
-func (tq *TenantQuery) IDs(ctx context.Context) ([]pulid.ID, error) {
-	var ids []pulid.ID
+func (tq *TenantQuery) IDs(ctx context.Context) ([]qrn.ID, error) {
+	var ids []qrn.ID
 	if err := tq.Select(tenant.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -188,7 +188,7 @@ func (tq *TenantQuery) IDs(ctx context.Context) ([]pulid.ID, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (tq *TenantQuery) IDsX(ctx context.Context) []pulid.ID {
+func (tq *TenantQuery) IDsX(ctx context.Context) []qrn.ID {
 	ids, err := tq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -305,6 +305,12 @@ func (tq *TenantQuery) prepareQuery(ctx context.Context) error {
 			return err
 		}
 		tq.sql = prev
+	}
+	if tenant.Policy == nil {
+		return errors.New("ent: uninitialized tenant.Policy (forgotten import ent/runtime?)")
+	}
+	if err := tenant.Policy.EvalQuery(ctx, tq); err != nil {
+		return err
 	}
 	return nil
 }

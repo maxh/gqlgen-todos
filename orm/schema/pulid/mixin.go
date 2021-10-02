@@ -5,6 +5,8 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/mixin"
+
+	"github.com/maxh/gqlgen-todos/qrn"
 )
 
 // MixinWithPrefix creates a Mixin that encodes the provided resourceType.
@@ -22,8 +24,8 @@ type Mixin struct {
 func (m Mixin) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("id").
-			GoType(ID("")).
-			DefaultFunc(func() ID { return MustNew(m.resourceType) }),
+			GoType(qrn.ID("")).
+			DefaultFunc(func() qrn.ID { return qrn.MustNew(m.resourceType) }),
 	}
 }
 

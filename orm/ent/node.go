@@ -14,7 +14,7 @@ import (
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
-	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
+	"github.com/maxh/gqlgen-todos/qrn"
 )
 
 // Noder wraps the basic Node method.
@@ -24,7 +24,7 @@ type Noder interface {
 
 // Node in the graph.
 type Node struct {
-	ID     pulid.ID `json:"id,omitempty"`     // node id.
+	ID     qrn.ID   `json:"id,omitempty"`     // node id.
 	Type   string   `json:"type,omitempty"`   // node type.
 	Fields []*Field `json:"fields,omitempty"` // node fields.
 	Edges  []*Edge  `json:"edges,omitempty"`  // node edges.
@@ -39,9 +39,9 @@ type Field struct {
 
 // Edges between two nodes.
 type Edge struct {
-	Type string     `json:"type,omitempty"` // edge type.
-	Name string     `json:"name,omitempty"` // edge name.
-	IDs  []pulid.ID `json:"ids,omitempty"`  // node ids (where this edge point to).
+	Type string   `json:"type,omitempty"` // edge type.
+	Name string   `json:"name,omitempty"` // edge name.
+	IDs  []qrn.ID `json:"ids,omitempty"`  // node ids (where this edge point to).
 }
 
 func (o *Organization) Node(ctx context.Context) (node *Node, err error) {
@@ -198,7 +198,7 @@ func (u *User) Node(ctx context.Context) (node *Node, err error) {
 	return node, nil
 }
 
-func (c *Client) Node(ctx context.Context, id pulid.ID) (*Node, error) {
+func (c *Client) Node(ctx context.Context, id qrn.ID) (*Node, error) {
 	n, err := c.Noder(ctx, id)
 	if err != nil {
 		return nil, err
@@ -214,7 +214,7 @@ type NodeOption func(*nodeOptions)
 // WithNodeType sets the node Type resolver function (i.e. the table to query).
 // If was not provided, the table will be derived from the universal-id
 // configuration as described in: https://entgo.io/docs/migrate/#universal-ids.
-func WithNodeType(f func(context.Context, pulid.ID) (string, error)) NodeOption {
+func WithNodeType(f func(context.Context, qrn.ID) (string, error)) NodeOption {
 	return func(o *nodeOptions) {
 		o.nodeType = f
 	}
@@ -222,13 +222,13 @@ func WithNodeType(f func(context.Context, pulid.ID) (string, error)) NodeOption 
 
 // WithFixedNodeType sets the Type of the node to a fixed value.
 func WithFixedNodeType(t string) NodeOption {
-	return WithNodeType(func(context.Context, pulid.ID) (string, error) {
+	return WithNodeType(func(context.Context, qrn.ID) (string, error) {
 		return t, nil
 	})
 }
 
 type nodeOptions struct {
-	nodeType func(context.Context, pulid.ID) (string, error)
+	nodeType func(context.Context, qrn.ID) (string, error)
 }
 
 func (c *Client) newNodeOpts(opts []NodeOption) *nodeOptions {
@@ -237,7 +237,7 @@ func (c *Client) newNodeOpts(opts []NodeOption) *nodeOptions {
 		opt(nopts)
 	}
 	if nopts.nodeType == nil {
-		nopts.nodeType = func(ctx context.Context, id pulid.ID) (string, error) {
+		nopts.nodeType = func(ctx context.Context, id qrn.ID) (string, error) {
 			return "", fmt.Errorf("cannot resolve noder (%v) without its type", id)
 		}
 	}
@@ -250,7 +250,7 @@ func (c *Client) newNodeOpts(opts []NodeOption) *nodeOptions {
 //		c.Noder(ctx, id)
 //		c.Noder(ctx, id, ent.WithNodeType(pet.Table))
 //
-func (c *Client) Noder(ctx context.Context, id pulid.ID, opts ...NodeOption) (_ Noder, err error) {
+func (c *Client) Noder(ctx context.Context, id qrn.ID, opts ...NodeOption) (_ Noder, err error) {
 	defer func() {
 		if IsNotFound(err) {
 			err = multierror.Append(err, entgql.ErrNodeNotFound(id))
@@ -263,7 +263,7 @@ func (c *Client) Noder(ctx context.Context, id pulid.ID, opts ...NodeOption) (_ 
 	return c.noder(ctx, table, id)
 }
 
-func (c *Client) noder(ctx context.Context, table string, id pulid.ID) (Noder, error) {
+func (c *Client) noder(ctx context.Context, table string, id qrn.ID) (Noder, error) {
 	switch table {
 	case organization.Table:
 		n, err := c.Organization.Query().
@@ -306,7 +306,7 @@ func (c *Client) noder(ctx context.Context, table string, id pulid.ID) (Noder, e
 	}
 }
 
-func (c *Client) Noders(ctx context.Context, ids []pulid.ID, opts ...NodeOption) ([]Noder, error) {
+func (c *Client) Noders(ctx context.Context, ids []qrn.ID, opts ...NodeOption) ([]Noder, error) {
 	switch len(ids) {
 	case 1:
 		noder, err := c.Noder(ctx, ids[0], opts...)
@@ -320,8 +320,8 @@ func (c *Client) Noders(ctx context.Context, ids []pulid.ID, opts ...NodeOption)
 
 	noders := make([]Noder, len(ids))
 	errors := make([]error, len(ids))
-	tables := make(map[string][]pulid.ID)
-	id2idx := make(map[pulid.ID][]int, len(ids))
+	tables := make(map[string][]qrn.ID)
+	id2idx := make(map[qrn.ID][]int, len(ids))
 	nopts := c.newNodeOpts(opts)
 	for i, id := range ids {
 		table, err := nopts.nodeType(ctx, id)
@@ -367,9 +367,9 @@ func (c *Client) Noders(ctx context.Context, ids []pulid.ID, opts ...NodeOption)
 	return noders, nil
 }
 
-func (c *Client) noders(ctx context.Context, table string, ids []pulid.ID) ([]Noder, error) {
+func (c *Client) noders(ctx context.Context, table string, ids []qrn.ID) ([]Noder, error) {
 	noders := make([]Noder, len(ids))
-	idmap := make(map[pulid.ID][]*Noder, len(ids))
+	idmap := make(map[qrn.ID][]*Noder, len(ids))
 	for i, id := range ids {
 		idmap[id] = append(idmap[id], &noders[i])
 	}

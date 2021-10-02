@@ -3,7 +3,7 @@
 package organization
 
 import (
-	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
+	"github.com/maxh/gqlgen-todos/qrn"
 )
 
 const (
@@ -66,5 +66,5 @@ var (
 	// DefaultName holds the default value on creation for the "name" field.
 	DefaultName string
 	// DefaultID holds the default value on creation for the "id" field.
-	DefaultID func() pulid.ID
+	DefaultID func() qrn.ID
 )

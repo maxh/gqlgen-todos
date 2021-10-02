@@ -1,4 +1,4 @@
-package pulid
+package qrn
 
 import (
 	"crypto/rand"

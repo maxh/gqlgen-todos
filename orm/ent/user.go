@@ -10,21 +10,21 @@ import (
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
-	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
+	"github.com/maxh/gqlgen-todos/qrn"
 )
 
 // User is the model entity for the User schema.
 type User struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID pulid.ID `json:"id,omitempty"`
+	ID qrn.ID `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
 	Edges              UserEdges `json:"edges"`
-	organization_users *pulid.ID
-	user_tenant        *pulid.ID
+	organization_users *qrn.ID
+	user_tenant        *qrn.ID
 }
 
 // UserEdges holds the relations/edges for other nodes in the graph.
@@ -83,13 +83,13 @@ func (*User) scanValues(columns []string) ([]interface{}, error) {
 	for i := range columns {
 		switch columns[i] {
 		case user.FieldID:
-			values[i] = new(pulid.ID)
+			values[i] = new(qrn.ID)
 		case user.FieldName:
 			values[i] = new(sql.NullString)
 		case user.ForeignKeys[0]: // organization_users
-			values[i] = &sql.NullScanner{S: new(pulid.ID)}
+			values[i] = &sql.NullScanner{S: new(qrn.ID)}
 		case user.ForeignKeys[1]: // user_tenant
-			values[i] = &sql.NullScanner{S: new(pulid.ID)}
+			values[i] = &sql.NullScanner{S: new(qrn.ID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type User", columns[i])
 		}
@@ -106,7 +106,7 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 	for i := range columns {
 		switch columns[i] {
 		case user.FieldID:
-			if value, ok := values[i].(*pulid.ID); !ok {
+			if value, ok := values[i].(*qrn.ID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
 				u.ID = *value
@@ -121,15 +121,15 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field organization_users", values[i])
 			} else if value.Valid {
-				u.organization_users = new(pulid.ID)
-				*u.organization_users = *value.S.(*pulid.ID)
+				u.organization_users = new(qrn.ID)
+				*u.organization_users = *value.S.(*qrn.ID)
 			}
 		case user.ForeignKeys[1]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field user_tenant", values[i])
 			} else if value.Valid {
-				u.user_tenant = new(pulid.ID)
-				*u.user_tenant = *value.S.(*pulid.ID)
+				u.user_tenant = new(qrn.ID)
+				*u.user_tenant = *value.S.(*qrn.ID)
 			}
 		}
 	}

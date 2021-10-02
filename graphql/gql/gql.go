@@ -13,7 +13,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	"github.com/maxh/gqlgen-todos/orm/ent"
-	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
+	"github.com/maxh/gqlgen-todos/qrn"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -482,9 +482,9 @@ func (ec *executionContext) _Organization_id(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.(pulid.ID)
+	res := resTmp.(qrn.ID)
 	fc.Result = res
-	return ec.marshalNID2githubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋormᚋschemaᚋpulidᚐID(ctx, field.Selections, res)
+	return ec.marshalNID2githubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋqrnᚐID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Organization_tenant(ctx context.Context, field graphql.CollectedField, obj *ent.Organization) (ret graphql.Marshaler) {
@@ -728,9 +728,9 @@ func (ec *executionContext) _Tenant_id(ctx context.Context, field graphql.Collec
 		}
 		return graphql.Null
 	}
-	res := resTmp.(pulid.ID)
+	res := resTmp.(qrn.ID)
 	fc.Result = res
-	return ec.marshalNID2githubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋormᚋschemaᚋpulidᚐID(ctx, field.Selections, res)
+	return ec.marshalNID2githubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋqrnᚐID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Tenant_name(ctx context.Context, field graphql.CollectedField, obj *ent.Tenant) (ret graphql.Marshaler) {
@@ -798,9 +798,9 @@ func (ec *executionContext) _Todo_id(ctx context.Context, field graphql.Collecte
 		}
 		return graphql.Null
 	}
-	res := resTmp.(pulid.ID)
+	res := resTmp.(qrn.ID)
 	fc.Result = res
-	return ec.marshalNID2githubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋormᚋschemaᚋpulidᚐID(ctx, field.Selections, res)
+	return ec.marshalNID2githubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋqrnᚐID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Todo_tenant(ctx context.Context, field graphql.CollectedField, obj *ent.Todo) (ret graphql.Marshaler) {
@@ -973,9 +973,9 @@ func (ec *executionContext) _User_id(ctx context.Context, field graphql.Collecte
 		}
 		return graphql.Null
 	}
-	res := resTmp.(pulid.ID)
+	res := resTmp.(qrn.ID)
 	fc.Result = res
-	return ec.marshalNID2githubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋormᚋschemaᚋpulidᚐID(ctx, field.Selections, res)
+	return ec.marshalNID2githubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋqrnᚐID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _User_tenant(ctx context.Context, field graphql.CollectedField, obj *ent.User) (ret graphql.Marshaler) {
@@ -2226,7 +2226,7 @@ func (ec *executionContext) unmarshalInputCreateTodoInput(ctx context.Context, o
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
-			it.UserID, err = ec.unmarshalNID2githubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋormᚋschemaᚋpulidᚐID(ctx, v)
+			it.UserID, err = ec.unmarshalNID2githubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋqrnᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -2806,13 +2806,13 @@ func (ec *executionContext) unmarshalNCreateTodoInput2githubᚗcomᚋmaxhᚋgqlg
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNID2githubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋormᚋschemaᚋpulidᚐID(ctx context.Context, v interface{}) (pulid.ID, error) {
-	var res pulid.ID
+func (ec *executionContext) unmarshalNID2githubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋqrnᚐID(ctx context.Context, v interface{}) (qrn.ID, error) {
+	var res qrn.ID
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNID2githubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋormᚋschemaᚋpulidᚐID(ctx context.Context, sel ast.SelectionSet, v pulid.ID) graphql.Marshaler {
+func (ec *executionContext) marshalNID2githubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋqrnᚐID(ctx context.Context, sel ast.SelectionSet, v qrn.ID) graphql.Marshaler {
 	return v
 }
 

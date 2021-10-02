@@ -8,14 +8,14 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
-	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
+	"github.com/maxh/gqlgen-todos/qrn"
 )
 
 // Tenant is the model entity for the Tenant schema.
 type Tenant struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID pulid.ID `json:"id,omitempty"`
+	ID qrn.ID `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 }
@@ -26,7 +26,7 @@ func (*Tenant) scanValues(columns []string) ([]interface{}, error) {
 	for i := range columns {
 		switch columns[i] {
 		case tenant.FieldID:
-			values[i] = new(pulid.ID)
+			values[i] = new(qrn.ID)
 		case tenant.FieldName:
 			values[i] = new(sql.NullString)
 		default:
@@ -45,7 +45,7 @@ func (t *Tenant) assignValues(columns []string, values []interface{}) error {
 	for i := range columns {
 		switch columns[i] {
 		case tenant.FieldID:
-			if value, ok := values[i].(*pulid.ID); !ok {
+			if value, ok := values[i].(*qrn.ID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
 				t.ID = *value

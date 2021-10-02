@@ -14,7 +14,7 @@ import (
 	"github.com/maxh/gqlgen-todos/orm/ent/predicate"
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
-	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
+	"github.com/maxh/gqlgen-todos/qrn"
 )
 
 // OrganizationUpdate is the builder for updating Organization entities.
@@ -45,7 +45,7 @@ func (ou *OrganizationUpdate) SetNillableName(s *string) *OrganizationUpdate {
 }
 
 // SetTenantID sets the "tenant" edge to the Tenant entity by ID.
-func (ou *OrganizationUpdate) SetTenantID(id pulid.ID) *OrganizationUpdate {
+func (ou *OrganizationUpdate) SetTenantID(id qrn.ID) *OrganizationUpdate {
 	ou.mutation.SetTenantID(id)
 	return ou
 }
@@ -56,14 +56,14 @@ func (ou *OrganizationUpdate) SetTenant(t *Tenant) *OrganizationUpdate {
 }
 
 // AddUserIDs adds the "users" edge to the User entity by IDs.
-func (ou *OrganizationUpdate) AddUserIDs(ids ...pulid.ID) *OrganizationUpdate {
+func (ou *OrganizationUpdate) AddUserIDs(ids ...qrn.ID) *OrganizationUpdate {
 	ou.mutation.AddUserIDs(ids...)
 	return ou
 }
 
 // AddUsers adds the "users" edges to the User entity.
 func (ou *OrganizationUpdate) AddUsers(u ...*User) *OrganizationUpdate {
-	ids := make([]pulid.ID, len(u))
+	ids := make([]qrn.ID, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
@@ -88,14 +88,14 @@ func (ou *OrganizationUpdate) ClearUsers() *OrganizationUpdate {
 }
 
 // RemoveUserIDs removes the "users" edge to User entities by IDs.
-func (ou *OrganizationUpdate) RemoveUserIDs(ids ...pulid.ID) *OrganizationUpdate {
+func (ou *OrganizationUpdate) RemoveUserIDs(ids ...qrn.ID) *OrganizationUpdate {
 	ou.mutation.RemoveUserIDs(ids...)
 	return ou
 }
 
 // RemoveUsers removes "users" edges to User entities.
 func (ou *OrganizationUpdate) RemoveUsers(u ...*User) *OrganizationUpdate {
-	ids := make([]pulid.ID, len(u))
+	ids := make([]qrn.ID, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
@@ -318,7 +318,7 @@ func (ouo *OrganizationUpdateOne) SetNillableName(s *string) *OrganizationUpdate
 }
 
 // SetTenantID sets the "tenant" edge to the Tenant entity by ID.
-func (ouo *OrganizationUpdateOne) SetTenantID(id pulid.ID) *OrganizationUpdateOne {
+func (ouo *OrganizationUpdateOne) SetTenantID(id qrn.ID) *OrganizationUpdateOne {
 	ouo.mutation.SetTenantID(id)
 	return ouo
 }
@@ -329,14 +329,14 @@ func (ouo *OrganizationUpdateOne) SetTenant(t *Tenant) *OrganizationUpdateOne {
 }
 
 // AddUserIDs adds the "users" edge to the User entity by IDs.
-func (ouo *OrganizationUpdateOne) AddUserIDs(ids ...pulid.ID) *OrganizationUpdateOne {
+func (ouo *OrganizationUpdateOne) AddUserIDs(ids ...qrn.ID) *OrganizationUpdateOne {
 	ouo.mutation.AddUserIDs(ids...)
 	return ouo
 }
 
 // AddUsers adds the "users" edges to the User entity.
 func (ouo *OrganizationUpdateOne) AddUsers(u ...*User) *OrganizationUpdateOne {
-	ids := make([]pulid.ID, len(u))
+	ids := make([]qrn.ID, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
@@ -361,14 +361,14 @@ func (ouo *OrganizationUpdateOne) ClearUsers() *OrganizationUpdateOne {
 }
 
 // RemoveUserIDs removes the "users" edge to User entities by IDs.
-func (ouo *OrganizationUpdateOne) RemoveUserIDs(ids ...pulid.ID) *OrganizationUpdateOne {
+func (ouo *OrganizationUpdateOne) RemoveUserIDs(ids ...qrn.ID) *OrganizationUpdateOne {
 	ouo.mutation.RemoveUserIDs(ids...)
 	return ouo
 }
 
 // RemoveUsers removes "users" edges to User entities.
 func (ouo *OrganizationUpdateOne) RemoveUsers(u ...*User) *OrganizationUpdateOne {
-	ids := make([]pulid.ID, len(u))
+	ids := make([]qrn.ID, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}

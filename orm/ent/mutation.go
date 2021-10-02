@@ -12,7 +12,7 @@ import (
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
-	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
+	"github.com/maxh/gqlgen-todos/qrn"
 
 	"entgo.io/ent"
 )
@@ -37,13 +37,13 @@ type OrganizationMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *pulid.ID
+	id            *qrn.ID
 	name          *string
 	clearedFields map[string]struct{}
-	tenant        *pulid.ID
+	tenant        *qrn.ID
 	clearedtenant bool
-	users         map[pulid.ID]struct{}
-	removedusers  map[pulid.ID]struct{}
+	users         map[qrn.ID]struct{}
+	removedusers  map[qrn.ID]struct{}
 	clearedusers  bool
 	done          bool
 	oldValue      func(context.Context) (*Organization, error)
@@ -70,7 +70,7 @@ func newOrganizationMutation(c config, op Op, opts ...organizationOption) *Organ
 }
 
 // withOrganizationID sets the ID field of the mutation.
-func withOrganizationID(id pulid.ID) organizationOption {
+func withOrganizationID(id qrn.ID) organizationOption {
 	return func(m *OrganizationMutation) {
 		var (
 			err   error
@@ -122,13 +122,13 @@ func (m OrganizationMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of Organization entities.
-func (m *OrganizationMutation) SetID(id pulid.ID) {
+func (m *OrganizationMutation) SetID(id qrn.ID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *OrganizationMutation) ID() (id pulid.ID, exists bool) {
+func (m *OrganizationMutation) ID() (id qrn.ID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -172,7 +172,7 @@ func (m *OrganizationMutation) ResetName() {
 }
 
 // SetTenantID sets the "tenant" edge to the Tenant entity by id.
-func (m *OrganizationMutation) SetTenantID(id pulid.ID) {
+func (m *OrganizationMutation) SetTenantID(id qrn.ID) {
 	m.tenant = &id
 }
 
@@ -187,7 +187,7 @@ func (m *OrganizationMutation) TenantCleared() bool {
 }
 
 // TenantID returns the "tenant" edge ID in the mutation.
-func (m *OrganizationMutation) TenantID() (id pulid.ID, exists bool) {
+func (m *OrganizationMutation) TenantID() (id qrn.ID, exists bool) {
 	if m.tenant != nil {
 		return *m.tenant, true
 	}
@@ -197,7 +197,7 @@ func (m *OrganizationMutation) TenantID() (id pulid.ID, exists bool) {
 // TenantIDs returns the "tenant" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TenantID instead. It exists only for internal usage by the builders.
-func (m *OrganizationMutation) TenantIDs() (ids []pulid.ID) {
+func (m *OrganizationMutation) TenantIDs() (ids []qrn.ID) {
 	if id := m.tenant; id != nil {
 		ids = append(ids, *id)
 	}
@@ -211,9 +211,9 @@ func (m *OrganizationMutation) ResetTenant() {
 }
 
 // AddUserIDs adds the "users" edge to the User entity by ids.
-func (m *OrganizationMutation) AddUserIDs(ids ...pulid.ID) {
+func (m *OrganizationMutation) AddUserIDs(ids ...qrn.ID) {
 	if m.users == nil {
-		m.users = make(map[pulid.ID]struct{})
+		m.users = make(map[qrn.ID]struct{})
 	}
 	for i := range ids {
 		m.users[ids[i]] = struct{}{}
@@ -231,9 +231,9 @@ func (m *OrganizationMutation) UsersCleared() bool {
 }
 
 // RemoveUserIDs removes the "users" edge to the User entity by IDs.
-func (m *OrganizationMutation) RemoveUserIDs(ids ...pulid.ID) {
+func (m *OrganizationMutation) RemoveUserIDs(ids ...qrn.ID) {
 	if m.removedusers == nil {
-		m.removedusers = make(map[pulid.ID]struct{})
+		m.removedusers = make(map[qrn.ID]struct{})
 	}
 	for i := range ids {
 		delete(m.users, ids[i])
@@ -242,7 +242,7 @@ func (m *OrganizationMutation) RemoveUserIDs(ids ...pulid.ID) {
 }
 
 // RemovedUsers returns the removed IDs of the "users" edge to the User entity.
-func (m *OrganizationMutation) RemovedUsersIDs() (ids []pulid.ID) {
+func (m *OrganizationMutation) RemovedUsersIDs() (ids []qrn.ID) {
 	for id := range m.removedusers {
 		ids = append(ids, id)
 	}
@@ -250,7 +250,7 @@ func (m *OrganizationMutation) RemovedUsersIDs() (ids []pulid.ID) {
 }
 
 // UsersIDs returns the "users" edge IDs in the mutation.
-func (m *OrganizationMutation) UsersIDs() (ids []pulid.ID) {
+func (m *OrganizationMutation) UsersIDs() (ids []qrn.ID) {
 	for id := range m.users {
 		ids = append(ids, id)
 	}
@@ -487,7 +487,7 @@ type TenantMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *pulid.ID
+	id            *qrn.ID
 	name          *string
 	clearedFields map[string]struct{}
 	done          bool
@@ -515,7 +515,7 @@ func newTenantMutation(c config, op Op, opts ...tenantOption) *TenantMutation {
 }
 
 // withTenantID sets the ID field of the mutation.
-func withTenantID(id pulid.ID) tenantOption {
+func withTenantID(id qrn.ID) tenantOption {
 	return func(m *TenantMutation) {
 		var (
 			err   error
@@ -567,13 +567,13 @@ func (m TenantMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of Tenant entities.
-func (m *TenantMutation) SetID(id pulid.ID) {
+func (m *TenantMutation) SetID(id qrn.ID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *TenantMutation) ID() (id pulid.ID, exists bool) {
+func (m *TenantMutation) ID() (id qrn.ID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -785,13 +785,13 @@ type TodoMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *pulid.ID
+	id            *qrn.ID
 	text          *string
 	_done         *bool
 	clearedFields map[string]struct{}
-	tenant        *pulid.ID
+	tenant        *qrn.ID
 	clearedtenant bool
-	user          *pulid.ID
+	user          *qrn.ID
 	cleareduser   bool
 	done          bool
 	oldValue      func(context.Context) (*Todo, error)
@@ -818,7 +818,7 @@ func newTodoMutation(c config, op Op, opts ...todoOption) *TodoMutation {
 }
 
 // withTodoID sets the ID field of the mutation.
-func withTodoID(id pulid.ID) todoOption {
+func withTodoID(id qrn.ID) todoOption {
 	return func(m *TodoMutation) {
 		var (
 			err   error
@@ -870,13 +870,13 @@ func (m TodoMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of Todo entities.
-func (m *TodoMutation) SetID(id pulid.ID) {
+func (m *TodoMutation) SetID(id qrn.ID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *TodoMutation) ID() (id pulid.ID, exists bool) {
+func (m *TodoMutation) ID() (id qrn.ID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -956,7 +956,7 @@ func (m *TodoMutation) ResetDone() {
 }
 
 // SetTenantID sets the "tenant" edge to the Tenant entity by id.
-func (m *TodoMutation) SetTenantID(id pulid.ID) {
+func (m *TodoMutation) SetTenantID(id qrn.ID) {
 	m.tenant = &id
 }
 
@@ -971,7 +971,7 @@ func (m *TodoMutation) TenantCleared() bool {
 }
 
 // TenantID returns the "tenant" edge ID in the mutation.
-func (m *TodoMutation) TenantID() (id pulid.ID, exists bool) {
+func (m *TodoMutation) TenantID() (id qrn.ID, exists bool) {
 	if m.tenant != nil {
 		return *m.tenant, true
 	}
@@ -981,7 +981,7 @@ func (m *TodoMutation) TenantID() (id pulid.ID, exists bool) {
 // TenantIDs returns the "tenant" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TenantID instead. It exists only for internal usage by the builders.
-func (m *TodoMutation) TenantIDs() (ids []pulid.ID) {
+func (m *TodoMutation) TenantIDs() (ids []qrn.ID) {
 	if id := m.tenant; id != nil {
 		ids = append(ids, *id)
 	}
@@ -995,7 +995,7 @@ func (m *TodoMutation) ResetTenant() {
 }
 
 // SetUserID sets the "user" edge to the User entity by id.
-func (m *TodoMutation) SetUserID(id pulid.ID) {
+func (m *TodoMutation) SetUserID(id qrn.ID) {
 	m.user = &id
 }
 
@@ -1010,7 +1010,7 @@ func (m *TodoMutation) UserCleared() bool {
 }
 
 // UserID returns the "user" edge ID in the mutation.
-func (m *TodoMutation) UserID() (id pulid.ID, exists bool) {
+func (m *TodoMutation) UserID() (id qrn.ID, exists bool) {
 	if m.user != nil {
 		return *m.user, true
 	}
@@ -1020,7 +1020,7 @@ func (m *TodoMutation) UserID() (id pulid.ID, exists bool) {
 // UserIDs returns the "user" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // UserID instead. It exists only for internal usage by the builders.
-func (m *TodoMutation) UserIDs() (ids []pulid.ID) {
+func (m *TodoMutation) UserIDs() (ids []qrn.ID) {
 	if id := m.user; id != nil {
 		ids = append(ids, *id)
 	}
@@ -1265,15 +1265,15 @@ type UserMutation struct {
 	config
 	op                  Op
 	typ                 string
-	id                  *pulid.ID
+	id                  *qrn.ID
 	name                *string
 	clearedFields       map[string]struct{}
-	tenant              *pulid.ID
+	tenant              *qrn.ID
 	clearedtenant       bool
-	todos               map[pulid.ID]struct{}
-	removedtodos        map[pulid.ID]struct{}
+	todos               map[qrn.ID]struct{}
+	removedtodos        map[qrn.ID]struct{}
 	clearedtodos        bool
-	organization        *pulid.ID
+	organization        *qrn.ID
 	clearedorganization bool
 	done                bool
 	oldValue            func(context.Context) (*User, error)
@@ -1300,7 +1300,7 @@ func newUserMutation(c config, op Op, opts ...userOption) *UserMutation {
 }
 
 // withUserID sets the ID field of the mutation.
-func withUserID(id pulid.ID) userOption {
+func withUserID(id qrn.ID) userOption {
 	return func(m *UserMutation) {
 		var (
 			err   error
@@ -1352,13 +1352,13 @@ func (m UserMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of User entities.
-func (m *UserMutation) SetID(id pulid.ID) {
+func (m *UserMutation) SetID(id qrn.ID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *UserMutation) ID() (id pulid.ID, exists bool) {
+func (m *UserMutation) ID() (id qrn.ID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -1402,7 +1402,7 @@ func (m *UserMutation) ResetName() {
 }
 
 // SetTenantID sets the "tenant" edge to the Tenant entity by id.
-func (m *UserMutation) SetTenantID(id pulid.ID) {
+func (m *UserMutation) SetTenantID(id qrn.ID) {
 	m.tenant = &id
 }
 
@@ -1417,7 +1417,7 @@ func (m *UserMutation) TenantCleared() bool {
 }
 
 // TenantID returns the "tenant" edge ID in the mutation.
-func (m *UserMutation) TenantID() (id pulid.ID, exists bool) {
+func (m *UserMutation) TenantID() (id qrn.ID, exists bool) {
 	if m.tenant != nil {
 		return *m.tenant, true
 	}
@@ -1427,7 +1427,7 @@ func (m *UserMutation) TenantID() (id pulid.ID, exists bool) {
 // TenantIDs returns the "tenant" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TenantID instead. It exists only for internal usage by the builders.
-func (m *UserMutation) TenantIDs() (ids []pulid.ID) {
+func (m *UserMutation) TenantIDs() (ids []qrn.ID) {
 	if id := m.tenant; id != nil {
 		ids = append(ids, *id)
 	}
@@ -1441,9 +1441,9 @@ func (m *UserMutation) ResetTenant() {
 }
 
 // AddTodoIDs adds the "todos" edge to the Todo entity by ids.
-func (m *UserMutation) AddTodoIDs(ids ...pulid.ID) {
+func (m *UserMutation) AddTodoIDs(ids ...qrn.ID) {
 	if m.todos == nil {
-		m.todos = make(map[pulid.ID]struct{})
+		m.todos = make(map[qrn.ID]struct{})
 	}
 	for i := range ids {
 		m.todos[ids[i]] = struct{}{}
@@ -1461,9 +1461,9 @@ func (m *UserMutation) TodosCleared() bool {
 }
 
 // RemoveTodoIDs removes the "todos" edge to the Todo entity by IDs.
-func (m *UserMutation) RemoveTodoIDs(ids ...pulid.ID) {
+func (m *UserMutation) RemoveTodoIDs(ids ...qrn.ID) {
 	if m.removedtodos == nil {
-		m.removedtodos = make(map[pulid.ID]struct{})
+		m.removedtodos = make(map[qrn.ID]struct{})
 	}
 	for i := range ids {
 		delete(m.todos, ids[i])
@@ -1472,7 +1472,7 @@ func (m *UserMutation) RemoveTodoIDs(ids ...pulid.ID) {
 }
 
 // RemovedTodos returns the removed IDs of the "todos" edge to the Todo entity.
-func (m *UserMutation) RemovedTodosIDs() (ids []pulid.ID) {
+func (m *UserMutation) RemovedTodosIDs() (ids []qrn.ID) {
 	for id := range m.removedtodos {
 		ids = append(ids, id)
 	}
@@ -1480,7 +1480,7 @@ func (m *UserMutation) RemovedTodosIDs() (ids []pulid.ID) {
 }
 
 // TodosIDs returns the "todos" edge IDs in the mutation.
-func (m *UserMutation) TodosIDs() (ids []pulid.ID) {
+func (m *UserMutation) TodosIDs() (ids []qrn.ID) {
 	for id := range m.todos {
 		ids = append(ids, id)
 	}
@@ -1495,7 +1495,7 @@ func (m *UserMutation) ResetTodos() {
 }
 
 // SetOrganizationID sets the "organization" edge to the Organization entity by id.
-func (m *UserMutation) SetOrganizationID(id pulid.ID) {
+func (m *UserMutation) SetOrganizationID(id qrn.ID) {
 	m.organization = &id
 }
 
@@ -1510,7 +1510,7 @@ func (m *UserMutation) OrganizationCleared() bool {
 }
 
 // OrganizationID returns the "organization" edge ID in the mutation.
-func (m *UserMutation) OrganizationID() (id pulid.ID, exists bool) {
+func (m *UserMutation) OrganizationID() (id qrn.ID, exists bool) {
 	if m.organization != nil {
 		return *m.organization, true
 	}
@@ -1520,7 +1520,7 @@ func (m *UserMutation) OrganizationID() (id pulid.ID, exists bool) {
 // OrganizationIDs returns the "organization" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // OrganizationID instead. It exists only for internal usage by the builders.
-func (m *UserMutation) OrganizationIDs() (ids []pulid.ID) {
+func (m *UserMutation) OrganizationIDs() (ids []qrn.ID) {
 	if id := m.organization; id != nil {
 		ids = append(ids, *id)
 	}

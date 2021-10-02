@@ -10,7 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
-	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
+	"github.com/maxh/gqlgen-todos/qrn"
 )
 
 // TenantCreate is the builder for creating a Tenant entity.
@@ -27,15 +27,15 @@ func (tc *TenantCreate) SetName(s string) *TenantCreate {
 }
 
 // SetID sets the "id" field.
-func (tc *TenantCreate) SetID(pu pulid.ID) *TenantCreate {
-	tc.mutation.SetID(pu)
+func (tc *TenantCreate) SetID(q qrn.ID) *TenantCreate {
+	tc.mutation.SetID(q)
 	return tc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (tc *TenantCreate) SetNillableID(pu *pulid.ID) *TenantCreate {
-	if pu != nil {
-		tc.SetID(*pu)
+func (tc *TenantCreate) SetNillableID(q *qrn.ID) *TenantCreate {
+	if q != nil {
+		tc.SetID(*q)
 	}
 	return tc
 }
@@ -51,7 +51,9 @@ func (tc *TenantCreate) Save(ctx context.Context) (*Tenant, error) {
 		err  error
 		node *Tenant
 	)
-	tc.defaults()
+	if err := tc.defaults(); err != nil {
+		return nil, err
+	}
 	if len(tc.hooks) == 0 {
 		if err = tc.check(); err != nil {
 			return nil, err
@@ -110,11 +112,15 @@ func (tc *TenantCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (tc *TenantCreate) defaults() {
+func (tc *TenantCreate) defaults() error {
 	if _, ok := tc.mutation.ID(); !ok {
+		if tenant.DefaultID == nil {
+			return fmt.Errorf("ent: uninitialized tenant.DefaultID (forgotten import ent/runtime?)")
+		}
 		v := tenant.DefaultID()
 		tc.mutation.SetID(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -139,7 +145,7 @@ func (tc *TenantCreate) sqlSave(ctx context.Context) (*Tenant, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(pulid.ID)
+		_node.ID = _spec.ID.Value.(qrn.ID)
 	}
 	return _node, nil
 }

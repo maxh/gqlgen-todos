@@ -3,7 +3,8 @@
 package tenant
 
 import (
-	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
+	"entgo.io/ent"
+	"github.com/maxh/gqlgen-todos/qrn"
 )
 
 const (
@@ -33,9 +34,17 @@ func ValidColumn(column string) bool {
 	return false
 }
 
+// Note that the variables below are initialized by the runtime
+// package on the initialization of the application. Therefore,
+// it should be imported in the main as follows:
+//
+//	import _ "github.com/maxh/gqlgen-todos/orm/ent/runtime"
+//
 var (
+	Hooks  [1]ent.Hook
+	Policy ent.Policy
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
 	// DefaultID holds the default value on creation for the "id" field.
-	DefaultID func() pulid.ID
+	DefaultID func() qrn.ID
 )

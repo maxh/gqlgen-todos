@@ -15,7 +15,7 @@ import (
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
-	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
+	"github.com/maxh/gqlgen-todos/qrn"
 )
 
 // UserUpdate is the builder for updating User entities.
@@ -46,7 +46,7 @@ func (uu *UserUpdate) SetNillableName(s *string) *UserUpdate {
 }
 
 // SetTenantID sets the "tenant" edge to the Tenant entity by ID.
-func (uu *UserUpdate) SetTenantID(id pulid.ID) *UserUpdate {
+func (uu *UserUpdate) SetTenantID(id qrn.ID) *UserUpdate {
 	uu.mutation.SetTenantID(id)
 	return uu
 }
@@ -57,14 +57,14 @@ func (uu *UserUpdate) SetTenant(t *Tenant) *UserUpdate {
 }
 
 // AddTodoIDs adds the "todos" edge to the Todo entity by IDs.
-func (uu *UserUpdate) AddTodoIDs(ids ...pulid.ID) *UserUpdate {
+func (uu *UserUpdate) AddTodoIDs(ids ...qrn.ID) *UserUpdate {
 	uu.mutation.AddTodoIDs(ids...)
 	return uu
 }
 
 // AddTodos adds the "todos" edges to the Todo entity.
 func (uu *UserUpdate) AddTodos(t ...*Todo) *UserUpdate {
-	ids := make([]pulid.ID, len(t))
+	ids := make([]qrn.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
@@ -72,7 +72,7 @@ func (uu *UserUpdate) AddTodos(t ...*Todo) *UserUpdate {
 }
 
 // SetOrganizationID sets the "organization" edge to the Organization entity by ID.
-func (uu *UserUpdate) SetOrganizationID(id pulid.ID) *UserUpdate {
+func (uu *UserUpdate) SetOrganizationID(id qrn.ID) *UserUpdate {
 	uu.mutation.SetOrganizationID(id)
 	return uu
 }
@@ -100,14 +100,14 @@ func (uu *UserUpdate) ClearTodos() *UserUpdate {
 }
 
 // RemoveTodoIDs removes the "todos" edge to Todo entities by IDs.
-func (uu *UserUpdate) RemoveTodoIDs(ids ...pulid.ID) *UserUpdate {
+func (uu *UserUpdate) RemoveTodoIDs(ids ...qrn.ID) *UserUpdate {
 	uu.mutation.RemoveTodoIDs(ids...)
 	return uu
 }
 
 // RemoveTodos removes "todos" edges to Todo entities.
 func (uu *UserUpdate) RemoveTodos(t ...*Todo) *UserUpdate {
-	ids := make([]pulid.ID, len(t))
+	ids := make([]qrn.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
@@ -374,7 +374,7 @@ func (uuo *UserUpdateOne) SetNillableName(s *string) *UserUpdateOne {
 }
 
 // SetTenantID sets the "tenant" edge to the Tenant entity by ID.
-func (uuo *UserUpdateOne) SetTenantID(id pulid.ID) *UserUpdateOne {
+func (uuo *UserUpdateOne) SetTenantID(id qrn.ID) *UserUpdateOne {
 	uuo.mutation.SetTenantID(id)
 	return uuo
 }
@@ -385,14 +385,14 @@ func (uuo *UserUpdateOne) SetTenant(t *Tenant) *UserUpdateOne {
 }
 
 // AddTodoIDs adds the "todos" edge to the Todo entity by IDs.
-func (uuo *UserUpdateOne) AddTodoIDs(ids ...pulid.ID) *UserUpdateOne {
+func (uuo *UserUpdateOne) AddTodoIDs(ids ...qrn.ID) *UserUpdateOne {
 	uuo.mutation.AddTodoIDs(ids...)
 	return uuo
 }
 
 // AddTodos adds the "todos" edges to the Todo entity.
 func (uuo *UserUpdateOne) AddTodos(t ...*Todo) *UserUpdateOne {
-	ids := make([]pulid.ID, len(t))
+	ids := make([]qrn.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
@@ -400,7 +400,7 @@ func (uuo *UserUpdateOne) AddTodos(t ...*Todo) *UserUpdateOne {
 }
 
 // SetOrganizationID sets the "organization" edge to the Organization entity by ID.
-func (uuo *UserUpdateOne) SetOrganizationID(id pulid.ID) *UserUpdateOne {
+func (uuo *UserUpdateOne) SetOrganizationID(id qrn.ID) *UserUpdateOne {
 	uuo.mutation.SetOrganizationID(id)
 	return uuo
 }
@@ -428,14 +428,14 @@ func (uuo *UserUpdateOne) ClearTodos() *UserUpdateOne {
 }
 
 // RemoveTodoIDs removes the "todos" edge to Todo entities by IDs.
-func (uuo *UserUpdateOne) RemoveTodoIDs(ids ...pulid.ID) *UserUpdateOne {
+func (uuo *UserUpdateOne) RemoveTodoIDs(ids ...qrn.ID) *UserUpdateOne {
 	uuo.mutation.RemoveTodoIDs(ids...)
 	return uuo
 }
 
 // RemoveTodos removes "todos" edges to Todo entities.
 func (uuo *UserUpdateOne) RemoveTodos(t ...*Todo) *UserUpdateOne {
-	ids := make([]pulid.ID, len(t))
+	ids := make([]qrn.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}

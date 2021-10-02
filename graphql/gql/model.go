@@ -3,10 +3,10 @@
 package gql
 
 import (
-	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
+	"github.com/maxh/gqlgen-todos/qrn"
 )
 
 type CreateTodoInput struct {
-	Text   string   `json:"text"`
-	UserID pulid.ID `json:"userId"`
+	Text   string `json:"text"`
+	UserID qrn.ID `json:"userId"`
 }
