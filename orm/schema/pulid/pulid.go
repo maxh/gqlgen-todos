@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/oklog/ulid/v2"
@@ -16,6 +17,9 @@ type ID string
 
 // The default entropy source.
 var defaultEntropySource *ulid.MonotonicEntropy
+
+var qidPrefix = "qid"
+var serviceName = "qualligo"
 
 func init() {
 	// Seed the default entropy source.
@@ -28,8 +32,15 @@ func newULID() ulid.ULID {
 	return ulid.MustNew(ulid.Timestamp(time.Now()), defaultEntropySource)
 }
 
-// MustNew returns a new PULID for time.Now() given a prefix. This uses the default entropy source.
-func MustNew(prefix string) ID { return ID(prefix + fmt.Sprint(newULID())) }
+// newULIDLower returns a lower-cased ULID.
+func newULIDLower() string {
+	return strings.ToLower(newULID().String())
+}
+
+// MustNew returns a new PULID for time.Now() given a resourceType. This uses the default entropy source.
+func MustNew(resourceType string) ID {
+	return ID(fmt.Sprintf("%s::%s:%s:%s", qidPrefix, serviceName, resourceType, newULIDLower()))
+}
 
 // UnmarshalGQL implements the graphql.Unmarshaler interface
 func (u *ID) UnmarshalGQL(v interface{}) error {

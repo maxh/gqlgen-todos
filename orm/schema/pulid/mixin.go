@@ -7,15 +7,15 @@ import (
 	"entgo.io/ent/schema/mixin"
 )
 
-// MixinWithPrefix creates a Mixin that encodes the provided prefix.
+// MixinWithPrefix creates a Mixin that encodes the provided resourceType.
 func MixinWithPrefix(prefix string) *Mixin {
-	return &Mixin{prefix: prefix}
+	return &Mixin{resourceType: prefix}
 }
 
-// Mixin defines an ent Mixin that captures the PULID prefix for a type.
+// Mixin defines an ent Mixin that captures the PULID resourceType for a type.
 type Mixin struct {
 	mixin.Schema
-	prefix string
+	resourceType string
 }
 
 // Fields provides the id field.
@@ -23,11 +23,11 @@ func (m Mixin) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("id").
 			GoType(ID("")).
-			DefaultFunc(func() ID { return MustNew(m.prefix) }),
+			DefaultFunc(func() ID { return MustNew(m.resourceType) }),
 	}
 }
 
-// Annotation captures the id prefix for a type.
+// Annotation captures the id resourceType for a type.
 type Annotation struct {
 	Prefix string
 }
@@ -40,6 +40,6 @@ func (a Annotation) Name() string {
 // Annotations returns the annotations for a Mixin instance.
 func (m Mixin) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		Annotation{Prefix: m.prefix},
+		Annotation{Prefix: m.resourceType},
 	}
 }

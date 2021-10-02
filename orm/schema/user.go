@@ -23,7 +23,7 @@ func (User) Fields() []ent.Field {
 // Mixin of the User.
 func (User) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		pulid.MixinWithPrefix("UR"),
+		pulid.MixinWithPrefix("user"),
 	}
 }
 
