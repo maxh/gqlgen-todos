@@ -1,35 +1,43 @@
 # Query
 
+type Tenant {
+    id: ID!
+    name: String!
+}
+
 type Todo {
-  id: ID!
-  text: String!
-  done: Boolean!
-  user: User!
+    id: ID!
+    tenant: Tenant!
+    text: String!
+    done: Boolean!
+    user: User!
 }
 
 type User {
-  id: ID!
-  name: String!
-  organization: Organization!
+    id: ID!
+    tenant: Tenant!
+    name: String!
+    organization: Organization!
 }
 
 type Organization {
-  id: ID!
-  name: String!
+    id: ID!
+    tenant: Tenant!
+    name: String!
 }
 
 type Query {
-  todos: [Todo!]!
-  users: [User!]!
+    todos: [Todo!]!
+    users: [User!]!
 }
 
 # Mutation
 
 input CreateTodoInput {
-  text: String!
-  userId: ID!
+    text: String!
+    userId: ID!
 }
 
 type Mutation {
-  createTodo(input: CreateTodoInput!): Todo!
+    createTodo(input: CreateTodoInput!): Todo!
 }
