@@ -20,30 +20,16 @@ type OrganizationCreate struct {
 	hooks    []Hook
 }
 
-// SetText sets the "text" field.
-func (oc *OrganizationCreate) SetText(s string) *OrganizationCreate {
-	oc.mutation.SetText(s)
+// SetName sets the "name" field.
+func (oc *OrganizationCreate) SetName(s string) *OrganizationCreate {
+	oc.mutation.SetName(s)
 	return oc
 }
 
-// SetNillableText sets the "text" field if the given value is not nil.
-func (oc *OrganizationCreate) SetNillableText(s *string) *OrganizationCreate {
+// SetNillableName sets the "name" field if the given value is not nil.
+func (oc *OrganizationCreate) SetNillableName(s *string) *OrganizationCreate {
 	if s != nil {
-		oc.SetText(*s)
-	}
-	return oc
-}
-
-// SetDone sets the "done" field.
-func (oc *OrganizationCreate) SetDone(b bool) *OrganizationCreate {
-	oc.mutation.SetDone(b)
-	return oc
-}
-
-// SetNillableDone sets the "done" field if the given value is not nil.
-func (oc *OrganizationCreate) SetNillableDone(b *bool) *OrganizationCreate {
-	if b != nil {
-		oc.SetDone(*b)
+		oc.SetName(*s)
 	}
 	return oc
 }
@@ -134,23 +120,16 @@ func (oc *OrganizationCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (oc *OrganizationCreate) defaults() {
-	if _, ok := oc.mutation.Text(); !ok {
-		v := organization.DefaultText
-		oc.mutation.SetText(v)
-	}
-	if _, ok := oc.mutation.Done(); !ok {
-		v := organization.DefaultDone
-		oc.mutation.SetDone(v)
+	if _, ok := oc.mutation.Name(); !ok {
+		v := organization.DefaultName
+		oc.mutation.SetName(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (oc *OrganizationCreate) check() error {
-	if _, ok := oc.mutation.Text(); !ok {
-		return &ValidationError{Name: "text", err: errors.New(`ent: missing required field "text"`)}
-	}
-	if _, ok := oc.mutation.Done(); !ok {
-		return &ValidationError{Name: "done", err: errors.New(`ent: missing required field "done"`)}
+	if _, ok := oc.mutation.Name(); !ok {
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
 	}
 	return nil
 }
@@ -179,21 +158,13 @@ func (oc *OrganizationCreate) createSpec() (*Organization, *sqlgraph.CreateSpec)
 			},
 		}
 	)
-	if value, ok := oc.mutation.Text(); ok {
+	if value, ok := oc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: organization.FieldText,
+			Column: organization.FieldName,
 		})
-		_node.Text = value
-	}
-	if value, ok := oc.mutation.Done(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: organization.FieldDone,
-		})
-		_node.Done = value
+		_node.Name = value
 	}
 	if nodes := oc.mutation.UsersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

@@ -36,7 +36,11 @@ func main() {
 	srv := handler.NewDefaultServer(graphql.NewSchema(client))
 	srv.Use(entgql.Transactioner{TxOpener: client})
 
-	CreateUser(context.TODO(), client)
+	_, err = CreateUser(context.TODO(), client)
+	if err != nil {
+		log.Fatal("unable to create user", err)
+	}
+
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
 
@@ -45,8 +49,13 @@ func main() {
 }
 
 func CreateUser(ctx context.Context, client *ent.Client) (*ent.User, error) {
+	o, err := client.Organization.Create().SetName("my organization").Save(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed creating organization: %w", err)
+	}
 	u, err := client.User.
 		Create().
+		SetOrganization(o).
 		Save(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed creating user: %w", err)

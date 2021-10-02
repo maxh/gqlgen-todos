@@ -15,14 +15,10 @@ import (
 func init() {
 	organizationFields := schema.Organization{}.Fields()
 	_ = organizationFields
-	// organizationDescText is the schema descriptor for text field.
-	organizationDescText := organizationFields[0].Descriptor()
-	// organization.DefaultText holds the default value on creation for the text field.
-	organization.DefaultText = organizationDescText.Default.(string)
-	// organizationDescDone is the schema descriptor for done field.
-	organizationDescDone := organizationFields[1].Descriptor()
-	// organization.DefaultDone holds the default value on creation for the done field.
-	organization.DefaultDone = organizationDescDone.Default.(bool)
+	// organizationDescName is the schema descriptor for name field.
+	organizationDescName := organizationFields[0].Descriptor()
+	// organization.DefaultName holds the default value on creation for the name field.
+	organization.DefaultName = organizationDescName.Default.(string)
 	todoFields := schema.Todo{}.Fields()
 	_ = todoFields
 	// todoDescText is the schema descriptor for text field.

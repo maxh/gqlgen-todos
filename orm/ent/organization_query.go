@@ -291,12 +291,12 @@ func (oq *OrganizationQuery) WithUsers(opts ...func(*UserQuery)) *OrganizationQu
 // Example:
 //
 //	var v []struct {
-//		Text string `json:"text,omitempty"`
+//		Name string `json:"name,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Organization.Query().
-//		GroupBy(organization.FieldText).
+//		GroupBy(organization.FieldName).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -318,11 +318,11 @@ func (oq *OrganizationQuery) GroupBy(field string, fields ...string) *Organizati
 // Example:
 //
 //	var v []struct {
-//		Text string `json:"text,omitempty"`
+//		Name string `json:"name,omitempty"`
 //	}
 //
 //	client.Organization.Query().
-//		Select(organization.FieldText).
+//		Select(organization.FieldName).
 //		Scan(ctx, &v)
 //
 func (oq *OrganizationQuery) Select(fields ...string) *OrganizationSelect {

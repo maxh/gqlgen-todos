@@ -14,10 +14,8 @@ type Organization struct {
 // Fields of the Organization.
 func (Organization) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("text").
+		field.String("name").
 			Default("unknown"),
-		field.Bool("done").
-			Default(false),
 	}
 }
 

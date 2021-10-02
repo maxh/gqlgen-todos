@@ -7,10 +7,8 @@ const (
 	Label = "organization"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldText holds the string denoting the text field in the database.
-	FieldText = "text"
-	// FieldDone holds the string denoting the done field in the database.
-	FieldDone = "done"
+	// FieldName holds the string denoting the name field in the database.
+	FieldName = "name"
 	// EdgeUsers holds the string denoting the users edge name in mutations.
 	EdgeUsers = "users"
 	// Table holds the table name of the organization in the database.
@@ -27,8 +25,7 @@ const (
 // Columns holds all SQL columns for organization fields.
 var Columns = []string{
 	FieldID,
-	FieldText,
-	FieldDone,
+	FieldName,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -42,8 +39,6 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// DefaultText holds the default value on creation for the "text" field.
-	DefaultText string
-	// DefaultDone holds the default value on creation for the "done" field.
-	DefaultDone bool
+	// DefaultName holds the default value on creation for the "name" field.
+	DefaultName string
 )

@@ -35,8 +35,7 @@ type OrganizationMutation struct {
 	op            Op
 	typ           string
 	id            *int
-	text          *string
-	_done         *bool
+	name          *string
 	clearedFields map[string]struct{}
 	users         map[int]struct{}
 	removedusers  map[int]struct{}
@@ -125,76 +124,40 @@ func (m *OrganizationMutation) ID() (id int, exists bool) {
 	return *m.id, true
 }
 
-// SetText sets the "text" field.
-func (m *OrganizationMutation) SetText(s string) {
-	m.text = &s
+// SetName sets the "name" field.
+func (m *OrganizationMutation) SetName(s string) {
+	m.name = &s
 }
 
-// Text returns the value of the "text" field in the mutation.
-func (m *OrganizationMutation) Text() (r string, exists bool) {
-	v := m.text
+// Name returns the value of the "name" field in the mutation.
+func (m *OrganizationMutation) Name() (r string, exists bool) {
+	v := m.name
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldText returns the old "text" field's value of the Organization entity.
+// OldName returns the old "name" field's value of the Organization entity.
 // If the Organization object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *OrganizationMutation) OldText(ctx context.Context) (v string, err error) {
+func (m *OrganizationMutation) OldName(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldText is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldName is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldText requires an ID field in the mutation")
+		return v, fmt.Errorf("OldName requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldText: %w", err)
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
 	}
-	return oldValue.Text, nil
+	return oldValue.Name, nil
 }
 
-// ResetText resets all changes to the "text" field.
-func (m *OrganizationMutation) ResetText() {
-	m.text = nil
-}
-
-// SetDone sets the "done" field.
-func (m *OrganizationMutation) SetDone(b bool) {
-	m._done = &b
-}
-
-// Done returns the value of the "done" field in the mutation.
-func (m *OrganizationMutation) Done() (r bool, exists bool) {
-	v := m._done
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDone returns the old "done" field's value of the Organization entity.
-// If the Organization object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *OrganizationMutation) OldDone(ctx context.Context) (v bool, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldDone is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldDone requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDone: %w", err)
-	}
-	return oldValue.Done, nil
-}
-
-// ResetDone resets all changes to the "done" field.
-func (m *OrganizationMutation) ResetDone() {
-	m._done = nil
+// ResetName resets all changes to the "name" field.
+func (m *OrganizationMutation) ResetName() {
+	m.name = nil
 }
 
 // AddUserIDs adds the "users" edge to the User entity by ids.
@@ -270,12 +233,9 @@ func (m *OrganizationMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *OrganizationMutation) Fields() []string {
-	fields := make([]string, 0, 2)
-	if m.text != nil {
-		fields = append(fields, organization.FieldText)
-	}
-	if m._done != nil {
-		fields = append(fields, organization.FieldDone)
+	fields := make([]string, 0, 1)
+	if m.name != nil {
+		fields = append(fields, organization.FieldName)
 	}
 	return fields
 }
@@ -285,10 +245,8 @@ func (m *OrganizationMutation) Fields() []string {
 // schema.
 func (m *OrganizationMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case organization.FieldText:
-		return m.Text()
-	case organization.FieldDone:
-		return m.Done()
+	case organization.FieldName:
+		return m.Name()
 	}
 	return nil, false
 }
@@ -298,10 +256,8 @@ func (m *OrganizationMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *OrganizationMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case organization.FieldText:
-		return m.OldText(ctx)
-	case organization.FieldDone:
-		return m.OldDone(ctx)
+	case organization.FieldName:
+		return m.OldName(ctx)
 	}
 	return nil, fmt.Errorf("unknown Organization field %s", name)
 }
@@ -311,19 +267,12 @@ func (m *OrganizationMutation) OldField(ctx context.Context, name string) (ent.V
 // type.
 func (m *OrganizationMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case organization.FieldText:
+	case organization.FieldName:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetText(v)
-		return nil
-	case organization.FieldDone:
-		v, ok := value.(bool)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetDone(v)
+		m.SetName(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Organization field %s", name)
@@ -374,11 +323,8 @@ func (m *OrganizationMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *OrganizationMutation) ResetField(name string) error {
 	switch name {
-	case organization.FieldText:
-		m.ResetText()
-		return nil
-	case organization.FieldDone:
-		m.ResetDone()
+	case organization.FieldName:
+		m.ResetName()
 		return nil
 	}
 	return fmt.Errorf("unknown Organization field %s", name)

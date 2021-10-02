@@ -27,30 +27,16 @@ func (ou *OrganizationUpdate) Where(ps ...predicate.Organization) *OrganizationU
 	return ou
 }
 
-// SetText sets the "text" field.
-func (ou *OrganizationUpdate) SetText(s string) *OrganizationUpdate {
-	ou.mutation.SetText(s)
+// SetName sets the "name" field.
+func (ou *OrganizationUpdate) SetName(s string) *OrganizationUpdate {
+	ou.mutation.SetName(s)
 	return ou
 }
 
-// SetNillableText sets the "text" field if the given value is not nil.
-func (ou *OrganizationUpdate) SetNillableText(s *string) *OrganizationUpdate {
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ou *OrganizationUpdate) SetNillableName(s *string) *OrganizationUpdate {
 	if s != nil {
-		ou.SetText(*s)
-	}
-	return ou
-}
-
-// SetDone sets the "done" field.
-func (ou *OrganizationUpdate) SetDone(b bool) *OrganizationUpdate {
-	ou.mutation.SetDone(b)
-	return ou
-}
-
-// SetNillableDone sets the "done" field if the given value is not nil.
-func (ou *OrganizationUpdate) SetNillableDone(b *bool) *OrganizationUpdate {
-	if b != nil {
-		ou.SetDone(*b)
+		ou.SetName(*s)
 	}
 	return ou
 }
@@ -168,18 +154,11 @@ func (ou *OrganizationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := ou.mutation.Text(); ok {
+	if value, ok := ou.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: organization.FieldText,
-		})
-	}
-	if value, ok := ou.mutation.Done(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: organization.FieldDone,
+			Column: organization.FieldName,
 		})
 	}
 	if ou.mutation.UsersCleared() {
@@ -255,30 +234,16 @@ type OrganizationUpdateOne struct {
 	mutation *OrganizationMutation
 }
 
-// SetText sets the "text" field.
-func (ouo *OrganizationUpdateOne) SetText(s string) *OrganizationUpdateOne {
-	ouo.mutation.SetText(s)
+// SetName sets the "name" field.
+func (ouo *OrganizationUpdateOne) SetName(s string) *OrganizationUpdateOne {
+	ouo.mutation.SetName(s)
 	return ouo
 }
 
-// SetNillableText sets the "text" field if the given value is not nil.
-func (ouo *OrganizationUpdateOne) SetNillableText(s *string) *OrganizationUpdateOne {
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ouo *OrganizationUpdateOne) SetNillableName(s *string) *OrganizationUpdateOne {
 	if s != nil {
-		ouo.SetText(*s)
-	}
-	return ouo
-}
-
-// SetDone sets the "done" field.
-func (ouo *OrganizationUpdateOne) SetDone(b bool) *OrganizationUpdateOne {
-	ouo.mutation.SetDone(b)
-	return ouo
-}
-
-// SetNillableDone sets the "done" field if the given value is not nil.
-func (ouo *OrganizationUpdateOne) SetNillableDone(b *bool) *OrganizationUpdateOne {
-	if b != nil {
-		ouo.SetDone(*b)
+		ouo.SetName(*s)
 	}
 	return ouo
 }
@@ -420,18 +385,11 @@ func (ouo *OrganizationUpdateOne) sqlSave(ctx context.Context) (_node *Organizat
 			}
 		}
 	}
-	if value, ok := ouo.mutation.Text(); ok {
+	if value, ok := ouo.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: organization.FieldText,
-		})
-	}
-	if value, ok := ouo.mutation.Done(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: organization.FieldDone,
+			Column: organization.FieldName,
 		})
 	}
 	if ouo.mutation.UsersCleared() {

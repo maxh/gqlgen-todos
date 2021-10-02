@@ -56,14 +56,6 @@ func (uc *UserCreate) SetOrganizationID(id int) *UserCreate {
 	return uc
 }
 
-// SetNillableOrganizationID sets the "organization" edge to the Organization entity by ID if the given value is not nil.
-func (uc *UserCreate) SetNillableOrganizationID(id *int) *UserCreate {
-	if id != nil {
-		uc = uc.SetOrganizationID(*id)
-	}
-	return uc
-}
-
 // SetOrganization sets the "organization" edge to the Organization entity.
 func (uc *UserCreate) SetOrganization(o *Organization) *UserCreate {
 	return uc.SetOrganizationID(o.ID)
@@ -150,6 +142,9 @@ func (uc *UserCreate) defaults() {
 func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
+	}
+	if _, ok := uc.mutation.OrganizationID(); !ok {
+		return &ValidationError{Name: "organization", err: errors.New("ent: missing required edge \"organization\"")}
 	}
 	return nil
 }

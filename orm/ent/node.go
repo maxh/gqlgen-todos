@@ -52,24 +52,16 @@ func (o *Organization) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     o.ID,
 		Type:   "Organization",
-		Fields: make([]*Field, 2),
+		Fields: make([]*Field, 1),
 		Edges:  make([]*Edge, 1),
 	}
 	var buf []byte
-	if buf, err = json.Marshal(o.Text); err != nil {
+	if buf, err = json.Marshal(o.Name); err != nil {
 		return nil, err
 	}
 	node.Fields[0] = &Field{
 		Type:  "string",
-		Name:  "text",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(o.Done); err != nil {
-		return nil, err
-	}
-	node.Fields[1] = &Field{
-		Type:  "bool",
-		Name:  "done",
+		Name:  "name",
 		Value: string(buf),
 	}
 	node.Edges[0] = &Edge{

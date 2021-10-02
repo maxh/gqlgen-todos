@@ -15,10 +15,8 @@ type Organization struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
-	// Text holds the value of the "text" field.
-	Text string `json:"text,omitempty"`
-	// Done holds the value of the "done" field.
-	Done bool `json:"done,omitempty"`
+	// Name holds the value of the "name" field.
+	Name string `json:"name,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the OrganizationQuery when eager-loading is set.
 	Edges OrganizationEdges `json:"edges"`
@@ -47,11 +45,9 @@ func (*Organization) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case organization.FieldDone:
-			values[i] = new(sql.NullBool)
 		case organization.FieldID:
 			values[i] = new(sql.NullInt64)
-		case organization.FieldText:
+		case organization.FieldName:
 			values[i] = new(sql.NullString)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Organization", columns[i])
@@ -74,17 +70,11 @@ func (o *Organization) assignValues(columns []string, values []interface{}) erro
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			o.ID = int(value.Int64)
-		case organization.FieldText:
+		case organization.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field text", values[i])
+				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
-				o.Text = value.String
-			}
-		case organization.FieldDone:
-			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field done", values[i])
-			} else if value.Valid {
-				o.Done = value.Bool
+				o.Name = value.String
 			}
 		}
 	}
@@ -119,10 +109,8 @@ func (o *Organization) String() string {
 	var builder strings.Builder
 	builder.WriteString("Organization(")
 	builder.WriteString(fmt.Sprintf("id=%v", o.ID))
-	builder.WriteString(", text=")
-	builder.WriteString(o.Text)
-	builder.WriteString(", done=")
-	builder.WriteString(fmt.Sprintf("%v", o.Done))
+	builder.WriteString(", name=")
+	builder.WriteString(o.Name)
 	builder.WriteByte(')')
 	return builder.String()
 }

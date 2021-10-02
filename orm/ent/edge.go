@@ -33,5 +33,5 @@ func (u *User) Organization(ctx context.Context) (*Organization, error) {
 	if IsNotLoaded(err) {
 		result, err = u.QueryOrganization().Only(ctx)
 	}
-	return result, MaskNotFound(err)
+	return result, err
 }

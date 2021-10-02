@@ -11,8 +11,7 @@ var (
 	// OrganizationsColumns holds the columns for the "organizations" table.
 	OrganizationsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "text", Type: field.TypeString, Default: "unknown"},
-		{Name: "done", Type: field.TypeBool, Default: false},
+		{Name: "name", Type: field.TypeString, Default: "unknown"},
 	}
 	// OrganizationsTable holds the schema information for the "organizations" table.
 	OrganizationsTable = &schema.Table{
