@@ -3,7 +3,7 @@
 package user
 
 import (
-	"github.com/maxh/gqlgen-todos/qrn"
+	"github.com/maxh/gqlgen-todos/qid"
 )
 
 const (
@@ -76,5 +76,5 @@ var (
 	// DefaultName holds the default value on creation for the "name" field.
 	DefaultName string
 	// DefaultID holds the default value on creation for the "id" field.
-	DefaultID func() qrn.ID
+	DefaultID func() qid.ID
 )

@@ -10,7 +10,7 @@ import (
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
 	"github.com/maxh/gqlgen-todos/orm/schema"
-	"github.com/maxh/gqlgen-todos/qrn"
+	"github.com/maxh/gqlgen-todos/qid"
 
 	"entgo.io/ent"
 	"entgo.io/ent/privacy"
@@ -32,7 +32,7 @@ func init() {
 	// organizationDescID is the schema descriptor for id field.
 	organizationDescID := organizationMixinFields0[0].Descriptor()
 	// organization.DefaultID holds the default value on creation for the id field.
-	organization.DefaultID = organizationDescID.Default.(func() qrn.ID)
+	organization.DefaultID = organizationDescID.Default.(func() qid.ID)
 	tenantMixin := schema.Tenant{}.Mixin()
 	tenant.Policy = privacy.NewPolicies(tenantMixin[1], schema.Tenant{})
 	tenant.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -54,7 +54,7 @@ func init() {
 	// tenantDescID is the schema descriptor for id field.
 	tenantDescID := tenantMixinFields0[0].Descriptor()
 	// tenant.DefaultID holds the default value on creation for the id field.
-	tenant.DefaultID = tenantDescID.Default.(func() qrn.ID)
+	tenant.DefaultID = tenantDescID.Default.(func() qid.ID)
 	todoMixin := schema.Todo{}.Mixin()
 	todoMixinFields0 := todoMixin[0].Fields()
 	_ = todoMixinFields0
@@ -71,7 +71,7 @@ func init() {
 	// todoDescID is the schema descriptor for id field.
 	todoDescID := todoMixinFields0[0].Descriptor()
 	// todo.DefaultID holds the default value on creation for the id field.
-	todo.DefaultID = todoDescID.Default.(func() qrn.ID)
+	todo.DefaultID = todoDescID.Default.(func() qid.ID)
 	userMixin := schema.User{}.Mixin()
 	userMixinFields0 := userMixin[0].Fields()
 	_ = userMixinFields0
@@ -84,7 +84,7 @@ func init() {
 	// userDescID is the schema descriptor for id field.
 	userDescID := userMixinFields0[0].Descriptor()
 	// user.DefaultID holds the default value on creation for the id field.
-	user.DefaultID = userDescID.Default.(func() qrn.ID)
+	user.DefaultID = userDescID.Default.(func() qid.ID)
 }
 
 const (

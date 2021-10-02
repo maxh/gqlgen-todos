@@ -18,7 +18,7 @@ import (
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
-	"github.com/maxh/gqlgen-todos/qrn"
+	"github.com/maxh/gqlgen-todos/qid"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 	"github.com/vmihailenco/msgpack/v5"
 )
@@ -148,7 +148,7 @@ type PageInfo struct {
 
 // Cursor of an edge type.
 type Cursor struct {
-	ID    qrn.ID `msgpack:"i"`
+	ID    qid.ID `msgpack:"i"`
 	Value Value  `msgpack:"v,omitempty"`
 }
 

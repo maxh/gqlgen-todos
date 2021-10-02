@@ -10,14 +10,14 @@ import (
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
-	"github.com/maxh/gqlgen-todos/qrn"
+	"github.com/maxh/gqlgen-todos/qid"
 )
 
 // Todo is the model entity for the Todo schema.
 type Todo struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID qrn.ID `json:"id,omitempty"`
+	ID qid.ID `json:"id,omitempty"`
 	// Text holds the value of the "text" field.
 	Text string `json:"text,omitempty"`
 	// Done holds the value of the "done" field.
@@ -25,8 +25,8 @@ type Todo struct {
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TodoQuery when eager-loading is set.
 	Edges       TodoEdges `json:"edges"`
-	todo_tenant *qrn.ID
-	user_todos  *qrn.ID
+	todo_tenant *qid.ID
+	user_todos  *qid.ID
 }
 
 // TodoEdges holds the relations/edges for other nodes in the graph.
@@ -74,15 +74,15 @@ func (*Todo) scanValues(columns []string) ([]interface{}, error) {
 	for i := range columns {
 		switch columns[i] {
 		case todo.FieldID:
-			values[i] = new(qrn.ID)
+			values[i] = new(qid.ID)
 		case todo.FieldDone:
 			values[i] = new(sql.NullBool)
 		case todo.FieldText:
 			values[i] = new(sql.NullString)
 		case todo.ForeignKeys[0]: // todo_tenant
-			values[i] = &sql.NullScanner{S: new(qrn.ID)}
+			values[i] = &sql.NullScanner{S: new(qid.ID)}
 		case todo.ForeignKeys[1]: // user_todos
-			values[i] = &sql.NullScanner{S: new(qrn.ID)}
+			values[i] = &sql.NullScanner{S: new(qid.ID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Todo", columns[i])
 		}
@@ -99,7 +99,7 @@ func (t *Todo) assignValues(columns []string, values []interface{}) error {
 	for i := range columns {
 		switch columns[i] {
 		case todo.FieldID:
-			if value, ok := values[i].(*qrn.ID); !ok {
+			if value, ok := values[i].(*qid.ID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
 				t.ID = *value
@@ -120,15 +120,15 @@ func (t *Todo) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field todo_tenant", values[i])
 			} else if value.Valid {
-				t.todo_tenant = new(qrn.ID)
-				*t.todo_tenant = *value.S.(*qrn.ID)
+				t.todo_tenant = new(qid.ID)
+				*t.todo_tenant = *value.S.(*qid.ID)
 			}
 		case todo.ForeignKeys[1]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field user_todos", values[i])
 			} else if value.Valid {
-				t.user_todos = new(qrn.ID)
-				*t.user_todos = *value.S.(*qrn.ID)
+				t.user_todos = new(qid.ID)
+				*t.user_todos = *value.S.(*qid.ID)
 			}
 		}
 	}

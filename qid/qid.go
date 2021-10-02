@@ -1,4 +1,4 @@
-package qrn
+package qid
 
 import (
 	"crypto/rand"
@@ -18,7 +18,7 @@ type ID string
 // The default entropy source.
 var defaultEntropySource *ulid.MonotonicEntropy
 
-var qidPrefix = "qrn"
+var qidPrefix = "qid"
 var serviceName = "qgo"
 
 func init() {

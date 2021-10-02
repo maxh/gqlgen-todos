@@ -3,7 +3,7 @@
 package todo
 
 import (
-	"github.com/maxh/gqlgen-todos/qrn"
+	"github.com/maxh/gqlgen-todos/qid"
 )
 
 const (
@@ -72,5 +72,5 @@ var (
 	// DefaultDone holds the default value on creation for the "done" field.
 	DefaultDone bool
 	// DefaultID holds the default value on creation for the "id" field.
-	DefaultID func() qrn.ID
+	DefaultID func() qid.ID
 )

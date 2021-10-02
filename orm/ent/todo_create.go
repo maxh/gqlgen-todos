@@ -12,7 +12,7 @@ import (
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
-	"github.com/maxh/gqlgen-todos/qrn"
+	"github.com/maxh/gqlgen-todos/qid"
 )
 
 // TodoCreate is the builder for creating a Todo entity.
@@ -51,13 +51,13 @@ func (tc *TodoCreate) SetNillableDone(b *bool) *TodoCreate {
 }
 
 // SetID sets the "id" field.
-func (tc *TodoCreate) SetID(q qrn.ID) *TodoCreate {
+func (tc *TodoCreate) SetID(q qid.ID) *TodoCreate {
 	tc.mutation.SetID(q)
 	return tc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (tc *TodoCreate) SetNillableID(q *qrn.ID) *TodoCreate {
+func (tc *TodoCreate) SetNillableID(q *qid.ID) *TodoCreate {
 	if q != nil {
 		tc.SetID(*q)
 	}
@@ -65,7 +65,7 @@ func (tc *TodoCreate) SetNillableID(q *qrn.ID) *TodoCreate {
 }
 
 // SetTenantID sets the "tenant" edge to the Tenant entity by ID.
-func (tc *TodoCreate) SetTenantID(id qrn.ID) *TodoCreate {
+func (tc *TodoCreate) SetTenantID(id qid.ID) *TodoCreate {
 	tc.mutation.SetTenantID(id)
 	return tc
 }
@@ -76,13 +76,13 @@ func (tc *TodoCreate) SetTenant(t *Tenant) *TodoCreate {
 }
 
 // SetUserID sets the "user" edge to the User entity by ID.
-func (tc *TodoCreate) SetUserID(id qrn.ID) *TodoCreate {
+func (tc *TodoCreate) SetUserID(id qid.ID) *TodoCreate {
 	tc.mutation.SetUserID(id)
 	return tc
 }
 
 // SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (tc *TodoCreate) SetNillableUserID(id *qrn.ID) *TodoCreate {
+func (tc *TodoCreate) SetNillableUserID(id *qid.ID) *TodoCreate {
 	if id != nil {
 		tc = tc.SetUserID(*id)
 	}
@@ -202,7 +202,7 @@ func (tc *TodoCreate) sqlSave(ctx context.Context) (*Todo, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(qrn.ID)
+		_node.ID = _spec.ID.Value.(qid.ID)
 	}
 	return _node, nil
 }

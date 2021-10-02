@@ -12,7 +12,7 @@ import (
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
-	"github.com/maxh/gqlgen-todos/qrn"
+	"github.com/maxh/gqlgen-todos/qid"
 )
 
 // OrganizationCreate is the builder for creating a Organization entity.
@@ -37,13 +37,13 @@ func (oc *OrganizationCreate) SetNillableName(s *string) *OrganizationCreate {
 }
 
 // SetID sets the "id" field.
-func (oc *OrganizationCreate) SetID(q qrn.ID) *OrganizationCreate {
+func (oc *OrganizationCreate) SetID(q qid.ID) *OrganizationCreate {
 	oc.mutation.SetID(q)
 	return oc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (oc *OrganizationCreate) SetNillableID(q *qrn.ID) *OrganizationCreate {
+func (oc *OrganizationCreate) SetNillableID(q *qid.ID) *OrganizationCreate {
 	if q != nil {
 		oc.SetID(*q)
 	}
@@ -51,7 +51,7 @@ func (oc *OrganizationCreate) SetNillableID(q *qrn.ID) *OrganizationCreate {
 }
 
 // SetTenantID sets the "tenant" edge to the Tenant entity by ID.
-func (oc *OrganizationCreate) SetTenantID(id qrn.ID) *OrganizationCreate {
+func (oc *OrganizationCreate) SetTenantID(id qid.ID) *OrganizationCreate {
 	oc.mutation.SetTenantID(id)
 	return oc
 }
@@ -62,14 +62,14 @@ func (oc *OrganizationCreate) SetTenant(t *Tenant) *OrganizationCreate {
 }
 
 // AddUserIDs adds the "users" edge to the User entity by IDs.
-func (oc *OrganizationCreate) AddUserIDs(ids ...qrn.ID) *OrganizationCreate {
+func (oc *OrganizationCreate) AddUserIDs(ids ...qid.ID) *OrganizationCreate {
 	oc.mutation.AddUserIDs(ids...)
 	return oc
 }
 
 // AddUsers adds the "users" edges to the User entity.
 func (oc *OrganizationCreate) AddUsers(u ...*User) *OrganizationCreate {
-	ids := make([]qrn.ID, len(u))
+	ids := make([]qid.ID, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
@@ -177,7 +177,7 @@ func (oc *OrganizationCreate) sqlSave(ctx context.Context) (*Organization, error
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(qrn.ID)
+		_node.ID = _spec.ID.Value.(qid.ID)
 	}
 	return _node, nil
 }

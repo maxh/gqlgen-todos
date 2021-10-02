@@ -6,32 +6,32 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/maxh/gqlgen-todos/orm/ent/predicate"
-	"github.com/maxh/gqlgen-todos/qrn"
+	"github.com/maxh/gqlgen-todos/qid"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id qrn.ID) predicate.Todo {
+func ID(id qid.ID) predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldID), id))
 	})
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id qrn.ID) predicate.Todo {
+func IDEQ(id qid.ID) predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldID), id))
 	})
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id qrn.ID) predicate.Todo {
+func IDNEQ(id qid.ID) predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldID), id))
 	})
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...qrn.ID) predicate.Todo {
+func IDIn(ids ...qid.ID) predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
 		// if not arguments were provided, append the FALSE constants,
 		// since we can't apply "IN ()". This will make this predicate falsy.
@@ -48,7 +48,7 @@ func IDIn(ids ...qrn.ID) predicate.Todo {
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...qrn.ID) predicate.Todo {
+func IDNotIn(ids ...qid.ID) predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
 		// if not arguments were provided, append the FALSE constants,
 		// since we can't apply "IN ()". This will make this predicate falsy.
@@ -65,28 +65,28 @@ func IDNotIn(ids ...qrn.ID) predicate.Todo {
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id qrn.ID) predicate.Todo {
+func IDGT(id qid.ID) predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldID), id))
 	})
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id qrn.ID) predicate.Todo {
+func IDGTE(id qid.ID) predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldID), id))
 	})
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id qrn.ID) predicate.Todo {
+func IDLT(id qid.ID) predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldID), id))
 	})
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id qrn.ID) predicate.Todo {
+func IDLTE(id qid.ID) predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldID), id))
 	})

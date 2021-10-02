@@ -8,7 +8,7 @@ import (
 	"log"
 
 	"github.com/maxh/gqlgen-todos/orm/ent/migrate"
-	"github.com/maxh/gqlgen-todos/qrn"
+	"github.com/maxh/gqlgen-todos/qid"
 
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
@@ -184,7 +184,7 @@ func (c *OrganizationClient) UpdateOne(o *Organization) *OrganizationUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *OrganizationClient) UpdateOneID(id qrn.ID) *OrganizationUpdateOne {
+func (c *OrganizationClient) UpdateOneID(id qid.ID) *OrganizationUpdateOne {
 	mutation := newOrganizationMutation(c.config, OpUpdateOne, withOrganizationID(id))
 	return &OrganizationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -201,7 +201,7 @@ func (c *OrganizationClient) DeleteOne(o *Organization) *OrganizationDeleteOne {
 }
 
 // DeleteOneID returns a delete builder for the given id.
-func (c *OrganizationClient) DeleteOneID(id qrn.ID) *OrganizationDeleteOne {
+func (c *OrganizationClient) DeleteOneID(id qid.ID) *OrganizationDeleteOne {
 	builder := c.Delete().Where(organization.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -216,12 +216,12 @@ func (c *OrganizationClient) Query() *OrganizationQuery {
 }
 
 // Get returns a Organization entity by its id.
-func (c *OrganizationClient) Get(ctx context.Context, id qrn.ID) (*Organization, error) {
+func (c *OrganizationClient) Get(ctx context.Context, id qid.ID) (*Organization, error) {
 	return c.Query().Where(organization.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *OrganizationClient) GetX(ctx context.Context, id qrn.ID) *Organization {
+func (c *OrganizationClient) GetX(ctx context.Context, id qid.ID) *Organization {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -306,7 +306,7 @@ func (c *TenantClient) UpdateOne(t *Tenant) *TenantUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *TenantClient) UpdateOneID(id qrn.ID) *TenantUpdateOne {
+func (c *TenantClient) UpdateOneID(id qid.ID) *TenantUpdateOne {
 	mutation := newTenantMutation(c.config, OpUpdateOne, withTenantID(id))
 	return &TenantUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -323,7 +323,7 @@ func (c *TenantClient) DeleteOne(t *Tenant) *TenantDeleteOne {
 }
 
 // DeleteOneID returns a delete builder for the given id.
-func (c *TenantClient) DeleteOneID(id qrn.ID) *TenantDeleteOne {
+func (c *TenantClient) DeleteOneID(id qid.ID) *TenantDeleteOne {
 	builder := c.Delete().Where(tenant.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -338,12 +338,12 @@ func (c *TenantClient) Query() *TenantQuery {
 }
 
 // Get returns a Tenant entity by its id.
-func (c *TenantClient) Get(ctx context.Context, id qrn.ID) (*Tenant, error) {
+func (c *TenantClient) Get(ctx context.Context, id qid.ID) (*Tenant, error) {
 	return c.Query().Where(tenant.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *TenantClient) GetX(ctx context.Context, id qrn.ID) *Tenant {
+func (c *TenantClient) GetX(ctx context.Context, id qid.ID) *Tenant {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -397,7 +397,7 @@ func (c *TodoClient) UpdateOne(t *Todo) *TodoUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *TodoClient) UpdateOneID(id qrn.ID) *TodoUpdateOne {
+func (c *TodoClient) UpdateOneID(id qid.ID) *TodoUpdateOne {
 	mutation := newTodoMutation(c.config, OpUpdateOne, withTodoID(id))
 	return &TodoUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -414,7 +414,7 @@ func (c *TodoClient) DeleteOne(t *Todo) *TodoDeleteOne {
 }
 
 // DeleteOneID returns a delete builder for the given id.
-func (c *TodoClient) DeleteOneID(id qrn.ID) *TodoDeleteOne {
+func (c *TodoClient) DeleteOneID(id qid.ID) *TodoDeleteOne {
 	builder := c.Delete().Where(todo.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -429,12 +429,12 @@ func (c *TodoClient) Query() *TodoQuery {
 }
 
 // Get returns a Todo entity by its id.
-func (c *TodoClient) Get(ctx context.Context, id qrn.ID) (*Todo, error) {
+func (c *TodoClient) Get(ctx context.Context, id qid.ID) (*Todo, error) {
 	return c.Query().Where(todo.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *TodoClient) GetX(ctx context.Context, id qrn.ID) *Todo {
+func (c *TodoClient) GetX(ctx context.Context, id qid.ID) *Todo {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -519,7 +519,7 @@ func (c *UserClient) UpdateOne(u *User) *UserUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *UserClient) UpdateOneID(id qrn.ID) *UserUpdateOne {
+func (c *UserClient) UpdateOneID(id qid.ID) *UserUpdateOne {
 	mutation := newUserMutation(c.config, OpUpdateOne, withUserID(id))
 	return &UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -536,7 +536,7 @@ func (c *UserClient) DeleteOne(u *User) *UserDeleteOne {
 }
 
 // DeleteOneID returns a delete builder for the given id.
-func (c *UserClient) DeleteOneID(id qrn.ID) *UserDeleteOne {
+func (c *UserClient) DeleteOneID(id qid.ID) *UserDeleteOne {
 	builder := c.Delete().Where(user.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -551,12 +551,12 @@ func (c *UserClient) Query() *UserQuery {
 }
 
 // Get returns a User entity by its id.
-func (c *UserClient) Get(ctx context.Context, id qrn.ID) (*User, error) {
+func (c *UserClient) Get(ctx context.Context, id qid.ID) (*User, error) {
 	return c.Query().Where(user.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *UserClient) GetX(ctx context.Context, id qrn.ID) *User {
+func (c *UserClient) GetX(ctx context.Context, id qid.ID) *User {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)

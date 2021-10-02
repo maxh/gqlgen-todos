@@ -13,7 +13,7 @@ import (
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
-	"github.com/maxh/gqlgen-todos/qrn"
+	"github.com/maxh/gqlgen-todos/qid"
 )
 
 // UserCreate is the builder for creating a User entity.
@@ -38,13 +38,13 @@ func (uc *UserCreate) SetNillableName(s *string) *UserCreate {
 }
 
 // SetID sets the "id" field.
-func (uc *UserCreate) SetID(q qrn.ID) *UserCreate {
+func (uc *UserCreate) SetID(q qid.ID) *UserCreate {
 	uc.mutation.SetID(q)
 	return uc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (uc *UserCreate) SetNillableID(q *qrn.ID) *UserCreate {
+func (uc *UserCreate) SetNillableID(q *qid.ID) *UserCreate {
 	if q != nil {
 		uc.SetID(*q)
 	}
@@ -52,7 +52,7 @@ func (uc *UserCreate) SetNillableID(q *qrn.ID) *UserCreate {
 }
 
 // SetTenantID sets the "tenant" edge to the Tenant entity by ID.
-func (uc *UserCreate) SetTenantID(id qrn.ID) *UserCreate {
+func (uc *UserCreate) SetTenantID(id qid.ID) *UserCreate {
 	uc.mutation.SetTenantID(id)
 	return uc
 }
@@ -63,14 +63,14 @@ func (uc *UserCreate) SetTenant(t *Tenant) *UserCreate {
 }
 
 // AddTodoIDs adds the "todos" edge to the Todo entity by IDs.
-func (uc *UserCreate) AddTodoIDs(ids ...qrn.ID) *UserCreate {
+func (uc *UserCreate) AddTodoIDs(ids ...qid.ID) *UserCreate {
 	uc.mutation.AddTodoIDs(ids...)
 	return uc
 }
 
 // AddTodos adds the "todos" edges to the Todo entity.
 func (uc *UserCreate) AddTodos(t ...*Todo) *UserCreate {
-	ids := make([]qrn.ID, len(t))
+	ids := make([]qid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
@@ -78,7 +78,7 @@ func (uc *UserCreate) AddTodos(t ...*Todo) *UserCreate {
 }
 
 // SetOrganizationID sets the "organization" edge to the Organization entity by ID.
-func (uc *UserCreate) SetOrganizationID(id qrn.ID) *UserCreate {
+func (uc *UserCreate) SetOrganizationID(id qid.ID) *UserCreate {
 	uc.mutation.SetOrganizationID(id)
 	return uc
 }
@@ -192,7 +192,7 @@ func (uc *UserCreate) sqlSave(ctx context.Context) (*User, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(qrn.ID)
+		_node.ID = _spec.ID.Value.(qid.ID)
 	}
 	return _node, nil
 }

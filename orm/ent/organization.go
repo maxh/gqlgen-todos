@@ -9,20 +9,20 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
-	"github.com/maxh/gqlgen-todos/qrn"
+	"github.com/maxh/gqlgen-todos/qid"
 )
 
 // Organization is the model entity for the Organization schema.
 type Organization struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID qrn.ID `json:"id,omitempty"`
+	ID qid.ID `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the OrganizationQuery when eager-loading is set.
 	Edges               OrganizationEdges `json:"edges"`
-	organization_tenant *qrn.ID
+	organization_tenant *qid.ID
 }
 
 // OrganizationEdges holds the relations/edges for other nodes in the graph.
@@ -65,11 +65,11 @@ func (*Organization) scanValues(columns []string) ([]interface{}, error) {
 	for i := range columns {
 		switch columns[i] {
 		case organization.FieldID:
-			values[i] = new(qrn.ID)
+			values[i] = new(qid.ID)
 		case organization.FieldName:
 			values[i] = new(sql.NullString)
 		case organization.ForeignKeys[0]: // organization_tenant
-			values[i] = &sql.NullScanner{S: new(qrn.ID)}
+			values[i] = &sql.NullScanner{S: new(qid.ID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Organization", columns[i])
 		}
@@ -86,7 +86,7 @@ func (o *Organization) assignValues(columns []string, values []interface{}) erro
 	for i := range columns {
 		switch columns[i] {
 		case organization.FieldID:
-			if value, ok := values[i].(*qrn.ID); !ok {
+			if value, ok := values[i].(*qid.ID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
 				o.ID = *value
@@ -101,8 +101,8 @@ func (o *Organization) assignValues(columns []string, values []interface{}) erro
 			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field organization_tenant", values[i])
 			} else if value.Valid {
-				o.organization_tenant = new(qrn.ID)
-				*o.organization_tenant = *value.S.(*qrn.ID)
+				o.organization_tenant = new(qid.ID)
+				*o.organization_tenant = *value.S.(*qid.ID)
 			}
 		}
 	}

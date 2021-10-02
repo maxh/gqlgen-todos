@@ -16,7 +16,7 @@ import (
 	"github.com/maxh/gqlgen-todos/orm/ent/predicate"
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
-	"github.com/maxh/gqlgen-todos/qrn"
+	"github.com/maxh/gqlgen-todos/qid"
 )
 
 // OrganizationQuery is the builder for querying Organization entities.
@@ -136,8 +136,8 @@ func (oq *OrganizationQuery) FirstX(ctx context.Context) *Organization {
 
 // FirstID returns the first Organization ID from the query.
 // Returns a *NotFoundError when no Organization ID was found.
-func (oq *OrganizationQuery) FirstID(ctx context.Context) (id qrn.ID, err error) {
-	var ids []qrn.ID
+func (oq *OrganizationQuery) FirstID(ctx context.Context) (id qid.ID, err error) {
+	var ids []qid.ID
 	if ids, err = oq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -149,7 +149,7 @@ func (oq *OrganizationQuery) FirstID(ctx context.Context) (id qrn.ID, err error)
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (oq *OrganizationQuery) FirstIDX(ctx context.Context) qrn.ID {
+func (oq *OrganizationQuery) FirstIDX(ctx context.Context) qid.ID {
 	id, err := oq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -187,8 +187,8 @@ func (oq *OrganizationQuery) OnlyX(ctx context.Context) *Organization {
 // OnlyID is like Only, but returns the only Organization ID in the query.
 // Returns a *NotSingularError when exactly one Organization ID is not found.
 // Returns a *NotFoundError when no entities are found.
-func (oq *OrganizationQuery) OnlyID(ctx context.Context) (id qrn.ID, err error) {
-	var ids []qrn.ID
+func (oq *OrganizationQuery) OnlyID(ctx context.Context) (id qid.ID, err error) {
+	var ids []qid.ID
 	if ids, err = oq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -204,7 +204,7 @@ func (oq *OrganizationQuery) OnlyID(ctx context.Context) (id qrn.ID, err error) 
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (oq *OrganizationQuery) OnlyIDX(ctx context.Context) qrn.ID {
+func (oq *OrganizationQuery) OnlyIDX(ctx context.Context) qid.ID {
 	id, err := oq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -230,8 +230,8 @@ func (oq *OrganizationQuery) AllX(ctx context.Context) []*Organization {
 }
 
 // IDs executes the query and returns a list of Organization IDs.
-func (oq *OrganizationQuery) IDs(ctx context.Context) ([]qrn.ID, error) {
-	var ids []qrn.ID
+func (oq *OrganizationQuery) IDs(ctx context.Context) ([]qid.ID, error) {
+	var ids []qid.ID
 	if err := oq.Select(organization.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -239,7 +239,7 @@ func (oq *OrganizationQuery) IDs(ctx context.Context) ([]qrn.ID, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (oq *OrganizationQuery) IDsX(ctx context.Context) []qrn.ID {
+func (oq *OrganizationQuery) IDsX(ctx context.Context) []qid.ID {
 	ids, err := oq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -421,8 +421,8 @@ func (oq *OrganizationQuery) sqlAll(ctx context.Context) ([]*Organization, error
 	}
 
 	if query := oq.withTenant; query != nil {
-		ids := make([]qrn.ID, 0, len(nodes))
-		nodeids := make(map[qrn.ID][]*Organization)
+		ids := make([]qid.ID, 0, len(nodes))
+		nodeids := make(map[qid.ID][]*Organization)
 		for i := range nodes {
 			if nodes[i].organization_tenant == nil {
 				continue
@@ -451,7 +451,7 @@ func (oq *OrganizationQuery) sqlAll(ctx context.Context) ([]*Organization, error
 
 	if query := oq.withUsers; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[qrn.ID]*Organization)
+		nodeids := make(map[qid.ID]*Organization)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]

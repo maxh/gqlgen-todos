@@ -10,7 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
-	"github.com/maxh/gqlgen-todos/qrn"
+	"github.com/maxh/gqlgen-todos/qid"
 )
 
 // TenantCreate is the builder for creating a Tenant entity.
@@ -27,13 +27,13 @@ func (tc *TenantCreate) SetName(s string) *TenantCreate {
 }
 
 // SetID sets the "id" field.
-func (tc *TenantCreate) SetID(q qrn.ID) *TenantCreate {
+func (tc *TenantCreate) SetID(q qid.ID) *TenantCreate {
 	tc.mutation.SetID(q)
 	return tc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (tc *TenantCreate) SetNillableID(q *qrn.ID) *TenantCreate {
+func (tc *TenantCreate) SetNillableID(q *qid.ID) *TenantCreate {
 	if q != nil {
 		tc.SetID(*q)
 	}
@@ -145,7 +145,7 @@ func (tc *TenantCreate) sqlSave(ctx context.Context) (*Tenant, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(qrn.ID)
+		_node.ID = _spec.ID.Value.(qid.ID)
 	}
 	return _node, nil
 }

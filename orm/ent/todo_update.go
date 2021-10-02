@@ -14,7 +14,7 @@ import (
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
-	"github.com/maxh/gqlgen-todos/qrn"
+	"github.com/maxh/gqlgen-todos/qid"
 )
 
 // TodoUpdate is the builder for updating Todo entities.
@@ -59,7 +59,7 @@ func (tu *TodoUpdate) SetNillableDone(b *bool) *TodoUpdate {
 }
 
 // SetTenantID sets the "tenant" edge to the Tenant entity by ID.
-func (tu *TodoUpdate) SetTenantID(id qrn.ID) *TodoUpdate {
+func (tu *TodoUpdate) SetTenantID(id qid.ID) *TodoUpdate {
 	tu.mutation.SetTenantID(id)
 	return tu
 }
@@ -70,13 +70,13 @@ func (tu *TodoUpdate) SetTenant(t *Tenant) *TodoUpdate {
 }
 
 // SetUserID sets the "user" edge to the User entity by ID.
-func (tu *TodoUpdate) SetUserID(id qrn.ID) *TodoUpdate {
+func (tu *TodoUpdate) SetUserID(id qid.ID) *TodoUpdate {
 	tu.mutation.SetUserID(id)
 	return tu
 }
 
 // SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (tu *TodoUpdate) SetNillableUserID(id *qrn.ID) *TodoUpdate {
+func (tu *TodoUpdate) SetNillableUserID(id *qid.ID) *TodoUpdate {
 	if id != nil {
 		tu = tu.SetUserID(*id)
 	}
@@ -323,7 +323,7 @@ func (tuo *TodoUpdateOne) SetNillableDone(b *bool) *TodoUpdateOne {
 }
 
 // SetTenantID sets the "tenant" edge to the Tenant entity by ID.
-func (tuo *TodoUpdateOne) SetTenantID(id qrn.ID) *TodoUpdateOne {
+func (tuo *TodoUpdateOne) SetTenantID(id qid.ID) *TodoUpdateOne {
 	tuo.mutation.SetTenantID(id)
 	return tuo
 }
@@ -334,13 +334,13 @@ func (tuo *TodoUpdateOne) SetTenant(t *Tenant) *TodoUpdateOne {
 }
 
 // SetUserID sets the "user" edge to the User entity by ID.
-func (tuo *TodoUpdateOne) SetUserID(id qrn.ID) *TodoUpdateOne {
+func (tuo *TodoUpdateOne) SetUserID(id qid.ID) *TodoUpdateOne {
 	tuo.mutation.SetUserID(id)
 	return tuo
 }
 
 // SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (tuo *TodoUpdateOne) SetNillableUserID(id *qrn.ID) *TodoUpdateOne {
+func (tuo *TodoUpdateOne) SetNillableUserID(id *qid.ID) *TodoUpdateOne {
 	if id != nil {
 		tuo = tuo.SetUserID(*id)
 	}
