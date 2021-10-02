@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"github.com/maxh/gqlgen-todos/orm/ent/organization"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
 	"github.com/maxh/gqlgen-todos/orm/schema"
@@ -12,6 +13,16 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	organizationFields := schema.Organization{}.Fields()
+	_ = organizationFields
+	// organizationDescText is the schema descriptor for text field.
+	organizationDescText := organizationFields[0].Descriptor()
+	// organization.DefaultText holds the default value on creation for the text field.
+	organization.DefaultText = organizationDescText.Default.(string)
+	// organizationDescDone is the schema descriptor for done field.
+	organizationDescDone := organizationFields[1].Descriptor()
+	// organization.DefaultDone holds the default value on creation for the done field.
+	organization.DefaultDone = organizationDescDone.Default.(bool)
 	todoFields := schema.Todo{}.Fields()
 	_ = todoFields
 	// todoDescText is the schema descriptor for text field.

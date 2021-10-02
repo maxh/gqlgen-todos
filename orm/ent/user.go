@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/maxh/gqlgen-todos/orm/ent/organization"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
 )
 
@@ -19,16 +20,19 @@ type User struct {
 	Name string `json:"name,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
-	Edges UserEdges `json:"edges"`
+	Edges              UserEdges `json:"edges"`
+	organization_users *int
 }
 
 // UserEdges holds the relations/edges for other nodes in the graph.
 type UserEdges struct {
 	// Todos holds the value of the todos edge.
 	Todos []*Todo `json:"todos,omitempty"`
+	// Organization holds the value of the organization edge.
+	Organization *Organization `json:"organization,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // TodosOrErr returns the Todos value or an error if the edge
@@ -40,6 +44,20 @@ func (e UserEdges) TodosOrErr() ([]*Todo, error) {
 	return nil, &NotLoadedError{edge: "todos"}
 }
 
+// OrganizationOrErr returns the Organization value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e UserEdges) OrganizationOrErr() (*Organization, error) {
+	if e.loadedTypes[1] {
+		if e.Organization == nil {
+			// The edge organization was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: organization.Label}
+		}
+		return e.Organization, nil
+	}
+	return nil, &NotLoadedError{edge: "organization"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*User) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
@@ -49,6 +67,8 @@ func (*User) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullInt64)
 		case user.FieldName:
 			values[i] = new(sql.NullString)
+		case user.ForeignKeys[0]: // organization_users
+			values[i] = new(sql.NullInt64)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type User", columns[i])
 		}
@@ -76,6 +96,13 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				u.Name = value.String
 			}
+		case user.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field organization_users", value)
+			} else if value.Valid {
+				u.organization_users = new(int)
+				*u.organization_users = int(value.Int64)
+			}
 		}
 	}
 	return nil
@@ -84,6 +111,11 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 // QueryTodos queries the "todos" edge of the User entity.
 func (u *User) QueryTodos() *TodoQuery {
 	return (&UserClient{config: u.config}).QueryTodos(u)
+}
+
+// QueryOrganization queries the "organization" edge of the User entity.
+func (u *User) QueryOrganization() *OrganizationQuery {
+	return (&UserClient{config: u.config}).QueryOrganization(u)
 }
 
 // Update returns a builder for updating this User.

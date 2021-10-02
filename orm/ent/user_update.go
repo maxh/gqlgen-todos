@@ -9,6 +9,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/maxh/gqlgen-todos/orm/ent/organization"
 	"github.com/maxh/gqlgen-todos/orm/ent/predicate"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
@@ -56,6 +57,25 @@ func (uu *UserUpdate) AddTodos(t ...*Todo) *UserUpdate {
 	return uu.AddTodoIDs(ids...)
 }
 
+// SetOrganizationID sets the "organization" edge to the Organization entity by ID.
+func (uu *UserUpdate) SetOrganizationID(id int) *UserUpdate {
+	uu.mutation.SetOrganizationID(id)
+	return uu
+}
+
+// SetNillableOrganizationID sets the "organization" edge to the Organization entity by ID if the given value is not nil.
+func (uu *UserUpdate) SetNillableOrganizationID(id *int) *UserUpdate {
+	if id != nil {
+		uu = uu.SetOrganizationID(*id)
+	}
+	return uu
+}
+
+// SetOrganization sets the "organization" edge to the Organization entity.
+func (uu *UserUpdate) SetOrganization(o *Organization) *UserUpdate {
+	return uu.SetOrganizationID(o.ID)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -80,6 +100,12 @@ func (uu *UserUpdate) RemoveTodos(t ...*Todo) *UserUpdate {
 		ids[i] = t[i].ID
 	}
 	return uu.RemoveTodoIDs(ids...)
+}
+
+// ClearOrganization clears the "organization" edge to the Organization entity.
+func (uu *UserUpdate) ClearOrganization() *UserUpdate {
+	uu.mutation.ClearOrganization()
+	return uu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -215,6 +241,41 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.OrganizationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.OrganizationTable,
+			Columns: []string{user.OrganizationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: organization.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.OrganizationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.OrganizationTable,
+			Columns: []string{user.OrganizationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: organization.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -263,6 +324,25 @@ func (uuo *UserUpdateOne) AddTodos(t ...*Todo) *UserUpdateOne {
 	return uuo.AddTodoIDs(ids...)
 }
 
+// SetOrganizationID sets the "organization" edge to the Organization entity by ID.
+func (uuo *UserUpdateOne) SetOrganizationID(id int) *UserUpdateOne {
+	uuo.mutation.SetOrganizationID(id)
+	return uuo
+}
+
+// SetNillableOrganizationID sets the "organization" edge to the Organization entity by ID if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableOrganizationID(id *int) *UserUpdateOne {
+	if id != nil {
+		uuo = uuo.SetOrganizationID(*id)
+	}
+	return uuo
+}
+
+// SetOrganization sets the "organization" edge to the Organization entity.
+func (uuo *UserUpdateOne) SetOrganization(o *Organization) *UserUpdateOne {
+	return uuo.SetOrganizationID(o.ID)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -287,6 +367,12 @@ func (uuo *UserUpdateOne) RemoveTodos(t ...*Todo) *UserUpdateOne {
 		ids[i] = t[i].ID
 	}
 	return uuo.RemoveTodoIDs(ids...)
+}
+
+// ClearOrganization clears the "organization" edge to the Organization entity.
+func (uuo *UserUpdateOne) ClearOrganization() *UserUpdateOne {
+	uuo.mutation.ClearOrganization()
+	return uuo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -438,6 +524,41 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: todo.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.OrganizationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.OrganizationTable,
+			Columns: []string{user.OrganizationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: organization.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.OrganizationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.OrganizationTable,
+			Columns: []string{user.OrganizationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: organization.FieldID,
 				},
 			},
 		}
