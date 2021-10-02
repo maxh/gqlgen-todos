@@ -73,19 +73,19 @@ func (m QidMixin) Fields() []ent.Field {
 	}
 }
 
-// Annotation captures the id resourceType for a type.
-type Annotation struct {
+// QidAnnotation captures the id resourceType for a type.
+type QidAnnotation struct {
 	Prefix string
 }
 
 // Name implements the ent Annotation interface.
-func (a Annotation) Name() string {
+func (a QidAnnotation) Name() string {
 	return "QID"
 }
 
 // Annotations returns the annotations for a Mixin instance.
 func (m QidMixin) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		Annotation{Prefix: m.resourceType},
+		QidAnnotation{Prefix: m.resourceType},
 	}
 }
