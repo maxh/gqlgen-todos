@@ -2,7 +2,6 @@ package schema
 
 import (
 	"entgo.io/ent"
-	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/mixin"
@@ -70,22 +69,5 @@ func (m QidMixin) Fields() []ent.Field {
 		field.String("id").
 			GoType(qid.ID("")).
 			DefaultFunc(func() qid.ID { return qid.MustNew(m.resourceType) }),
-	}
-}
-
-// QidAnnotation captures the id resourceType for a type.
-type QidAnnotation struct {
-	Prefix string
-}
-
-// Name implements the ent Annotation interface.
-func (a QidAnnotation) Name() string {
-	return "QID"
-}
-
-// Annotations returns the annotations for a Mixin instance.
-func (m QidMixin) Annotations() []schema.Annotation {
-	return []schema.Annotation{
-		QidAnnotation{Prefix: m.resourceType},
 	}
 }
