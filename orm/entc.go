@@ -1,3 +1,4 @@
+//go:build ignore
 // +build ignore
 
 package main
@@ -15,13 +16,17 @@ func main() {
 	if err != nil {
 		log.Fatalf("creating entgql extension: %v", err)
 	}
-	extensions := entc.Extensions(ex)
+	options := []entc.Option{
+		entc.FeatureNames("privacy"),
+		entc.Extensions(ex),
+	}
 	config := &gen.Config{
 		// IDType: &field.TypeInfo{Type: field.TypeString},
-		Target: "./ent",
+		Target:  "./ent",
 		Package: "github.com/maxh/gqlgen-todos/orm/ent",
 	}
-	if err := entc.Generate("./schema", config, extensions); err != nil {
+	err = entc.Generate("./schema", config, options...)
+	if err != nil {
 		log.Fatalf("running ent codegen: %v", err)
 	}
 }
