@@ -9,6 +9,9 @@ import (
 // Organization is the predicate function for organization builders.
 type Organization func(*sql.Selector)
 
+// Tenant is the predicate function for tenant builders.
+type Tenant func(*sql.Selector)
+
 // Todo is the predicate function for todo builders.
 type Todo func(*sql.Selector)
 

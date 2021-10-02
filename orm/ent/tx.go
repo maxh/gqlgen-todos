@@ -14,6 +14,8 @@ type Tx struct {
 	config
 	// Organization is the client for interacting with the Organization builders.
 	Organization *OrganizationClient
+	// Tenant is the client for interacting with the Tenant builders.
+	Tenant *TenantClient
 	// Todo is the client for interacting with the Todo builders.
 	Todo *TodoClient
 	// User is the client for interacting with the User builders.
@@ -154,6 +156,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Organization = NewOrganizationClient(tx.config)
+	tx.Tenant = NewTenantClient(tx.config)
 	tx.Todo = NewTodoClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }

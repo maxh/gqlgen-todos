@@ -14,6 +14,7 @@ import (
 	"github.com/maxh/gqlgen-todos/graphql"
 
 	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/maxh/gqlgen-todos/orm/ent/runtime"
 )
 
 const defaultPort = "8080"
@@ -49,17 +50,23 @@ func main() {
 }
 
 func CreateUser(ctx context.Context, client *ent.Client) (*ent.User, error) {
-	o, err := client.Organization.Create().SetName("my organization").Save(ctx)
+	t, err := client.Tenant.Create().SetName("my tenant").Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed creating organization: %w", err)
+		return nil, fmt.Errorf("failed creating Tenant: %w", err)
 	}
-	u, err := client.User.
-		Create().
-		SetOrganization(o).
-		Save(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("failed creating user: %w", err)
-	}
-	log.Println("user was created: ", u)
-	return u, nil
+	log.Println("tenant was created: ", t)
+	return nil, nil
+	//o, err := client.Organization.Create().SetName("my organization").Save(ctx)
+	//if err != nil {
+	//	return nil, fmt.Errorf("failed creating organization: %w", err)
+	//}
+	//u, err := client.User.
+	//	Create().
+	//	SetOrganization(o).
+	//	Save(ctx)
+	//if err != nil {
+	//	return nil, fmt.Errorf("failed creating user: %w", err)
+	//}
+	//log.Println("user was created: ", u)
+	//return u, nil
 }

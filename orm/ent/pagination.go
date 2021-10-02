@@ -15,6 +15,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/errcode"
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
+	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
 	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
@@ -459,6 +460,233 @@ func (o *Organization) ToEdge(order *OrganizationOrder) *OrganizationEdge {
 	return &OrganizationEdge{
 		Node:   o,
 		Cursor: order.Field.toCursor(o),
+	}
+}
+
+// TenantEdge is the edge representation of Tenant.
+type TenantEdge struct {
+	Node   *Tenant `json:"node"`
+	Cursor Cursor  `json:"cursor"`
+}
+
+// TenantConnection is the connection containing edges to Tenant.
+type TenantConnection struct {
+	Edges      []*TenantEdge `json:"edges"`
+	PageInfo   PageInfo      `json:"pageInfo"`
+	TotalCount int           `json:"totalCount"`
+}
+
+// TenantPaginateOption enables pagination customization.
+type TenantPaginateOption func(*tenantPager) error
+
+// WithTenantOrder configures pagination ordering.
+func WithTenantOrder(order *TenantOrder) TenantPaginateOption {
+	if order == nil {
+		order = DefaultTenantOrder
+	}
+	o := *order
+	return func(pager *tenantPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultTenantOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithTenantFilter configures pagination filter.
+func WithTenantFilter(filter func(*TenantQuery) (*TenantQuery, error)) TenantPaginateOption {
+	return func(pager *tenantPager) error {
+		if filter == nil {
+			return errors.New("TenantQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type tenantPager struct {
+	order  *TenantOrder
+	filter func(*TenantQuery) (*TenantQuery, error)
+}
+
+func newTenantPager(opts []TenantPaginateOption) (*tenantPager, error) {
+	pager := &tenantPager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultTenantOrder
+	}
+	return pager, nil
+}
+
+func (p *tenantPager) applyFilter(query *TenantQuery) (*TenantQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *tenantPager) toCursor(t *Tenant) Cursor {
+	return p.order.Field.toCursor(t)
+}
+
+func (p *tenantPager) applyCursors(query *TenantQuery, after, before *Cursor) *TenantQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultTenantOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *tenantPager) applyOrder(query *TenantQuery, reverse bool) *TenantQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultTenantOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultTenantOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to Tenant.
+func (t *TenantQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...TenantPaginateOption,
+) (*TenantConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newTenantPager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if t, err = pager.applyFilter(t); err != nil {
+		return nil, err
+	}
+
+	conn := &TenantConnection{Edges: []*TenantEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := t.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := t.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	t = pager.applyCursors(t, after, before)
+	t = pager.applyOrder(t, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		t = t.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		t = t.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := t.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *Tenant
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *Tenant {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *Tenant {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*TenantEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &TenantEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// TenantOrderField defines the ordering field of Tenant.
+type TenantOrderField struct {
+	field    string
+	toCursor func(*Tenant) Cursor
+}
+
+// TenantOrder defines the ordering of Tenant.
+type TenantOrder struct {
+	Direction OrderDirection    `json:"direction"`
+	Field     *TenantOrderField `json:"field"`
+}
+
+// DefaultTenantOrder is the default ordering of Tenant.
+var DefaultTenantOrder = &TenantOrder{
+	Direction: OrderDirectionAsc,
+	Field: &TenantOrderField{
+		field: tenant.FieldID,
+		toCursor: func(t *Tenant) Cursor {
+			return Cursor{ID: t.ID}
+		},
+	},
+}
+
+// ToEdge converts Tenant into TenantEdge.
+func (t *Tenant) ToEdge(order *TenantOrder) *TenantEdge {
+	if order == nil {
+		order = DefaultTenantOrder
+	}
+	return &TenantEdge{
+		Node:   t,
+		Cursor: order.Field.toCursor(t),
 	}
 }
 

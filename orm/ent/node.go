@@ -11,6 +11,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/hashicorp/go-multierror"
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
+	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
 	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
@@ -68,6 +69,25 @@ func (o *Organization) Node(ctx context.Context) (node *Node, err error) {
 		Scan(ctx, &node.Edges[0].IDs)
 	if err != nil {
 		return nil, err
+	}
+	return node, nil
+}
+
+func (t *Tenant) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     t.ID,
+		Type:   "Tenant",
+		Fields: make([]*Field, 1),
+		Edges:  make([]*Edge, 0),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(t.Name); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "string",
+		Name:  "name",
+		Value: string(buf),
 	}
 	return node, nil
 }
@@ -224,6 +244,15 @@ func (c *Client) noder(ctx context.Context, table string, id pulid.ID) (Noder, e
 			return nil, err
 		}
 		return n, nil
+	case tenant.Table:
+		n, err := c.Tenant.Query().
+			Where(tenant.ID(id)).
+			CollectFields(ctx, "Tenant").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
 	case todo.Table:
 		n, err := c.Todo.Query().
 			Where(todo.ID(id)).
@@ -319,6 +348,19 @@ func (c *Client) noders(ctx context.Context, table string, ids []pulid.ID) ([]No
 		nodes, err := c.Organization.Query().
 			Where(organization.IDIn(ids...)).
 			CollectFields(ctx, "Organization").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case tenant.Table:
+		nodes, err := c.Tenant.Query().
+			Where(tenant.IDIn(ids...)).
+			CollectFields(ctx, "Tenant").
 			All(ctx)
 		if err != nil {
 			return nil, err

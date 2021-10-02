@@ -9,6 +9,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
+	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
 )
@@ -32,6 +33,7 @@ type OrderFunc func(*sql.Selector)
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
 		organization.Table: organization.ValidColumn,
+		tenant.Table:       tenant.ValidColumn,
 		todo.Table:         todo.ValidColumn,
 		user.Table:         user.ValidColumn,
 	}

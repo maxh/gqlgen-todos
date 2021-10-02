@@ -4,6 +4,7 @@ package ent
 
 import (
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
+	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
 	"github.com/maxh/gqlgen-todos/orm/schema"
@@ -27,6 +28,19 @@ func init() {
 	organizationDescID := organizationMixinFields0[0].Descriptor()
 	// organization.DefaultID holds the default value on creation for the id field.
 	organization.DefaultID = organizationDescID.Default.(func() pulid.ID)
+	tenantMixin := schema.Tenant{}.Mixin()
+	tenantMixinFields0 := tenantMixin[0].Fields()
+	_ = tenantMixinFields0
+	tenantFields := schema.Tenant{}.Fields()
+	_ = tenantFields
+	// tenantDescName is the schema descriptor for name field.
+	tenantDescName := tenantFields[0].Descriptor()
+	// tenant.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	tenant.NameValidator = tenantDescName.Validators[0].(func(string) error)
+	// tenantDescID is the schema descriptor for id field.
+	tenantDescID := tenantMixinFields0[0].Descriptor()
+	// tenant.DefaultID holds the default value on creation for the id field.
+	tenant.DefaultID = tenantDescID.Default.(func() pulid.ID)
 	todoMixin := schema.Todo{}.Mixin()
 	todoMixinFields0 := todoMixin[0].Fields()
 	_ = todoMixinFields0

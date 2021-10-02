@@ -21,6 +21,18 @@ func (o *OrganizationQuery) collectField(ctx *graphql.OperationContext, field gr
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (t *TenantQuery) CollectFields(ctx context.Context, satisfies ...string) *TenantQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		t = t.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return t
+}
+
+func (t *TenantQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TenantQuery {
+	return t
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
 func (t *TodoQuery) CollectFields(ctx context.Context, satisfies ...string) *TodoQuery {
 	if fc := graphql.GetFieldContext(ctx); fc != nil {
 		t = t.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)

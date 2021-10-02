@@ -22,6 +22,19 @@ func (f OrganizationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value
 	return f(ctx, mv)
 }
 
+// The TenantFunc type is an adapter to allow the use of ordinary
+// function as Tenant mutator.
+type TenantFunc func(context.Context, *ent.TenantMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TenantFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.TenantMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TenantMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The TodoFunc type is an adapter to allow the use of ordinary
 // function as Todo mutator.
 type TodoFunc func(context.Context, *ent.TodoMutation) (ent.Value, error)
