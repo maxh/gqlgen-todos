@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
+	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
 )
 
 // OrganizationCreate is the builder for creating a Organization entity.
@@ -34,15 +35,29 @@ func (oc *OrganizationCreate) SetNillableName(s *string) *OrganizationCreate {
 	return oc
 }
 
+// SetID sets the "id" field.
+func (oc *OrganizationCreate) SetID(pu pulid.ID) *OrganizationCreate {
+	oc.mutation.SetID(pu)
+	return oc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (oc *OrganizationCreate) SetNillableID(pu *pulid.ID) *OrganizationCreate {
+	if pu != nil {
+		oc.SetID(*pu)
+	}
+	return oc
+}
+
 // AddUserIDs adds the "users" edge to the User entity by IDs.
-func (oc *OrganizationCreate) AddUserIDs(ids ...int) *OrganizationCreate {
+func (oc *OrganizationCreate) AddUserIDs(ids ...pulid.ID) *OrganizationCreate {
 	oc.mutation.AddUserIDs(ids...)
 	return oc
 }
 
 // AddUsers adds the "users" edges to the User entity.
 func (oc *OrganizationCreate) AddUsers(u ...*User) *OrganizationCreate {
-	ids := make([]int, len(u))
+	ids := make([]pulid.ID, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
@@ -124,6 +139,10 @@ func (oc *OrganizationCreate) defaults() {
 		v := organization.DefaultName
 		oc.mutation.SetName(v)
 	}
+	if _, ok := oc.mutation.ID(); !ok {
+		v := organization.DefaultID()
+		oc.mutation.SetID(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -142,8 +161,9 @@ func (oc *OrganizationCreate) sqlSave(ctx context.Context) (*Organization, error
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		_node.ID = _spec.ID.Value.(pulid.ID)
+	}
 	return _node, nil
 }
 
@@ -153,11 +173,15 @@ func (oc *OrganizationCreate) createSpec() (*Organization, *sqlgraph.CreateSpec)
 		_spec = &sqlgraph.CreateSpec{
 			Table: organization.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeString,
 				Column: organization.FieldID,
 			},
 		}
 	)
+	if id, ok := oc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := oc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -175,7 +199,7 @@ func (oc *OrganizationCreate) createSpec() (*Organization, *sqlgraph.CreateSpec)
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: user.FieldID,
 				},
 			},
@@ -230,10 +254,6 @@ func (ocb *OrganizationCreateBulk) Save(ctx context.Context) ([]*Organization, e
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {

@@ -13,6 +13,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	"github.com/maxh/gqlgen-todos/orm/ent"
+	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -54,6 +55,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		Todos func(childComplexity int) int
+		Users func(childComplexity int) int
 	}
 
 	Todo struct {
@@ -75,6 +77,7 @@ type MutationResolver interface {
 }
 type QueryResolver interface {
 	Todos(ctx context.Context) ([]*ent.Todo, error)
+	Users(ctx context.Context) ([]*ent.User, error)
 }
 
 type executableSchema struct {
@@ -124,6 +127,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Todos(childComplexity), true
+
+	case "Query.users":
+		if e.complexity.Query.Users == nil {
+			break
+		}
+
+		return e.complexity.Query.Users(childComplexity), true
 
 	case "Todo.done":
 		if e.complexity.Todo.Done == nil {
@@ -241,32 +251,33 @@ var sources = []*ast.Source{
 	{Name: "schema.graphqls", Input: `# Query
 
 type Todo {
-  id: Int!
+  id: ID!
   text: String!
   done: Boolean!
   user: User!
 }
 
 type User {
-  id: Int!
+  id: ID!
   name: String!
   organization: Organization!
 }
 
 type Organization {
-  id: Int!
+  id: ID!
   name: String!
 }
 
 type Query {
   todos: [Todo!]!
+  users: [User!]!
 }
 
 # Mutation
 
 input CreateTodoInput {
   text: String!
-  userId: Int!
+  userId: ID!
 }
 
 type Mutation {
@@ -420,9 +431,9 @@ func (ec *executionContext) _Organization_id(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(pulid.ID)
 	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
+	return ec.marshalNID2githubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋormᚋschemaᚋpulidᚐID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Organization_name(ctx context.Context, field graphql.CollectedField, obj *ent.Organization) (ret graphql.Marshaler) {
@@ -493,6 +504,41 @@ func (ec *executionContext) _Query_todos(ctx context.Context, field graphql.Coll
 	res := resTmp.([]*ent.Todo)
 	fc.Result = res
 	return ec.marshalNTodo2ᚕᚖgithubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋormᚋentᚐTodoᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_users(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Users(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚕᚖgithubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋormᚋentᚐUserᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -596,9 +642,9 @@ func (ec *executionContext) _Todo_id(ctx context.Context, field graphql.Collecte
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(pulid.ID)
 	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
+	return ec.marshalNID2githubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋormᚋschemaᚋpulidᚐID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Todo_text(ctx context.Context, field graphql.CollectedField, obj *ent.Todo) (ret graphql.Marshaler) {
@@ -736,9 +782,9 @@ func (ec *executionContext) _User_id(ctx context.Context, field graphql.Collecte
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(pulid.ID)
 	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
+	return ec.marshalNID2githubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋormᚋschemaᚋpulidᚐID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _User_name(ctx context.Context, field graphql.CollectedField, obj *ent.User) (ret graphql.Marshaler) {
@@ -1954,7 +2000,7 @@ func (ec *executionContext) unmarshalInputCreateTodoInput(ctx context.Context, o
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
-			it.UserID, err = ec.unmarshalNInt2int(ctx, v)
+			it.UserID, err = ec.unmarshalNID2githubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋormᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -2059,6 +2105,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_todos(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "users":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_users(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -2446,19 +2506,14 @@ func (ec *executionContext) unmarshalNCreateTodoInput2githubᚗcomᚋmaxhᚋgqlg
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
-	res, err := graphql.UnmarshalInt(v)
+func (ec *executionContext) unmarshalNID2githubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋormᚋschemaᚋpulidᚐID(ctx context.Context, v interface{}) (pulid.ID, error) {
+	var res pulid.ID
+	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
-	res := graphql.MarshalInt(v)
-	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-	}
-	return res
+func (ec *executionContext) marshalNID2githubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋormᚋschemaᚋpulidᚐID(ctx context.Context, sel ast.SelectionSet, v pulid.ID) graphql.Marshaler {
+	return v
 }
 
 func (ec *executionContext) marshalNOrganization2ᚖgithubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋormᚋentᚐOrganization(ctx context.Context, sel ast.SelectionSet, v *ent.Organization) graphql.Marshaler {
@@ -2542,6 +2597,50 @@ func (ec *executionContext) marshalNTodo2ᚖgithubᚗcomᚋmaxhᚋgqlgenᚑtodos
 		return graphql.Null
 	}
 	return ec._Todo(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNUser2ᚕᚖgithubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋormᚋentᚐUserᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.User) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNUser2ᚖgithubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋormᚋentᚐUser(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋormᚋentᚐUser(ctx context.Context, sel ast.SelectionSet, v *ent.User) graphql.Marshaler {

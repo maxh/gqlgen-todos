@@ -2,7 +2,11 @@
 
 package gql
 
+import (
+	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
+)
+
 type CreateTodoInput struct {
-	Text   string `json:"text"`
-	UserID int    `json:"userId"`
+	Text   string   `json:"text"`
+	UserID pulid.ID `json:"userId"`
 }

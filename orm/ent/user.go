@@ -9,19 +9,20 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
+	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
 )
 
 // User is the model entity for the User schema.
 type User struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID pulid.ID `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
 	Edges              UserEdges `json:"edges"`
-	organization_users *int
+	organization_users *pulid.ID
 }
 
 // UserEdges holds the relations/edges for other nodes in the graph.
@@ -64,11 +65,11 @@ func (*User) scanValues(columns []string) ([]interface{}, error) {
 	for i := range columns {
 		switch columns[i] {
 		case user.FieldID:
-			values[i] = new(sql.NullInt64)
+			values[i] = new(pulid.ID)
 		case user.FieldName:
 			values[i] = new(sql.NullString)
 		case user.ForeignKeys[0]: // organization_users
-			values[i] = new(sql.NullInt64)
+			values[i] = &sql.NullScanner{S: new(pulid.ID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type User", columns[i])
 		}
@@ -85,11 +86,11 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 	for i := range columns {
 		switch columns[i] {
 		case user.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*pulid.ID); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value != nil {
+				u.ID = *value
 			}
-			u.ID = int(value.Int64)
 		case user.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
@@ -97,11 +98,11 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 				u.Name = value.String
 			}
 		case user.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field organization_users", value)
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field organization_users", values[i])
 			} else if value.Valid {
-				u.organization_users = new(int)
-				*u.organization_users = int(value.Int64)
+				u.organization_users = new(pulid.ID)
+				*u.organization_users = *value.S.(*pulid.ID)
 			}
 		}
 	}

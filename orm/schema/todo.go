@@ -4,6 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
 )
 
 // Todo holds the schema definition for the Todo entity.
@@ -18,6 +19,13 @@ func (Todo) Fields() []ent.Field {
 			Default("unknown"),
 		field.Bool("done").
 			Default(false),
+	}
+}
+
+// Mixin of the Todo.
+func (Todo) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		pulid.MixinWithPrefix("TD"),
 	}
 }
 

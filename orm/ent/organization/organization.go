@@ -2,6 +2,10 @@
 
 package organization
 
+import (
+	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
+)
+
 const (
 	// Label holds the string label denoting the organization type in the database.
 	Label = "organization"
@@ -41,4 +45,6 @@ func ValidColumn(column string) bool {
 var (
 	// DefaultName holds the default value on creation for the "name" field.
 	DefaultName string
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID func() pulid.ID
 )

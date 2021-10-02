@@ -1,32 +1,33 @@
 # Query
 
 type Todo {
-  id: Int!
+  id: ID!
   text: String!
   done: Boolean!
   user: User!
 }
 
 type User {
-  id: Int!
+  id: ID!
   name: String!
   organization: Organization!
 }
 
 type Organization {
-  id: Int!
+  id: ID!
   name: String!
 }
 
 type Query {
   todos: [Todo!]!
+  users: [User!]!
 }
 
 # Mutation
 
 input CreateTodoInput {
   text: String!
-  userId: Int!
+  userId: ID!
 }
 
 type Mutation {

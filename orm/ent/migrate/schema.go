@@ -10,7 +10,7 @@ import (
 var (
 	// OrganizationsColumns holds the columns for the "organizations" table.
 	OrganizationsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString, Default: "unknown"},
 	}
 	// OrganizationsTable holds the schema information for the "organizations" table.
@@ -21,10 +21,10 @@ var (
 	}
 	// TodosColumns holds the columns for the "todos" table.
 	TodosColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeString},
 		{Name: "text", Type: field.TypeString, Default: "unknown"},
 		{Name: "done", Type: field.TypeBool, Default: false},
-		{Name: "user_todos", Type: field.TypeInt, Nullable: true},
+		{Name: "user_todos", Type: field.TypeString, Nullable: true},
 	}
 	// TodosTable holds the schema information for the "todos" table.
 	TodosTable = &schema.Table{
@@ -42,9 +42,9 @@ var (
 	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString, Default: "unknown"},
-		{Name: "organization_users", Type: field.TypeInt, Nullable: true},
+		{Name: "organization_users", Type: field.TypeString, Nullable: true},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{

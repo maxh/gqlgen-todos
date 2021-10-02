@@ -4,6 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
 )
 
 // User holds the schema definition for the User entity.
@@ -16,6 +17,13 @@ func (User) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").
 			Default("unknown"),
+	}
+}
+
+// Mixin of the User.
+func (User) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		pulid.MixinWithPrefix("UR"),
 	}
 }
 

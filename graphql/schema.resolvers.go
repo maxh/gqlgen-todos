@@ -29,6 +29,10 @@ func (r *queryResolver) Todos(ctx context.Context) ([]*ent.Todo, error) {
 	return r.client.Todo.Query().All(ctx)
 }
 
+func (r *queryResolver) Users(ctx context.Context) ([]*ent.User, error) {
+	return r.client.User.Query().All(ctx)
+}
+
 // Mutation returns gql.MutationResolver implementation.
 func (r *Resolver) Mutation() gql.MutationResolver { return &mutationResolver{r} }
 

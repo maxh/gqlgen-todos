@@ -16,6 +16,7 @@ import (
 	"github.com/maxh/gqlgen-todos/orm/ent/predicate"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
+	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
 )
 
 // UserQuery is the builder for querying User entities.
@@ -135,8 +136,8 @@ func (uq *UserQuery) FirstX(ctx context.Context) *User {
 
 // FirstID returns the first User ID from the query.
 // Returns a *NotFoundError when no User ID was found.
-func (uq *UserQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (uq *UserQuery) FirstID(ctx context.Context) (id pulid.ID, err error) {
+	var ids []pulid.ID
 	if ids, err = uq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -148,7 +149,7 @@ func (uq *UserQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (uq *UserQuery) FirstIDX(ctx context.Context) int {
+func (uq *UserQuery) FirstIDX(ctx context.Context) pulid.ID {
 	id, err := uq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -186,8 +187,8 @@ func (uq *UserQuery) OnlyX(ctx context.Context) *User {
 // OnlyID is like Only, but returns the only User ID in the query.
 // Returns a *NotSingularError when exactly one User ID is not found.
 // Returns a *NotFoundError when no entities are found.
-func (uq *UserQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (uq *UserQuery) OnlyID(ctx context.Context) (id pulid.ID, err error) {
+	var ids []pulid.ID
 	if ids, err = uq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -203,7 +204,7 @@ func (uq *UserQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (uq *UserQuery) OnlyIDX(ctx context.Context) int {
+func (uq *UserQuery) OnlyIDX(ctx context.Context) pulid.ID {
 	id, err := uq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -229,8 +230,8 @@ func (uq *UserQuery) AllX(ctx context.Context) []*User {
 }
 
 // IDs executes the query and returns a list of User IDs.
-func (uq *UserQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (uq *UserQuery) IDs(ctx context.Context) ([]pulid.ID, error) {
+	var ids []pulid.ID
 	if err := uq.Select(user.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -238,7 +239,7 @@ func (uq *UserQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (uq *UserQuery) IDsX(ctx context.Context) []int {
+func (uq *UserQuery) IDsX(ctx context.Context) []pulid.ID {
 	ids, err := uq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -421,7 +422,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 
 	if query := uq.withTodos; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[int]*User)
+		nodeids := make(map[pulid.ID]*User)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
@@ -449,8 +450,8 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 	}
 
 	if query := uq.withOrganization; query != nil {
-		ids := make([]int, 0, len(nodes))
-		nodeids := make(map[int][]*User)
+		ids := make([]pulid.ID, 0, len(nodes))
+		nodeids := make(map[pulid.ID][]*User)
 		for i := range nodes {
 			if nodes[i].organization_users == nil {
 				continue
@@ -499,7 +500,7 @@ func (uq *UserQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   user.Table,
 			Columns: user.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeString,
 				Column: user.FieldID,
 			},
 		},

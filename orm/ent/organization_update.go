@@ -12,6 +12,7 @@ import (
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
 	"github.com/maxh/gqlgen-todos/orm/ent/predicate"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
+	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
 )
 
 // OrganizationUpdate is the builder for updating Organization entities.
@@ -42,14 +43,14 @@ func (ou *OrganizationUpdate) SetNillableName(s *string) *OrganizationUpdate {
 }
 
 // AddUserIDs adds the "users" edge to the User entity by IDs.
-func (ou *OrganizationUpdate) AddUserIDs(ids ...int) *OrganizationUpdate {
+func (ou *OrganizationUpdate) AddUserIDs(ids ...pulid.ID) *OrganizationUpdate {
 	ou.mutation.AddUserIDs(ids...)
 	return ou
 }
 
 // AddUsers adds the "users" edges to the User entity.
 func (ou *OrganizationUpdate) AddUsers(u ...*User) *OrganizationUpdate {
-	ids := make([]int, len(u))
+	ids := make([]pulid.ID, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
@@ -68,14 +69,14 @@ func (ou *OrganizationUpdate) ClearUsers() *OrganizationUpdate {
 }
 
 // RemoveUserIDs removes the "users" edge to User entities by IDs.
-func (ou *OrganizationUpdate) RemoveUserIDs(ids ...int) *OrganizationUpdate {
+func (ou *OrganizationUpdate) RemoveUserIDs(ids ...pulid.ID) *OrganizationUpdate {
 	ou.mutation.RemoveUserIDs(ids...)
 	return ou
 }
 
 // RemoveUsers removes "users" edges to User entities.
 func (ou *OrganizationUpdate) RemoveUsers(u ...*User) *OrganizationUpdate {
-	ids := make([]int, len(u))
+	ids := make([]pulid.ID, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
@@ -142,7 +143,7 @@ func (ou *OrganizationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   organization.Table,
 			Columns: organization.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeString,
 				Column: organization.FieldID,
 			},
 		},
@@ -170,7 +171,7 @@ func (ou *OrganizationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: user.FieldID,
 				},
 			},
@@ -186,7 +187,7 @@ func (ou *OrganizationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: user.FieldID,
 				},
 			},
@@ -205,7 +206,7 @@ func (ou *OrganizationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: user.FieldID,
 				},
 			},
@@ -249,14 +250,14 @@ func (ouo *OrganizationUpdateOne) SetNillableName(s *string) *OrganizationUpdate
 }
 
 // AddUserIDs adds the "users" edge to the User entity by IDs.
-func (ouo *OrganizationUpdateOne) AddUserIDs(ids ...int) *OrganizationUpdateOne {
+func (ouo *OrganizationUpdateOne) AddUserIDs(ids ...pulid.ID) *OrganizationUpdateOne {
 	ouo.mutation.AddUserIDs(ids...)
 	return ouo
 }
 
 // AddUsers adds the "users" edges to the User entity.
 func (ouo *OrganizationUpdateOne) AddUsers(u ...*User) *OrganizationUpdateOne {
-	ids := make([]int, len(u))
+	ids := make([]pulid.ID, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
@@ -275,14 +276,14 @@ func (ouo *OrganizationUpdateOne) ClearUsers() *OrganizationUpdateOne {
 }
 
 // RemoveUserIDs removes the "users" edge to User entities by IDs.
-func (ouo *OrganizationUpdateOne) RemoveUserIDs(ids ...int) *OrganizationUpdateOne {
+func (ouo *OrganizationUpdateOne) RemoveUserIDs(ids ...pulid.ID) *OrganizationUpdateOne {
 	ouo.mutation.RemoveUserIDs(ids...)
 	return ouo
 }
 
 // RemoveUsers removes "users" edges to User entities.
 func (ouo *OrganizationUpdateOne) RemoveUsers(u ...*User) *OrganizationUpdateOne {
-	ids := make([]int, len(u))
+	ids := make([]pulid.ID, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
@@ -356,7 +357,7 @@ func (ouo *OrganizationUpdateOne) sqlSave(ctx context.Context) (_node *Organizat
 			Table:   organization.Table,
 			Columns: organization.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeString,
 				Column: organization.FieldID,
 			},
 		},
@@ -401,7 +402,7 @@ func (ouo *OrganizationUpdateOne) sqlSave(ctx context.Context) (_node *Organizat
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: user.FieldID,
 				},
 			},
@@ -417,7 +418,7 @@ func (ouo *OrganizationUpdateOne) sqlSave(ctx context.Context) (_node *Organizat
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: user.FieldID,
 				},
 			},
@@ -436,7 +437,7 @@ func (ouo *OrganizationUpdateOne) sqlSave(ctx context.Context) (_node *Organizat
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: user.FieldID,
 				},
 			},

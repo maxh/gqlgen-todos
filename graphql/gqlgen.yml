@@ -45,7 +45,7 @@ autobind:
 models:
   ID:
     model:
-      - github.com/99designs/gqlgen/graphql.ID
+      - github.com/maxh/gqlgen-todos/orm/schema/pulid.ID
   Int:
     model:
       - github.com/99designs/gqlgen/graphql.Int

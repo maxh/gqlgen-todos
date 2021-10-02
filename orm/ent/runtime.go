@@ -7,18 +7,29 @@ import (
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
 	"github.com/maxh/gqlgen-todos/orm/schema"
+	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
 )
 
 // The init function reads all schema descriptors with runtime code
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	organizationMixin := schema.Organization{}.Mixin()
+	organizationMixinFields0 := organizationMixin[0].Fields()
+	_ = organizationMixinFields0
 	organizationFields := schema.Organization{}.Fields()
 	_ = organizationFields
 	// organizationDescName is the schema descriptor for name field.
 	organizationDescName := organizationFields[0].Descriptor()
 	// organization.DefaultName holds the default value on creation for the name field.
 	organization.DefaultName = organizationDescName.Default.(string)
+	// organizationDescID is the schema descriptor for id field.
+	organizationDescID := organizationMixinFields0[0].Descriptor()
+	// organization.DefaultID holds the default value on creation for the id field.
+	organization.DefaultID = organizationDescID.Default.(func() pulid.ID)
+	todoMixin := schema.Todo{}.Mixin()
+	todoMixinFields0 := todoMixin[0].Fields()
+	_ = todoMixinFields0
 	todoFields := schema.Todo{}.Fields()
 	_ = todoFields
 	// todoDescText is the schema descriptor for text field.
@@ -29,10 +40,21 @@ func init() {
 	todoDescDone := todoFields[1].Descriptor()
 	// todo.DefaultDone holds the default value on creation for the done field.
 	todo.DefaultDone = todoDescDone.Default.(bool)
+	// todoDescID is the schema descriptor for id field.
+	todoDescID := todoMixinFields0[0].Descriptor()
+	// todo.DefaultID holds the default value on creation for the id field.
+	todo.DefaultID = todoDescID.Default.(func() pulid.ID)
+	userMixin := schema.User{}.Mixin()
+	userMixinFields0 := userMixin[0].Fields()
+	_ = userMixinFields0
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescName is the schema descriptor for name field.
 	userDescName := userFields[0].Descriptor()
 	// user.DefaultName holds the default value on creation for the name field.
 	user.DefaultName = userDescName.Default.(string)
+	// userDescID is the schema descriptor for id field.
+	userDescID := userMixinFields0[0].Descriptor()
+	// user.DefaultID holds the default value on creation for the id field.
+	user.DefaultID = userDescID.Default.(func() pulid.ID)
 }

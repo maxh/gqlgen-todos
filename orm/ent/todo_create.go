@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
+	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
 )
 
 // TodoCreate is the builder for creating a Todo entity.
@@ -48,14 +49,28 @@ func (tc *TodoCreate) SetNillableDone(b *bool) *TodoCreate {
 	return tc
 }
 
+// SetID sets the "id" field.
+func (tc *TodoCreate) SetID(pu pulid.ID) *TodoCreate {
+	tc.mutation.SetID(pu)
+	return tc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (tc *TodoCreate) SetNillableID(pu *pulid.ID) *TodoCreate {
+	if pu != nil {
+		tc.SetID(*pu)
+	}
+	return tc
+}
+
 // SetUserID sets the "user" edge to the User entity by ID.
-func (tc *TodoCreate) SetUserID(id int) *TodoCreate {
+func (tc *TodoCreate) SetUserID(id pulid.ID) *TodoCreate {
 	tc.mutation.SetUserID(id)
 	return tc
 }
 
 // SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (tc *TodoCreate) SetNillableUserID(id *int) *TodoCreate {
+func (tc *TodoCreate) SetNillableUserID(id *pulid.ID) *TodoCreate {
 	if id != nil {
 		tc = tc.SetUserID(*id)
 	}
@@ -146,6 +161,10 @@ func (tc *TodoCreate) defaults() {
 		v := todo.DefaultDone
 		tc.mutation.SetDone(v)
 	}
+	if _, ok := tc.mutation.ID(); !ok {
+		v := todo.DefaultID()
+		tc.mutation.SetID(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -167,8 +186,9 @@ func (tc *TodoCreate) sqlSave(ctx context.Context) (*Todo, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		_node.ID = _spec.ID.Value.(pulid.ID)
+	}
 	return _node, nil
 }
 
@@ -178,11 +198,15 @@ func (tc *TodoCreate) createSpec() (*Todo, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: todo.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeString,
 				Column: todo.FieldID,
 			},
 		}
 	)
+	if id, ok := tc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := tc.mutation.Text(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -208,7 +232,7 @@ func (tc *TodoCreate) createSpec() (*Todo, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: user.FieldID,
 				},
 			},
@@ -264,10 +288,6 @@ func (tcb *TodoCreateBulk) Save(ctx context.Context) ([]*Todo, error) {
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {

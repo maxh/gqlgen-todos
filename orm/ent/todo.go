@@ -9,13 +9,14 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
+	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
 )
 
 // Todo is the model entity for the Todo schema.
 type Todo struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID pulid.ID `json:"id,omitempty"`
 	// Text holds the value of the "text" field.
 	Text string `json:"text,omitempty"`
 	// Done holds the value of the "done" field.
@@ -23,7 +24,7 @@ type Todo struct {
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TodoQuery when eager-loading is set.
 	Edges      TodoEdges `json:"edges"`
-	user_todos *int
+	user_todos *pulid.ID
 }
 
 // TodoEdges holds the relations/edges for other nodes in the graph.
@@ -54,14 +55,14 @@ func (*Todo) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case todo.FieldID:
+			values[i] = new(pulid.ID)
 		case todo.FieldDone:
 			values[i] = new(sql.NullBool)
-		case todo.FieldID:
-			values[i] = new(sql.NullInt64)
 		case todo.FieldText:
 			values[i] = new(sql.NullString)
 		case todo.ForeignKeys[0]: // user_todos
-			values[i] = new(sql.NullInt64)
+			values[i] = &sql.NullScanner{S: new(pulid.ID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Todo", columns[i])
 		}
@@ -78,11 +79,11 @@ func (t *Todo) assignValues(columns []string, values []interface{}) error {
 	for i := range columns {
 		switch columns[i] {
 		case todo.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*pulid.ID); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value != nil {
+				t.ID = *value
 			}
-			t.ID = int(value.Int64)
 		case todo.FieldText:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field text", values[i])
@@ -96,11 +97,11 @@ func (t *Todo) assignValues(columns []string, values []interface{}) error {
 				t.Done = value.Bool
 			}
 		case todo.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field user_todos", value)
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field user_todos", values[i])
 			} else if value.Valid {
-				t.user_todos = new(int)
-				*t.user_todos = int(value.Int64)
+				t.user_todos = new(pulid.ID)
+				*t.user_todos = *value.S.(*pulid.ID)
 			}
 		}
 	}

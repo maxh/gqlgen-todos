@@ -8,13 +8,14 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
+	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
 )
 
 // Organization is the model entity for the Organization schema.
 type Organization struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID pulid.ID `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -46,7 +47,7 @@ func (*Organization) scanValues(columns []string) ([]interface{}, error) {
 	for i := range columns {
 		switch columns[i] {
 		case organization.FieldID:
-			values[i] = new(sql.NullInt64)
+			values[i] = new(pulid.ID)
 		case organization.FieldName:
 			values[i] = new(sql.NullString)
 		default:
@@ -65,11 +66,11 @@ func (o *Organization) assignValues(columns []string, values []interface{}) erro
 	for i := range columns {
 		switch columns[i] {
 		case organization.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*pulid.ID); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value != nil {
+				o.ID = *value
 			}
-			o.ID = int(value.Int64)
 		case organization.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])

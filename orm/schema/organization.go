@@ -4,6 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
 )
 
 // Organization holds the schema definition for the Organization entity.
@@ -23,5 +24,12 @@ func (Organization) Fields() []ent.Field {
 func (Organization) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("users", User.Type),
+	}
+}
+
+// Mixin of the Organization.
+func (Organization) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		pulid.MixinWithPrefix("OR"),
 	}
 }

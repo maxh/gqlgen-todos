@@ -2,6 +2,10 @@
 
 package todo
 
+import (
+	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
+)
+
 const (
 	// Label holds the string label denoting the todo type in the database.
 	Label = "todo"
@@ -57,4 +61,6 @@ var (
 	DefaultText string
 	// DefaultDone holds the default value on creation for the "done" field.
 	DefaultDone bool
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID func() pulid.ID
 )

@@ -14,6 +14,7 @@ import (
 	"github.com/maxh/gqlgen-todos/orm/ent/predicate"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
+	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
 )
 
 // TodoQuery is the builder for querying Todo entities.
@@ -110,8 +111,8 @@ func (tq *TodoQuery) FirstX(ctx context.Context) *Todo {
 
 // FirstID returns the first Todo ID from the query.
 // Returns a *NotFoundError when no Todo ID was found.
-func (tq *TodoQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (tq *TodoQuery) FirstID(ctx context.Context) (id pulid.ID, err error) {
+	var ids []pulid.ID
 	if ids, err = tq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -123,7 +124,7 @@ func (tq *TodoQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (tq *TodoQuery) FirstIDX(ctx context.Context) int {
+func (tq *TodoQuery) FirstIDX(ctx context.Context) pulid.ID {
 	id, err := tq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -161,8 +162,8 @@ func (tq *TodoQuery) OnlyX(ctx context.Context) *Todo {
 // OnlyID is like Only, but returns the only Todo ID in the query.
 // Returns a *NotSingularError when exactly one Todo ID is not found.
 // Returns a *NotFoundError when no entities are found.
-func (tq *TodoQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (tq *TodoQuery) OnlyID(ctx context.Context) (id pulid.ID, err error) {
+	var ids []pulid.ID
 	if ids, err = tq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -178,7 +179,7 @@ func (tq *TodoQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (tq *TodoQuery) OnlyIDX(ctx context.Context) int {
+func (tq *TodoQuery) OnlyIDX(ctx context.Context) pulid.ID {
 	id, err := tq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -204,8 +205,8 @@ func (tq *TodoQuery) AllX(ctx context.Context) []*Todo {
 }
 
 // IDs executes the query and returns a list of Todo IDs.
-func (tq *TodoQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (tq *TodoQuery) IDs(ctx context.Context) ([]pulid.ID, error) {
+	var ids []pulid.ID
 	if err := tq.Select(todo.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -213,7 +214,7 @@ func (tq *TodoQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (tq *TodoQuery) IDsX(ctx context.Context) []int {
+func (tq *TodoQuery) IDsX(ctx context.Context) []pulid.ID {
 	ids, err := tq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -382,8 +383,8 @@ func (tq *TodoQuery) sqlAll(ctx context.Context) ([]*Todo, error) {
 	}
 
 	if query := tq.withUser; query != nil {
-		ids := make([]int, 0, len(nodes))
-		nodeids := make(map[int][]*Todo)
+		ids := make([]pulid.ID, 0, len(nodes))
+		nodeids := make(map[pulid.ID][]*Todo)
 		for i := range nodes {
 			if nodes[i].user_todos == nil {
 				continue
@@ -432,7 +433,7 @@ func (tq *TodoQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   todo.Table,
 			Columns: todo.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeString,
 				Column: todo.FieldID,
 			},
 		},

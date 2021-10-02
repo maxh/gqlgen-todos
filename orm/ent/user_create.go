@@ -12,6 +12,7 @@ import (
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
+	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
 )
 
 // UserCreate is the builder for creating a User entity.
@@ -35,15 +36,29 @@ func (uc *UserCreate) SetNillableName(s *string) *UserCreate {
 	return uc
 }
 
+// SetID sets the "id" field.
+func (uc *UserCreate) SetID(pu pulid.ID) *UserCreate {
+	uc.mutation.SetID(pu)
+	return uc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (uc *UserCreate) SetNillableID(pu *pulid.ID) *UserCreate {
+	if pu != nil {
+		uc.SetID(*pu)
+	}
+	return uc
+}
+
 // AddTodoIDs adds the "todos" edge to the Todo entity by IDs.
-func (uc *UserCreate) AddTodoIDs(ids ...int) *UserCreate {
+func (uc *UserCreate) AddTodoIDs(ids ...pulid.ID) *UserCreate {
 	uc.mutation.AddTodoIDs(ids...)
 	return uc
 }
 
 // AddTodos adds the "todos" edges to the Todo entity.
 func (uc *UserCreate) AddTodos(t ...*Todo) *UserCreate {
-	ids := make([]int, len(t))
+	ids := make([]pulid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
@@ -51,7 +66,7 @@ func (uc *UserCreate) AddTodos(t ...*Todo) *UserCreate {
 }
 
 // SetOrganizationID sets the "organization" edge to the Organization entity by ID.
-func (uc *UserCreate) SetOrganizationID(id int) *UserCreate {
+func (uc *UserCreate) SetOrganizationID(id pulid.ID) *UserCreate {
 	uc.mutation.SetOrganizationID(id)
 	return uc
 }
@@ -136,6 +151,10 @@ func (uc *UserCreate) defaults() {
 		v := user.DefaultName
 		uc.mutation.SetName(v)
 	}
+	if _, ok := uc.mutation.ID(); !ok {
+		v := user.DefaultID()
+		uc.mutation.SetID(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -157,8 +176,9 @@ func (uc *UserCreate) sqlSave(ctx context.Context) (*User, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		_node.ID = _spec.ID.Value.(pulid.ID)
+	}
 	return _node, nil
 }
 
@@ -168,11 +188,15 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: user.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeString,
 				Column: user.FieldID,
 			},
 		}
 	)
+	if id, ok := uc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := uc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -190,7 +214,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: todo.FieldID,
 				},
 			},
@@ -209,7 +233,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: organization.FieldID,
 				},
 			},
@@ -265,10 +289,6 @@ func (ucb *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {

@@ -12,6 +12,7 @@ import (
 	"github.com/maxh/gqlgen-todos/orm/ent/predicate"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
+	"github.com/maxh/gqlgen-todos/orm/schema/pulid"
 )
 
 // TodoUpdate is the builder for updating Todo entities.
@@ -56,13 +57,13 @@ func (tu *TodoUpdate) SetNillableDone(b *bool) *TodoUpdate {
 }
 
 // SetUserID sets the "user" edge to the User entity by ID.
-func (tu *TodoUpdate) SetUserID(id int) *TodoUpdate {
+func (tu *TodoUpdate) SetUserID(id pulid.ID) *TodoUpdate {
 	tu.mutation.SetUserID(id)
 	return tu
 }
 
 // SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (tu *TodoUpdate) SetNillableUserID(id *int) *TodoUpdate {
+func (tu *TodoUpdate) SetNillableUserID(id *pulid.ID) *TodoUpdate {
 	if id != nil {
 		tu = tu.SetUserID(*id)
 	}
@@ -145,7 +146,7 @@ func (tu *TodoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   todo.Table,
 			Columns: todo.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeString,
 				Column: todo.FieldID,
 			},
 		},
@@ -180,7 +181,7 @@ func (tu *TodoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: user.FieldID,
 				},
 			},
@@ -196,7 +197,7 @@ func (tu *TodoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: user.FieldID,
 				},
 			},
@@ -254,13 +255,13 @@ func (tuo *TodoUpdateOne) SetNillableDone(b *bool) *TodoUpdateOne {
 }
 
 // SetUserID sets the "user" edge to the User entity by ID.
-func (tuo *TodoUpdateOne) SetUserID(id int) *TodoUpdateOne {
+func (tuo *TodoUpdateOne) SetUserID(id pulid.ID) *TodoUpdateOne {
 	tuo.mutation.SetUserID(id)
 	return tuo
 }
 
 // SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (tuo *TodoUpdateOne) SetNillableUserID(id *int) *TodoUpdateOne {
+func (tuo *TodoUpdateOne) SetNillableUserID(id *pulid.ID) *TodoUpdateOne {
 	if id != nil {
 		tuo = tuo.SetUserID(*id)
 	}
@@ -350,7 +351,7 @@ func (tuo *TodoUpdateOne) sqlSave(ctx context.Context) (_node *Todo, err error) 
 			Table:   todo.Table,
 			Columns: todo.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeString,
 				Column: todo.FieldID,
 			},
 		},
@@ -402,7 +403,7 @@ func (tuo *TodoUpdateOne) sqlSave(ctx context.Context) (_node *Todo, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: user.FieldID,
 				},
 			},
@@ -418,7 +419,7 @@ func (tuo *TodoUpdateOne) sqlSave(ctx context.Context) (_node *Todo, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: user.FieldID,
 				},
 			},
