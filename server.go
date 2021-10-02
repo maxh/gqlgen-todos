@@ -4,6 +4,7 @@ import (
 	"context"
 	"entgo.io/contrib/entgql"
 	"fmt"
+	"github.com/maxh/gqlgen-todos/auth"
 	"github.com/maxh/gqlgen-todos/orm/ent"
 	"log"
 	"net/http"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/go-chi/chi"
 	"github.com/maxh/gqlgen-todos/graphql"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -34,6 +36,11 @@ func main() {
 	if err := client.Schema.Create(context.Background()); err != nil {
 		log.Fatal("running schema migration", err)
 	}
+
+	router := chi.NewRouter()
+
+	router.Use(auth.Middleware(client))
+
 	srv := handler.NewDefaultServer(graphql.NewSchema(client))
 	srv.Use(entgql.Transactioner{TxOpener: client})
 

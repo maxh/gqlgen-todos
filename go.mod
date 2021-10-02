@@ -6,6 +6,7 @@ require (
 	entgo.io/contrib v0.1.0
 	entgo.io/ent v0.9.1
 	github.com/99designs/gqlgen v0.14.0
+	github.com/go-chi/chi v3.3.2+incompatible
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/mattn/go-sqlite3 v1.14.8
 	github.com/oklog/ulid/v2 v2.0.2
