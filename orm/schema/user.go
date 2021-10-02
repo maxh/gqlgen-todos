@@ -22,6 +22,7 @@ func (User) Fields() []ent.Field {
 // Mixin of the User.
 func (User) Mixin() []ent.Mixin {
 	return []ent.Mixin{
+		BaseMixin{},
 		QidMixinWithPrefix("user"),
 		TenantMixin{},
 	}

@@ -21,8 +21,17 @@ import (
 // to their package variables.
 func init() {
 	organizationMixin := schema.Organization{}.Mixin()
-	organizationMixinFields0 := organizationMixin[0].Fields()
-	_ = organizationMixinFields0
+	organization.Policy = privacy.NewPolicies(organizationMixin[0], schema.Organization{})
+	organization.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := organization.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	organizationMixinFields1 := organizationMixin[1].Fields()
+	_ = organizationMixinFields1
 	organizationFields := schema.Organization{}.Fields()
 	_ = organizationFields
 	// organizationDescName is the schema descriptor for name field.
@@ -30,11 +39,11 @@ func init() {
 	// organization.DefaultName holds the default value on creation for the name field.
 	organization.DefaultName = organizationDescName.Default.(string)
 	// organizationDescID is the schema descriptor for id field.
-	organizationDescID := organizationMixinFields0[0].Descriptor()
+	organizationDescID := organizationMixinFields1[0].Descriptor()
 	// organization.DefaultID holds the default value on creation for the id field.
 	organization.DefaultID = organizationDescID.Default.(func() qid.ID)
 	tenantMixin := schema.Tenant{}.Mixin()
-	tenant.Policy = privacy.NewPolicies(tenantMixin[1], schema.Tenant{})
+	tenant.Policy = privacy.NewPolicies(tenantMixin[0], schema.Tenant{})
 	tenant.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := tenant.Policy.EvalMutation(ctx, m); err != nil {
@@ -43,8 +52,8 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	tenantMixinFields0 := tenantMixin[0].Fields()
-	_ = tenantMixinFields0
+	tenantMixinFields1 := tenantMixin[1].Fields()
+	_ = tenantMixinFields1
 	tenantFields := schema.Tenant{}.Fields()
 	_ = tenantFields
 	// tenantDescName is the schema descriptor for name field.
@@ -52,12 +61,21 @@ func init() {
 	// tenant.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	tenant.NameValidator = tenantDescName.Validators[0].(func(string) error)
 	// tenantDescID is the schema descriptor for id field.
-	tenantDescID := tenantMixinFields0[0].Descriptor()
+	tenantDescID := tenantMixinFields1[0].Descriptor()
 	// tenant.DefaultID holds the default value on creation for the id field.
 	tenant.DefaultID = tenantDescID.Default.(func() qid.ID)
 	todoMixin := schema.Todo{}.Mixin()
-	todoMixinFields0 := todoMixin[0].Fields()
-	_ = todoMixinFields0
+	todo.Policy = privacy.NewPolicies(todoMixin[0], schema.Todo{})
+	todo.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := todo.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	todoMixinFields1 := todoMixin[1].Fields()
+	_ = todoMixinFields1
 	todoFields := schema.Todo{}.Fields()
 	_ = todoFields
 	// todoDescText is the schema descriptor for text field.
@@ -69,12 +87,21 @@ func init() {
 	// todo.DefaultDone holds the default value on creation for the done field.
 	todo.DefaultDone = todoDescDone.Default.(bool)
 	// todoDescID is the schema descriptor for id field.
-	todoDescID := todoMixinFields0[0].Descriptor()
+	todoDescID := todoMixinFields1[0].Descriptor()
 	// todo.DefaultID holds the default value on creation for the id field.
 	todo.DefaultID = todoDescID.Default.(func() qid.ID)
 	userMixin := schema.User{}.Mixin()
-	userMixinFields0 := userMixin[0].Fields()
-	_ = userMixinFields0
+	user.Policy = privacy.NewPolicies(userMixin[0], schema.User{})
+	user.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := user.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	userMixinFields1 := userMixin[1].Fields()
+	_ = userMixinFields1
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescName is the schema descriptor for name field.
@@ -82,7 +109,7 @@ func init() {
 	// user.DefaultName holds the default value on creation for the name field.
 	user.DefaultName = userDescName.Default.(string)
 	// userDescID is the schema descriptor for id field.
-	userDescID := userMixinFields0[0].Descriptor()
+	userDescID := userMixinFields1[0].Descriptor()
 	// user.DefaultID holds the default value on creation for the id field.
 	user.DefaultID = userDescID.Default.(func() qid.ID)
 }

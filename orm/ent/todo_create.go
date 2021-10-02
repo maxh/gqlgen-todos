@@ -105,7 +105,9 @@ func (tc *TodoCreate) Save(ctx context.Context) (*Todo, error) {
 		err  error
 		node *Todo
 	)
-	tc.defaults()
+	if err := tc.defaults(); err != nil {
+		return nil, err
+	}
 	if len(tc.hooks) == 0 {
 		if err = tc.check(); err != nil {
 			return nil, err
@@ -164,7 +166,7 @@ func (tc *TodoCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (tc *TodoCreate) defaults() {
+func (tc *TodoCreate) defaults() error {
 	if _, ok := tc.mutation.Text(); !ok {
 		v := todo.DefaultText
 		tc.mutation.SetText(v)
@@ -174,9 +176,13 @@ func (tc *TodoCreate) defaults() {
 		tc.mutation.SetDone(v)
 	}
 	if _, ok := tc.mutation.ID(); !ok {
+		if todo.DefaultID == nil {
+			return fmt.Errorf("ent: uninitialized todo.DefaultID (forgotten import ent/runtime?)")
+		}
 		v := todo.DefaultID()
 		tc.mutation.SetID(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

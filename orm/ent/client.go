@@ -263,7 +263,8 @@ func (c *OrganizationClient) QueryUsers(o *Organization) *UserQuery {
 
 // Hooks returns the client hooks.
 func (c *OrganizationClient) Hooks() []Hook {
-	return c.hooks.Organization
+	hooks := c.hooks.Organization
+	return append(hooks[:len(hooks):len(hooks)], organization.Hooks[:]...)
 }
 
 // TenantClient is a client for the Tenant schema.
@@ -476,7 +477,8 @@ func (c *TodoClient) QueryUser(t *Todo) *UserQuery {
 
 // Hooks returns the client hooks.
 func (c *TodoClient) Hooks() []Hook {
-	return c.hooks.Todo
+	hooks := c.hooks.Todo
+	return append(hooks[:len(hooks):len(hooks)], todo.Hooks[:]...)
 }
 
 // UserClient is a client for the User schema.
@@ -614,5 +616,6 @@ func (c *UserClient) QueryOrganization(u *User) *OrganizationQuery {
 
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
-	return c.hooks.User
+	hooks := c.hooks.User
+	return append(hooks[:len(hooks):len(hooks)], user.Hooks[:]...)
 }

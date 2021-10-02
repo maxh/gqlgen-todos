@@ -7,6 +7,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/mixin"
 	"github.com/maxh/gqlgen-todos/orm/ent/privacy"
+	"github.com/maxh/gqlgen-todos/orm/rule"
 	"github.com/maxh/gqlgen-todos/qid"
 )
 
@@ -23,10 +24,10 @@ type BaseMixin struct {
 func (BaseMixin) Policy() ent.Policy {
 	return privacy.Policy{
 		Mutation: privacy.MutationPolicy{
-			privacy.AlwaysAllowRule(),
+			rule.DenyIfNoViewer(),
 		},
 		Query: privacy.QueryPolicy{
-			privacy.AlwaysAllowRule(),
+			rule.DenyIfNoViewer(),
 		},
 	}
 }

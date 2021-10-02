@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/maxh/gqlgen-todos/orm/ent"
+	"github.com/maxh/gqlgen-todos/orm/ent/privacy"
 	"github.com/maxh/gqlgen-todos/viewer"
 	"log"
 	"net/http"
@@ -35,22 +36,22 @@ func Middleware(client *ent.Client) func(http.Handler) http.Handler {
 			//	return
 			//}
 
-			userId, err := validateAndGetUserID(c)
+			_, err = validateAndGetUserID(c)
 			if err != nil {
 				http.Error(w, "Invalid cookie", http.StatusForbidden)
 				return
 			}
 
 			ctx := r.Context()
-			// get the user from the database
-			_, err = getUserByID(ctx, client, userId)
-			if err != nil {
+			allow := privacy.DecisionContext(ctx, privacy.Allow)
+			user, err := client.User.Query().First(allow)
+			if user == nil || err != nil {
 				log.Fatal("unable to get user", err)
 			}
 
 			// put it in context
 			// ctx := context.WithValue(r.Context(), userCtxKey, user)
-			t, err := client.Tenant.Query().First(ctx)
+			t, err := client.Tenant.Query().First(allow)
 			if err != nil {
 				log.Fatal("unable to get Tenant", err)
 			}
@@ -67,10 +68,6 @@ func Middleware(client *ent.Client) func(http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 		})
 	}
-}
-
-func getUserByID(ctx context.Context, client *ent.Client, id string) (*ent.User, error) {
-	return client.User.Query().First(ctx)
 }
 
 func validateAndGetUserID(c *http.Cookie) (string, error) {

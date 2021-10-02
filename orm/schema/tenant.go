@@ -17,8 +17,8 @@ type Tenant struct {
 // Mixin of the Tenant schema.
 func (Tenant) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		QidMixinWithPrefix("tenant"),
 		BaseMixin{},
+		QidMixinWithPrefix("tenant"),
 	}
 }
 

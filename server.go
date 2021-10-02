@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/maxh/gqlgen-todos/auth"
 	"github.com/maxh/gqlgen-todos/orm/ent"
+	"github.com/maxh/gqlgen-todos/viewer"
 	"log"
 	"net/http"
 	"os"
@@ -57,6 +58,9 @@ func main() {
 }
 
 func CreateUser(ctx context.Context, client *ent.Client) (*ent.User, error) {
+	ctx = viewer.NewContext(ctx, viewer.UserViewer{
+		Role: viewer.Admin,
+	})
 	t, err := client.Tenant.Create().SetName("my tenant").Save(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed creating Tenant: %w", err)

@@ -2,9 +2,8 @@ package rule
 
 import (
 	"context"
-
-	"entgo.io/ent/examples/privacyadmin/ent/privacy"
-	"entgo.io/ent/examples/privacyadmin/viewer"
+	"github.com/maxh/gqlgen-todos/orm/ent/privacy"
+	"github.com/maxh/gqlgen-todos/viewer"
 )
 
 // DenyIfNoViewer is a rule that returns Deny decision if the viewer is

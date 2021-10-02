@@ -381,6 +381,12 @@ func (oq *OrganizationQuery) prepareQuery(ctx context.Context) error {
 		}
 		oq.sql = prev
 	}
+	if organization.Policy == nil {
+		return errors.New("ent: uninitialized organization.Policy (forgotten import ent/runtime?)")
+	}
+	if err := organization.Policy.EvalQuery(ctx, oq); err != nil {
+		return err
+	}
 	return nil
 }
 

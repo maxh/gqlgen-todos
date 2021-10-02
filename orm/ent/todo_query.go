@@ -380,6 +380,12 @@ func (tq *TodoQuery) prepareQuery(ctx context.Context) error {
 		}
 		tq.sql = prev
 	}
+	if todo.Policy == nil {
+		return errors.New("ent: uninitialized todo.Policy (forgotten import ent/runtime?)")
+	}
+	if err := todo.Policy.EvalQuery(ctx, tq); err != nil {
+		return err
+	}
 	return nil
 }
 

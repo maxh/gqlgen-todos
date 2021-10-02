@@ -87,7 +87,9 @@ func (oc *OrganizationCreate) Save(ctx context.Context) (*Organization, error) {
 		err  error
 		node *Organization
 	)
-	oc.defaults()
+	if err := oc.defaults(); err != nil {
+		return nil, err
+	}
 	if len(oc.hooks) == 0 {
 		if err = oc.check(); err != nil {
 			return nil, err
@@ -146,15 +148,19 @@ func (oc *OrganizationCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (oc *OrganizationCreate) defaults() {
+func (oc *OrganizationCreate) defaults() error {
 	if _, ok := oc.mutation.Name(); !ok {
 		v := organization.DefaultName
 		oc.mutation.SetName(v)
 	}
 	if _, ok := oc.mutation.ID(); !ok {
+		if organization.DefaultID == nil {
+			return fmt.Errorf("ent: uninitialized organization.DefaultID (forgotten import ent/runtime?)")
+		}
 		v := organization.DefaultID()
 		oc.mutation.SetID(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
