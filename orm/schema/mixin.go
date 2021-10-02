@@ -26,7 +26,7 @@ func (BaseMixin) Policy() ent.Policy {
 			privacy.AlwaysAllowRule(),
 		},
 		Query: privacy.QueryPolicy{
-			privacy.AlwaysDenyRule(),
+			privacy.AlwaysAllowRule(),
 		},
 	}
 }

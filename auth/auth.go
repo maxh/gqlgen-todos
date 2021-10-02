@@ -2,7 +2,10 @@ package auth
 
 import (
 	"context"
+	"fmt"
 	"github.com/maxh/gqlgen-todos/orm/ent"
+	"github.com/maxh/gqlgen-todos/viewer"
+	"log"
 	"net/http"
 )
 
@@ -26,11 +29,11 @@ func Middleware(client *ent.Client) func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			c, err := r.Cookie("auth-cookie")
 
-			// Allow unauthenticated users in
-			if err != nil || c == nil {
-				next.ServeHTTP(w, r)
-				return
-			}
+			//// Allow unauthenticated users in
+			//if err != nil || c == nil {
+			//	next.ServeHTTP(w, r)
+			//	return
+			//}
 
 			userId, err := validateAndGetUserID(c)
 			if err != nil {
@@ -38,14 +41,29 @@ func Middleware(client *ent.Client) func(http.Handler) http.Handler {
 				return
 			}
 
+			ctx := r.Context()
 			// get the user from the database
-			user, err := getUserByID(r.Context(), client, userId)
+			_, err = getUserByID(ctx, client, userId)
+			if err != nil {
+				log.Fatal("unable to get user", err)
+			}
 
 			// put it in context
-			ctx := context.WithValue(r.Context(), userCtxKey, user)
+			// ctx := context.WithValue(r.Context(), userCtxKey, user)
+			t, err := client.Tenant.Query().First(ctx)
+			if err != nil {
+				log.Fatal("unable to get Tenant", err)
+			}
 
+			ctx = viewer.NewContext(ctx, viewer.UserViewer{
+				T:    t,
+				Role: viewer.Admin,
+			})
+			fmt.Println("got t")
+			fmt.Println(t.String())
 			// and call the next with our new context
 			r = r.WithContext(ctx)
+
 			next.ServeHTTP(w, r)
 		})
 	}
