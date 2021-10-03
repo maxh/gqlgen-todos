@@ -3,7 +3,6 @@
 package ent
 
 import (
-	"github.com/maxh/gqlgen-todos/orm/ent/entityrevision"
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
@@ -13,7 +12,6 @@ import (
 
 // resourceTypeMap maps qid resource types to table names.
 var resourceTypeMap = map[qid.ID]string{
-	"entity_revision": entityrevision.Table,
 	"organization":    organization.Table,
 	"tenant":          tenant.Table,
 	"todo":            todo.Table,

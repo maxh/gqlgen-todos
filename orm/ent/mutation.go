@@ -8,14 +8,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/maxh/gqlgen-todos/orm/ent/entityrevision"
+	"github.com/maxh/gqlgen-todos/nodevalue"
+	"github.com/maxh/gqlgen-todos/orm/ent/noderevision"
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
 	"github.com/maxh/gqlgen-todos/orm/ent/predicate"
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
 	"github.com/maxh/gqlgen-todos/qid"
-	"github.com/maxh/gqlgen-todos/nodevalue"
 
 	"entgo.io/ent"
 )
@@ -29,43 +29,43 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeEntityRevision = "EntityRevision"
-	TypeOrganization   = "Organization"
-	TypeTenant         = "Tenant"
-	TypeTodo           = "Todo"
-	TypeUser           = "User"
+	TypeNodeRevision = "NodeRevision"
+	TypeOrganization = "Organization"
+	TypeTenant       = "Tenant"
+	TypeTodo         = "Todo"
+	TypeUser         = "User"
 )
 
-// EntityRevisionMutation represents an operation that mutates the EntityRevision nodes in the graph.
-type EntityRevisionMutation struct {
+// NodeRevisionMutation represents an operation that mutates the NodeRevision nodes in the graph.
+type NodeRevisionMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *qid.ID
-	created_at      *time.Time
-	created_by      *qid.ID
-	updated_at      *time.Time
-	updated_by      *qid.ID
-	entity_id       *string
-	entity_revision *string
-	entity_value    **nodevalue.NodeValue
-	clearedFields   map[string]struct{}
-	done            bool
-	oldValue        func(context.Context) (*EntityRevision, error)
-	predicates      []predicate.EntityRevision
+	op            Op
+	typ           string
+	id            *qid.ID
+	created_at    *time.Time
+	created_by    *qid.ID
+	updated_at    *time.Time
+	updated_by    *qid.ID
+	node_id       *string
+	node_revision *string
+	node_value    **nodevalue.NodeValue
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*NodeRevision, error)
+	predicates    []predicate.NodeRevision
 }
 
-var _ ent.Mutation = (*EntityRevisionMutation)(nil)
+var _ ent.Mutation = (*NodeRevisionMutation)(nil)
 
-// entityrevisionOption allows management of the mutation configuration using functional options.
-type entityrevisionOption func(*EntityRevisionMutation)
+// noderevisionOption allows management of the mutation configuration using functional options.
+type noderevisionOption func(*NodeRevisionMutation)
 
-// newEntityRevisionMutation creates new mutation for the EntityRevision entity.
-func newEntityRevisionMutation(c config, op Op, opts ...entityrevisionOption) *EntityRevisionMutation {
-	m := &EntityRevisionMutation{
+// newNodeRevisionMutation creates new mutation for the NodeRevision entity.
+func newNodeRevisionMutation(c config, op Op, opts ...noderevisionOption) *NodeRevisionMutation {
+	m := &NodeRevisionMutation{
 		config:        c,
 		op:            op,
-		typ:           TypeEntityRevision,
+		typ:           TypeNodeRevision,
 		clearedFields: make(map[string]struct{}),
 	}
 	for _, opt := range opts {
@@ -74,20 +74,20 @@ func newEntityRevisionMutation(c config, op Op, opts ...entityrevisionOption) *E
 	return m
 }
 
-// withEntityRevisionID sets the ID field of the mutation.
-func withEntityRevisionID(id qid.ID) entityrevisionOption {
-	return func(m *EntityRevisionMutation) {
+// withNodeRevisionID sets the ID field of the mutation.
+func withNodeRevisionID(id qid.ID) noderevisionOption {
+	return func(m *NodeRevisionMutation) {
 		var (
 			err   error
 			once  sync.Once
-			value *EntityRevision
+			value *NodeRevision
 		)
-		m.oldValue = func(ctx context.Context) (*EntityRevision, error) {
+		m.oldValue = func(ctx context.Context) (*NodeRevision, error) {
 			once.Do(func() {
 				if m.done {
 					err = fmt.Errorf("querying old values post mutation is not allowed")
 				} else {
-					value, err = m.Client().EntityRevision.Get(ctx, id)
+					value, err = m.Client().NodeRevision.Get(ctx, id)
 				}
 			})
 			return value, err
@@ -96,10 +96,10 @@ func withEntityRevisionID(id qid.ID) entityrevisionOption {
 	}
 }
 
-// withEntityRevision sets the old EntityRevision of the mutation.
-func withEntityRevision(node *EntityRevision) entityrevisionOption {
-	return func(m *EntityRevisionMutation) {
-		m.oldValue = func(context.Context) (*EntityRevision, error) {
+// withNodeRevision sets the old NodeRevision of the mutation.
+func withNodeRevision(node *NodeRevision) noderevisionOption {
+	return func(m *NodeRevisionMutation) {
+		m.oldValue = func(context.Context) (*NodeRevision, error) {
 			return node, nil
 		}
 		m.id = &node.ID
@@ -108,7 +108,7 @@ func withEntityRevision(node *EntityRevision) entityrevisionOption {
 
 // Client returns a new `ent.Client` from the mutation. If the mutation was
 // executed in a transaction (ent.Tx), a transactional client is returned.
-func (m EntityRevisionMutation) Client() *Client {
+func (m NodeRevisionMutation) Client() *Client {
 	client := &Client{config: m.config}
 	client.init()
 	return client
@@ -116,7 +116,7 @@ func (m EntityRevisionMutation) Client() *Client {
 
 // Tx returns an `ent.Tx` for mutations that were executed in transactions;
 // it returns an error otherwise.
-func (m EntityRevisionMutation) Tx() (*Tx, error) {
+func (m NodeRevisionMutation) Tx() (*Tx, error) {
 	if _, ok := m.driver.(*txDriver); !ok {
 		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
 	}
@@ -126,14 +126,14 @@ func (m EntityRevisionMutation) Tx() (*Tx, error) {
 }
 
 // SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of EntityRevision entities.
-func (m *EntityRevisionMutation) SetID(id qid.ID) {
+// operation is only accepted on creation of NodeRevision entities.
+func (m *NodeRevisionMutation) SetID(id qid.ID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *EntityRevisionMutation) ID() (id qid.ID, exists bool) {
+func (m *NodeRevisionMutation) ID() (id qid.ID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -141,12 +141,12 @@ func (m *EntityRevisionMutation) ID() (id qid.ID, exists bool) {
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (m *EntityRevisionMutation) SetCreatedAt(t time.Time) {
+func (m *NodeRevisionMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
 }
 
 // CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *EntityRevisionMutation) CreatedAt() (r time.Time, exists bool) {
+func (m *NodeRevisionMutation) CreatedAt() (r time.Time, exists bool) {
 	v := m.created_at
 	if v == nil {
 		return
@@ -154,10 +154,10 @@ func (m *EntityRevisionMutation) CreatedAt() (r time.Time, exists bool) {
 	return *v, true
 }
 
-// OldCreatedAt returns the old "created_at" field's value of the EntityRevision entity.
-// If the EntityRevision object wasn't provided to the builder, the object is fetched from the database.
+// OldCreatedAt returns the old "created_at" field's value of the NodeRevision entity.
+// If the NodeRevision object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EntityRevisionMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+func (m *NodeRevisionMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
 	}
@@ -172,17 +172,17 @@ func (m *EntityRevisionMutation) OldCreatedAt(ctx context.Context) (v time.Time,
 }
 
 // ResetCreatedAt resets all changes to the "created_at" field.
-func (m *EntityRevisionMutation) ResetCreatedAt() {
+func (m *NodeRevisionMutation) ResetCreatedAt() {
 	m.created_at = nil
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (m *EntityRevisionMutation) SetCreatedBy(q qid.ID) {
+func (m *NodeRevisionMutation) SetCreatedBy(q qid.ID) {
 	m.created_by = &q
 }
 
 // CreatedBy returns the value of the "created_by" field in the mutation.
-func (m *EntityRevisionMutation) CreatedBy() (r qid.ID, exists bool) {
+func (m *NodeRevisionMutation) CreatedBy() (r qid.ID, exists bool) {
 	v := m.created_by
 	if v == nil {
 		return
@@ -190,10 +190,10 @@ func (m *EntityRevisionMutation) CreatedBy() (r qid.ID, exists bool) {
 	return *v, true
 }
 
-// OldCreatedBy returns the old "created_by" field's value of the EntityRevision entity.
-// If the EntityRevision object wasn't provided to the builder, the object is fetched from the database.
+// OldCreatedBy returns the old "created_by" field's value of the NodeRevision entity.
+// If the NodeRevision object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EntityRevisionMutation) OldCreatedBy(ctx context.Context) (v qid.ID, err error) {
+func (m *NodeRevisionMutation) OldCreatedBy(ctx context.Context) (v qid.ID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldCreatedBy is only allowed on UpdateOne operations")
 	}
@@ -208,30 +208,30 @@ func (m *EntityRevisionMutation) OldCreatedBy(ctx context.Context) (v qid.ID, er
 }
 
 // ClearCreatedBy clears the value of the "created_by" field.
-func (m *EntityRevisionMutation) ClearCreatedBy() {
+func (m *NodeRevisionMutation) ClearCreatedBy() {
 	m.created_by = nil
-	m.clearedFields[entityrevision.FieldCreatedBy] = struct{}{}
+	m.clearedFields[noderevision.FieldCreatedBy] = struct{}{}
 }
 
 // CreatedByCleared returns if the "created_by" field was cleared in this mutation.
-func (m *EntityRevisionMutation) CreatedByCleared() bool {
-	_, ok := m.clearedFields[entityrevision.FieldCreatedBy]
+func (m *NodeRevisionMutation) CreatedByCleared() bool {
+	_, ok := m.clearedFields[noderevision.FieldCreatedBy]
 	return ok
 }
 
 // ResetCreatedBy resets all changes to the "created_by" field.
-func (m *EntityRevisionMutation) ResetCreatedBy() {
+func (m *NodeRevisionMutation) ResetCreatedBy() {
 	m.created_by = nil
-	delete(m.clearedFields, entityrevision.FieldCreatedBy)
+	delete(m.clearedFields, noderevision.FieldCreatedBy)
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (m *EntityRevisionMutation) SetUpdatedAt(t time.Time) {
+func (m *NodeRevisionMutation) SetUpdatedAt(t time.Time) {
 	m.updated_at = &t
 }
 
 // UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *EntityRevisionMutation) UpdatedAt() (r time.Time, exists bool) {
+func (m *NodeRevisionMutation) UpdatedAt() (r time.Time, exists bool) {
 	v := m.updated_at
 	if v == nil {
 		return
@@ -239,10 +239,10 @@ func (m *EntityRevisionMutation) UpdatedAt() (r time.Time, exists bool) {
 	return *v, true
 }
 
-// OldUpdatedAt returns the old "updated_at" field's value of the EntityRevision entity.
-// If the EntityRevision object wasn't provided to the builder, the object is fetched from the database.
+// OldUpdatedAt returns the old "updated_at" field's value of the NodeRevision entity.
+// If the NodeRevision object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EntityRevisionMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+func (m *NodeRevisionMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
 	}
@@ -257,17 +257,17 @@ func (m *EntityRevisionMutation) OldUpdatedAt(ctx context.Context) (v time.Time,
 }
 
 // ResetUpdatedAt resets all changes to the "updated_at" field.
-func (m *EntityRevisionMutation) ResetUpdatedAt() {
+func (m *NodeRevisionMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (m *EntityRevisionMutation) SetUpdatedBy(q qid.ID) {
+func (m *NodeRevisionMutation) SetUpdatedBy(q qid.ID) {
 	m.updated_by = &q
 }
 
 // UpdatedBy returns the value of the "updated_by" field in the mutation.
-func (m *EntityRevisionMutation) UpdatedBy() (r qid.ID, exists bool) {
+func (m *NodeRevisionMutation) UpdatedBy() (r qid.ID, exists bool) {
 	v := m.updated_by
 	if v == nil {
 		return
@@ -275,10 +275,10 @@ func (m *EntityRevisionMutation) UpdatedBy() (r qid.ID, exists bool) {
 	return *v, true
 }
 
-// OldUpdatedBy returns the old "updated_by" field's value of the EntityRevision entity.
-// If the EntityRevision object wasn't provided to the builder, the object is fetched from the database.
+// OldUpdatedBy returns the old "updated_by" field's value of the NodeRevision entity.
+// If the NodeRevision object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EntityRevisionMutation) OldUpdatedBy(ctx context.Context) (v qid.ID, err error) {
+func (m *NodeRevisionMutation) OldUpdatedBy(ctx context.Context) (v qid.ID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldUpdatedBy is only allowed on UpdateOne operations")
 	}
@@ -293,171 +293,171 @@ func (m *EntityRevisionMutation) OldUpdatedBy(ctx context.Context) (v qid.ID, er
 }
 
 // ClearUpdatedBy clears the value of the "updated_by" field.
-func (m *EntityRevisionMutation) ClearUpdatedBy() {
+func (m *NodeRevisionMutation) ClearUpdatedBy() {
 	m.updated_by = nil
-	m.clearedFields[entityrevision.FieldUpdatedBy] = struct{}{}
+	m.clearedFields[noderevision.FieldUpdatedBy] = struct{}{}
 }
 
 // UpdatedByCleared returns if the "updated_by" field was cleared in this mutation.
-func (m *EntityRevisionMutation) UpdatedByCleared() bool {
-	_, ok := m.clearedFields[entityrevision.FieldUpdatedBy]
+func (m *NodeRevisionMutation) UpdatedByCleared() bool {
+	_, ok := m.clearedFields[noderevision.FieldUpdatedBy]
 	return ok
 }
 
 // ResetUpdatedBy resets all changes to the "updated_by" field.
-func (m *EntityRevisionMutation) ResetUpdatedBy() {
+func (m *NodeRevisionMutation) ResetUpdatedBy() {
 	m.updated_by = nil
-	delete(m.clearedFields, entityrevision.FieldUpdatedBy)
+	delete(m.clearedFields, noderevision.FieldUpdatedBy)
 }
 
-// SetEntityID sets the "entity_id" field.
-func (m *EntityRevisionMutation) SetEntityID(s string) {
-	m.entity_id = &s
+// SetNodeID sets the "node_id" field.
+func (m *NodeRevisionMutation) SetNodeID(s string) {
+	m.node_id = &s
 }
 
-// EntityID returns the value of the "entity_id" field in the mutation.
-func (m *EntityRevisionMutation) EntityID() (r string, exists bool) {
-	v := m.entity_id
+// NodeID returns the value of the "node_id" field in the mutation.
+func (m *NodeRevisionMutation) NodeID() (r string, exists bool) {
+	v := m.node_id
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldEntityID returns the old "entity_id" field's value of the EntityRevision entity.
-// If the EntityRevision object wasn't provided to the builder, the object is fetched from the database.
+// OldNodeID returns the old "node_id" field's value of the NodeRevision entity.
+// If the NodeRevision object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EntityRevisionMutation) OldEntityID(ctx context.Context) (v string, err error) {
+func (m *NodeRevisionMutation) OldNodeID(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldEntityID is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldNodeID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldEntityID requires an ID field in the mutation")
+		return v, fmt.Errorf("OldNodeID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldEntityID: %w", err)
+		return v, fmt.Errorf("querying old value for OldNodeID: %w", err)
 	}
-	return oldValue.EntityID, nil
+	return oldValue.NodeID, nil
 }
 
-// ResetEntityID resets all changes to the "entity_id" field.
-func (m *EntityRevisionMutation) ResetEntityID() {
-	m.entity_id = nil
+// ResetNodeID resets all changes to the "node_id" field.
+func (m *NodeRevisionMutation) ResetNodeID() {
+	m.node_id = nil
 }
 
-// SetEntityRevision sets the "entity_revision" field.
-func (m *EntityRevisionMutation) SetEntityRevision(s string) {
-	m.entity_revision = &s
+// SetNodeRevision sets the "node_revision" field.
+func (m *NodeRevisionMutation) SetNodeRevision(s string) {
+	m.node_revision = &s
 }
 
-// EntityRevision returns the value of the "entity_revision" field in the mutation.
-func (m *EntityRevisionMutation) EntityRevision() (r string, exists bool) {
-	v := m.entity_revision
+// NodeRevision returns the value of the "node_revision" field in the mutation.
+func (m *NodeRevisionMutation) NodeRevision() (r string, exists bool) {
+	v := m.node_revision
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldEntityRevision returns the old "entity_revision" field's value of the EntityRevision entity.
-// If the EntityRevision object wasn't provided to the builder, the object is fetched from the database.
+// OldNodeRevision returns the old "node_revision" field's value of the NodeRevision entity.
+// If the NodeRevision object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EntityRevisionMutation) OldEntityRevision(ctx context.Context) (v string, err error) {
+func (m *NodeRevisionMutation) OldNodeRevision(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldEntityRevision is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldNodeRevision is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldEntityRevision requires an ID field in the mutation")
+		return v, fmt.Errorf("OldNodeRevision requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldEntityRevision: %w", err)
+		return v, fmt.Errorf("querying old value for OldNodeRevision: %w", err)
 	}
-	return oldValue.EntityRevision, nil
+	return oldValue.NodeRevision, nil
 }
 
-// ResetEntityRevision resets all changes to the "entity_revision" field.
-func (m *EntityRevisionMutation) ResetEntityRevision() {
-	m.entity_revision = nil
+// ResetNodeRevision resets all changes to the "node_revision" field.
+func (m *NodeRevisionMutation) ResetNodeRevision() {
+	m.node_revision = nil
 }
 
-// SetEntityValue sets the "entity_value" field.
-func (m *EntityRevisionMutation) SetEntityValue(uv *nodevalue.NodeValue) {
-	m.entity_value = &uv
+// SetNodeValue sets the "node_value" field.
+func (m *NodeRevisionMutation) SetNodeValue(nv *nodevalue.NodeValue) {
+	m.node_value = &nv
 }
 
-// EntityValue returns the value of the "entity_value" field in the mutation.
-func (m *EntityRevisionMutation) EntityValue() (r *nodevalue.NodeValue, exists bool) {
-	v := m.entity_value
+// NodeValue returns the value of the "node_value" field in the mutation.
+func (m *NodeRevisionMutation) NodeValue() (r *nodevalue.NodeValue, exists bool) {
+	v := m.node_value
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldEntityValue returns the old "entity_value" field's value of the EntityRevision entity.
-// If the EntityRevision object wasn't provided to the builder, the object is fetched from the database.
+// OldNodeValue returns the old "node_value" field's value of the NodeRevision entity.
+// If the NodeRevision object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EntityRevisionMutation) OldEntityValue(ctx context.Context) (v *nodevalue.NodeValue, err error) {
+func (m *NodeRevisionMutation) OldNodeValue(ctx context.Context) (v *nodevalue.NodeValue, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldEntityValue is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldNodeValue is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldEntityValue requires an ID field in the mutation")
+		return v, fmt.Errorf("OldNodeValue requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldEntityValue: %w", err)
+		return v, fmt.Errorf("querying old value for OldNodeValue: %w", err)
 	}
-	return oldValue.EntityValue, nil
+	return oldValue.NodeValue, nil
 }
 
-// ResetEntityValue resets all changes to the "entity_value" field.
-func (m *EntityRevisionMutation) ResetEntityValue() {
-	m.entity_value = nil
+// ResetNodeValue resets all changes to the "node_value" field.
+func (m *NodeRevisionMutation) ResetNodeValue() {
+	m.node_value = nil
 }
 
-// Where appends a list predicates to the EntityRevisionMutation builder.
-func (m *EntityRevisionMutation) Where(ps ...predicate.EntityRevision) {
+// Where appends a list predicates to the NodeRevisionMutation builder.
+func (m *NodeRevisionMutation) Where(ps ...predicate.NodeRevision) {
 	m.predicates = append(m.predicates, ps...)
 }
 
 // Op returns the operation name.
-func (m *EntityRevisionMutation) Op() Op {
+func (m *NodeRevisionMutation) Op() Op {
 	return m.op
 }
 
-// Type returns the node type of this mutation (EntityRevision).
-func (m *EntityRevisionMutation) Type() string {
+// Type returns the node type of this mutation (NodeRevision).
+func (m *NodeRevisionMutation) Type() string {
 	return m.typ
 }
 
 // Fields returns all fields that were changed during this mutation. Note that in
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
-func (m *EntityRevisionMutation) Fields() []string {
+func (m *NodeRevisionMutation) Fields() []string {
 	fields := make([]string, 0, 7)
 	if m.created_at != nil {
-		fields = append(fields, entityrevision.FieldCreatedAt)
+		fields = append(fields, noderevision.FieldCreatedAt)
 	}
 	if m.created_by != nil {
-		fields = append(fields, entityrevision.FieldCreatedBy)
+		fields = append(fields, noderevision.FieldCreatedBy)
 	}
 	if m.updated_at != nil {
-		fields = append(fields, entityrevision.FieldUpdatedAt)
+		fields = append(fields, noderevision.FieldUpdatedAt)
 	}
 	if m.updated_by != nil {
-		fields = append(fields, entityrevision.FieldUpdatedBy)
+		fields = append(fields, noderevision.FieldUpdatedBy)
 	}
-	if m.entity_id != nil {
-		fields = append(fields, entityrevision.FieldEntityID)
+	if m.node_id != nil {
+		fields = append(fields, noderevision.FieldNodeID)
 	}
-	if m.entity_revision != nil {
-		fields = append(fields, entityrevision.FieldEntityRevision)
+	if m.node_revision != nil {
+		fields = append(fields, noderevision.FieldNodeRevision)
 	}
-	if m.entity_value != nil {
-		fields = append(fields, entityrevision.FieldEntityValue)
+	if m.node_value != nil {
+		fields = append(fields, noderevision.FieldNodeValue)
 	}
 	return fields
 }
@@ -465,22 +465,22 @@ func (m *EntityRevisionMutation) Fields() []string {
 // Field returns the value of a field with the given name. The second boolean
 // return value indicates that this field was not set, or was not defined in the
 // schema.
-func (m *EntityRevisionMutation) Field(name string) (ent.Value, bool) {
+func (m *NodeRevisionMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case entityrevision.FieldCreatedAt:
+	case noderevision.FieldCreatedAt:
 		return m.CreatedAt()
-	case entityrevision.FieldCreatedBy:
+	case noderevision.FieldCreatedBy:
 		return m.CreatedBy()
-	case entityrevision.FieldUpdatedAt:
+	case noderevision.FieldUpdatedAt:
 		return m.UpdatedAt()
-	case entityrevision.FieldUpdatedBy:
+	case noderevision.FieldUpdatedBy:
 		return m.UpdatedBy()
-	case entityrevision.FieldEntityID:
-		return m.EntityID()
-	case entityrevision.FieldEntityRevision:
-		return m.EntityRevision()
-	case entityrevision.FieldEntityValue:
-		return m.EntityValue()
+	case noderevision.FieldNodeID:
+		return m.NodeID()
+	case noderevision.FieldNodeRevision:
+		return m.NodeRevision()
+	case noderevision.FieldNodeValue:
+		return m.NodeValue()
 	}
 	return nil, false
 }
@@ -488,215 +488,215 @@ func (m *EntityRevisionMutation) Field(name string) (ent.Value, bool) {
 // OldField returns the old value of the field from the database. An error is
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
-func (m *EntityRevisionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+func (m *NodeRevisionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case entityrevision.FieldCreatedAt:
+	case noderevision.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
-	case entityrevision.FieldCreatedBy:
+	case noderevision.FieldCreatedBy:
 		return m.OldCreatedBy(ctx)
-	case entityrevision.FieldUpdatedAt:
+	case noderevision.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
-	case entityrevision.FieldUpdatedBy:
+	case noderevision.FieldUpdatedBy:
 		return m.OldUpdatedBy(ctx)
-	case entityrevision.FieldEntityID:
-		return m.OldEntityID(ctx)
-	case entityrevision.FieldEntityRevision:
-		return m.OldEntityRevision(ctx)
-	case entityrevision.FieldEntityValue:
-		return m.OldEntityValue(ctx)
+	case noderevision.FieldNodeID:
+		return m.OldNodeID(ctx)
+	case noderevision.FieldNodeRevision:
+		return m.OldNodeRevision(ctx)
+	case noderevision.FieldNodeValue:
+		return m.OldNodeValue(ctx)
 	}
-	return nil, fmt.Errorf("unknown EntityRevision field %s", name)
+	return nil, fmt.Errorf("unknown NodeRevision field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *EntityRevisionMutation) SetField(name string, value ent.Value) error {
+func (m *NodeRevisionMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case entityrevision.FieldCreatedAt:
+	case noderevision.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreatedAt(v)
 		return nil
-	case entityrevision.FieldCreatedBy:
+	case noderevision.FieldCreatedBy:
 		v, ok := value.(qid.ID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreatedBy(v)
 		return nil
-	case entityrevision.FieldUpdatedAt:
+	case noderevision.FieldUpdatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
 		return nil
-	case entityrevision.FieldUpdatedBy:
+	case noderevision.FieldUpdatedBy:
 		v, ok := value.(qid.ID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedBy(v)
 		return nil
-	case entityrevision.FieldEntityID:
+	case noderevision.FieldNodeID:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetEntityID(v)
+		m.SetNodeID(v)
 		return nil
-	case entityrevision.FieldEntityRevision:
+	case noderevision.FieldNodeRevision:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetEntityRevision(v)
+		m.SetNodeRevision(v)
 		return nil
-	case entityrevision.FieldEntityValue:
+	case noderevision.FieldNodeValue:
 		v, ok := value.(*nodevalue.NodeValue)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetEntityValue(v)
+		m.SetNodeValue(v)
 		return nil
 	}
-	return fmt.Errorf("unknown EntityRevision field %s", name)
+	return fmt.Errorf("unknown NodeRevision field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
-func (m *EntityRevisionMutation) AddedFields() []string {
+func (m *NodeRevisionMutation) AddedFields() []string {
 	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
-func (m *EntityRevisionMutation) AddedField(name string) (ent.Value, bool) {
+func (m *NodeRevisionMutation) AddedField(name string) (ent.Value, bool) {
 	return nil, false
 }
 
 // AddField adds the value to the field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *EntityRevisionMutation) AddField(name string, value ent.Value) error {
+func (m *NodeRevisionMutation) AddField(name string, value ent.Value) error {
 	switch name {
 	}
-	return fmt.Errorf("unknown EntityRevision numeric field %s", name)
+	return fmt.Errorf("unknown NodeRevision numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
-func (m *EntityRevisionMutation) ClearedFields() []string {
+func (m *NodeRevisionMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(entityrevision.FieldCreatedBy) {
-		fields = append(fields, entityrevision.FieldCreatedBy)
+	if m.FieldCleared(noderevision.FieldCreatedBy) {
+		fields = append(fields, noderevision.FieldCreatedBy)
 	}
-	if m.FieldCleared(entityrevision.FieldUpdatedBy) {
-		fields = append(fields, entityrevision.FieldUpdatedBy)
+	if m.FieldCleared(noderevision.FieldUpdatedBy) {
+		fields = append(fields, noderevision.FieldUpdatedBy)
 	}
 	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
 // cleared in this mutation.
-func (m *EntityRevisionMutation) FieldCleared(name string) bool {
+func (m *NodeRevisionMutation) FieldCleared(name string) bool {
 	_, ok := m.clearedFields[name]
 	return ok
 }
 
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
-func (m *EntityRevisionMutation) ClearField(name string) error {
+func (m *NodeRevisionMutation) ClearField(name string) error {
 	switch name {
-	case entityrevision.FieldCreatedBy:
+	case noderevision.FieldCreatedBy:
 		m.ClearCreatedBy()
 		return nil
-	case entityrevision.FieldUpdatedBy:
+	case noderevision.FieldUpdatedBy:
 		m.ClearUpdatedBy()
 		return nil
 	}
-	return fmt.Errorf("unknown EntityRevision nullable field %s", name)
+	return fmt.Errorf("unknown NodeRevision nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
-func (m *EntityRevisionMutation) ResetField(name string) error {
+func (m *NodeRevisionMutation) ResetField(name string) error {
 	switch name {
-	case entityrevision.FieldCreatedAt:
+	case noderevision.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
-	case entityrevision.FieldCreatedBy:
+	case noderevision.FieldCreatedBy:
 		m.ResetCreatedBy()
 		return nil
-	case entityrevision.FieldUpdatedAt:
+	case noderevision.FieldUpdatedAt:
 		m.ResetUpdatedAt()
 		return nil
-	case entityrevision.FieldUpdatedBy:
+	case noderevision.FieldUpdatedBy:
 		m.ResetUpdatedBy()
 		return nil
-	case entityrevision.FieldEntityID:
-		m.ResetEntityID()
+	case noderevision.FieldNodeID:
+		m.ResetNodeID()
 		return nil
-	case entityrevision.FieldEntityRevision:
-		m.ResetEntityRevision()
+	case noderevision.FieldNodeRevision:
+		m.ResetNodeRevision()
 		return nil
-	case entityrevision.FieldEntityValue:
-		m.ResetEntityValue()
+	case noderevision.FieldNodeValue:
+		m.ResetNodeValue()
 		return nil
 	}
-	return fmt.Errorf("unknown EntityRevision field %s", name)
+	return fmt.Errorf("unknown NodeRevision field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
-func (m *EntityRevisionMutation) AddedEdges() []string {
+func (m *NodeRevisionMutation) AddedEdges() []string {
 	edges := make([]string, 0, 0)
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
-func (m *EntityRevisionMutation) AddedIDs(name string) []ent.Value {
+func (m *NodeRevisionMutation) AddedIDs(name string) []ent.Value {
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
-func (m *EntityRevisionMutation) RemovedEdges() []string {
+func (m *NodeRevisionMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 0)
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
-func (m *EntityRevisionMutation) RemovedIDs(name string) []ent.Value {
+func (m *NodeRevisionMutation) RemovedIDs(name string) []ent.Value {
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *EntityRevisionMutation) ClearedEdges() []string {
+func (m *NodeRevisionMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 0)
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
-func (m *EntityRevisionMutation) EdgeCleared(name string) bool {
+func (m *NodeRevisionMutation) EdgeCleared(name string) bool {
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
-func (m *EntityRevisionMutation) ClearEdge(name string) error {
-	return fmt.Errorf("unknown EntityRevision unique edge %s", name)
+func (m *NodeRevisionMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown NodeRevision unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
-func (m *EntityRevisionMutation) ResetEdge(name string) error {
-	return fmt.Errorf("unknown EntityRevision edge %s", name)
+func (m *NodeRevisionMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown NodeRevision edge %s", name)
 }
 
 // OrganizationMutation represents an operation that mutates the Organization nodes in the graph.

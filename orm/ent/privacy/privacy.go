@@ -164,28 +164,28 @@ func DenyMutationOperationRule(op ent.Op) MutationRule {
 	return OnMutationOperation(rule, op)
 }
 
-// The EntityRevisionQueryRuleFunc type is an adapter to allow the use of ordinary
+// The NodeRevisionQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
-type EntityRevisionQueryRuleFunc func(context.Context, *ent.EntityRevisionQuery) error
+type NodeRevisionQueryRuleFunc func(context.Context, *ent.NodeRevisionQuery) error
 
 // EvalQuery return f(ctx, q).
-func (f EntityRevisionQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
-	if q, ok := q.(*ent.EntityRevisionQuery); ok {
+func (f NodeRevisionQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.NodeRevisionQuery); ok {
 		return f(ctx, q)
 	}
-	return Denyf("ent/privacy: unexpected query type %T, expect *ent.EntityRevisionQuery", q)
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.NodeRevisionQuery", q)
 }
 
-// The EntityRevisionMutationRuleFunc type is an adapter to allow the use of ordinary
+// The NodeRevisionMutationRuleFunc type is an adapter to allow the use of ordinary
 // functions as a mutation rule.
-type EntityRevisionMutationRuleFunc func(context.Context, *ent.EntityRevisionMutation) error
+type NodeRevisionMutationRuleFunc func(context.Context, *ent.NodeRevisionMutation) error
 
 // EvalMutation calls f(ctx, m).
-func (f EntityRevisionMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
-	if m, ok := m.(*ent.EntityRevisionMutation); ok {
+func (f NodeRevisionMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.NodeRevisionMutation); ok {
 		return f(ctx, m)
 	}
-	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.EntityRevisionMutation", m)
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.NodeRevisionMutation", m)
 }
 
 // The OrganizationQueryRuleFunc type is an adapter to allow the use of ordinary

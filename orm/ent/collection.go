@@ -9,15 +9,15 @@ import (
 )
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
-func (er *EntityRevisionQuery) CollectFields(ctx context.Context, satisfies ...string) *EntityRevisionQuery {
+func (nr *NodeRevisionQuery) CollectFields(ctx context.Context, satisfies ...string) *NodeRevisionQuery {
 	if fc := graphql.GetFieldContext(ctx); fc != nil {
-		er = er.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+		nr = nr.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
 	}
-	return er
+	return nr
 }
 
-func (er *EntityRevisionQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *EntityRevisionQuery {
-	return er
+func (nr *NodeRevisionQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *NodeRevisionQuery {
+	return nr
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.

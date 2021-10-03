@@ -8,22 +8,22 @@ import (
 )
 
 var (
-	// EntityRevisionsColumns holds the columns for the "entity_revisions" table.
-	EntityRevisionsColumns = []*schema.Column{
+	// NodeRevisionsColumns holds the columns for the "node_revisions" table.
+	NodeRevisionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "created_by", Type: field.TypeString, Nullable: true},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "updated_by", Type: field.TypeString, Nullable: true},
-		{Name: "entity_id", Type: field.TypeString},
-		{Name: "entity_revision", Type: field.TypeString},
-		{Name: "entity_value", Type: field.TypeJSON},
+		{Name: "node_id", Type: field.TypeString},
+		{Name: "node_revision", Type: field.TypeString},
+		{Name: "node_value", Type: field.TypeJSON},
 	}
-	// EntityRevisionsTable holds the schema information for the "entity_revisions" table.
-	EntityRevisionsTable = &schema.Table{
-		Name:       "entity_revisions",
-		Columns:    EntityRevisionsColumns,
-		PrimaryKey: []*schema.Column{EntityRevisionsColumns[0]},
+	// NodeRevisionsTable holds the schema information for the "node_revisions" table.
+	NodeRevisionsTable = &schema.Table{
+		Name:       "node_revisions",
+		Columns:    NodeRevisionsColumns,
+		PrimaryKey: []*schema.Column{NodeRevisionsColumns[0]},
 	}
 	// OrganizationsColumns holds the columns for the "organizations" table.
 	OrganizationsColumns = []*schema.Column{
@@ -129,7 +129,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
-		EntityRevisionsTable,
+		NodeRevisionsTable,
 		OrganizationsTable,
 		TenantsTable,
 		TodosTable,

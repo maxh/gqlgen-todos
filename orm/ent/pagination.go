@@ -14,7 +14,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/errcode"
-	"github.com/maxh/gqlgen-todos/orm/ent/entityrevision"
+	"github.com/maxh/gqlgen-todos/orm/ent/noderevision"
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
@@ -237,124 +237,124 @@ const (
 	totalCountField = "totalCount"
 )
 
-// EntityRevisionEdge is the edge representation of EntityRevision.
-type EntityRevisionEdge struct {
-	Node   *EntityRevision `json:"node"`
-	Cursor Cursor          `json:"cursor"`
+// NodeRevisionEdge is the edge representation of NodeRevision.
+type NodeRevisionEdge struct {
+	Node   *NodeRevision `json:"node"`
+	Cursor Cursor        `json:"cursor"`
 }
 
-// EntityRevisionConnection is the connection containing edges to EntityRevision.
-type EntityRevisionConnection struct {
-	Edges      []*EntityRevisionEdge `json:"edges"`
-	PageInfo   PageInfo              `json:"pageInfo"`
-	TotalCount int                   `json:"totalCount"`
+// NodeRevisionConnection is the connection containing edges to NodeRevision.
+type NodeRevisionConnection struct {
+	Edges      []*NodeRevisionEdge `json:"edges"`
+	PageInfo   PageInfo            `json:"pageInfo"`
+	TotalCount int                 `json:"totalCount"`
 }
 
-// EntityRevisionPaginateOption enables pagination customization.
-type EntityRevisionPaginateOption func(*entityRevisionPager) error
+// NodeRevisionPaginateOption enables pagination customization.
+type NodeRevisionPaginateOption func(*nodeRevisionPager) error
 
-// WithEntityRevisionOrder configures pagination ordering.
-func WithEntityRevisionOrder(order *EntityRevisionOrder) EntityRevisionPaginateOption {
+// WithNodeRevisionOrder configures pagination ordering.
+func WithNodeRevisionOrder(order *NodeRevisionOrder) NodeRevisionPaginateOption {
 	if order == nil {
-		order = DefaultEntityRevisionOrder
+		order = DefaultNodeRevisionOrder
 	}
 	o := *order
-	return func(pager *entityRevisionPager) error {
+	return func(pager *nodeRevisionPager) error {
 		if err := o.Direction.Validate(); err != nil {
 			return err
 		}
 		if o.Field == nil {
-			o.Field = DefaultEntityRevisionOrder.Field
+			o.Field = DefaultNodeRevisionOrder.Field
 		}
 		pager.order = &o
 		return nil
 	}
 }
 
-// WithEntityRevisionFilter configures pagination filter.
-func WithEntityRevisionFilter(filter func(*EntityRevisionQuery) (*EntityRevisionQuery, error)) EntityRevisionPaginateOption {
-	return func(pager *entityRevisionPager) error {
+// WithNodeRevisionFilter configures pagination filter.
+func WithNodeRevisionFilter(filter func(*NodeRevisionQuery) (*NodeRevisionQuery, error)) NodeRevisionPaginateOption {
+	return func(pager *nodeRevisionPager) error {
 		if filter == nil {
-			return errors.New("EntityRevisionQuery filter cannot be nil")
+			return errors.New("NodeRevisionQuery filter cannot be nil")
 		}
 		pager.filter = filter
 		return nil
 	}
 }
 
-type entityRevisionPager struct {
-	order  *EntityRevisionOrder
-	filter func(*EntityRevisionQuery) (*EntityRevisionQuery, error)
+type nodeRevisionPager struct {
+	order  *NodeRevisionOrder
+	filter func(*NodeRevisionQuery) (*NodeRevisionQuery, error)
 }
 
-func newEntityRevisionPager(opts []EntityRevisionPaginateOption) (*entityRevisionPager, error) {
-	pager := &entityRevisionPager{}
+func newNodeRevisionPager(opts []NodeRevisionPaginateOption) (*nodeRevisionPager, error) {
+	pager := &nodeRevisionPager{}
 	for _, opt := range opts {
 		if err := opt(pager); err != nil {
 			return nil, err
 		}
 	}
 	if pager.order == nil {
-		pager.order = DefaultEntityRevisionOrder
+		pager.order = DefaultNodeRevisionOrder
 	}
 	return pager, nil
 }
 
-func (p *entityRevisionPager) applyFilter(query *EntityRevisionQuery) (*EntityRevisionQuery, error) {
+func (p *nodeRevisionPager) applyFilter(query *NodeRevisionQuery) (*NodeRevisionQuery, error) {
 	if p.filter != nil {
 		return p.filter(query)
 	}
 	return query, nil
 }
 
-func (p *entityRevisionPager) toCursor(er *EntityRevision) Cursor {
-	return p.order.Field.toCursor(er)
+func (p *nodeRevisionPager) toCursor(nr *NodeRevision) Cursor {
+	return p.order.Field.toCursor(nr)
 }
 
-func (p *entityRevisionPager) applyCursors(query *EntityRevisionQuery, after, before *Cursor) *EntityRevisionQuery {
+func (p *nodeRevisionPager) applyCursors(query *NodeRevisionQuery, after, before *Cursor) *NodeRevisionQuery {
 	for _, predicate := range cursorsToPredicates(
 		p.order.Direction, after, before,
-		p.order.Field.field, DefaultEntityRevisionOrder.Field.field,
+		p.order.Field.field, DefaultNodeRevisionOrder.Field.field,
 	) {
 		query = query.Where(predicate)
 	}
 	return query
 }
 
-func (p *entityRevisionPager) applyOrder(query *EntityRevisionQuery, reverse bool) *EntityRevisionQuery {
+func (p *nodeRevisionPager) applyOrder(query *NodeRevisionQuery, reverse bool) *NodeRevisionQuery {
 	direction := p.order.Direction
 	if reverse {
 		direction = direction.reverse()
 	}
 	query = query.Order(direction.orderFunc(p.order.Field.field))
-	if p.order.Field != DefaultEntityRevisionOrder.Field {
-		query = query.Order(direction.orderFunc(DefaultEntityRevisionOrder.Field.field))
+	if p.order.Field != DefaultNodeRevisionOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultNodeRevisionOrder.Field.field))
 	}
 	return query
 }
 
-// Paginate executes the query and returns a relay based cursor connection to EntityRevision.
-func (er *EntityRevisionQuery) Paginate(
+// Paginate executes the query and returns a relay based cursor connection to NodeRevision.
+func (nr *NodeRevisionQuery) Paginate(
 	ctx context.Context, after *Cursor, first *int,
-	before *Cursor, last *int, opts ...EntityRevisionPaginateOption,
-) (*EntityRevisionConnection, error) {
+	before *Cursor, last *int, opts ...NodeRevisionPaginateOption,
+) (*NodeRevisionConnection, error) {
 	if err := validateFirstLast(first, last); err != nil {
 		return nil, err
 	}
-	pager, err := newEntityRevisionPager(opts)
+	pager, err := newNodeRevisionPager(opts)
 	if err != nil {
 		return nil, err
 	}
 
-	if er, err = pager.applyFilter(er); err != nil {
+	if nr, err = pager.applyFilter(nr); err != nil {
 		return nil, err
 	}
 
-	conn := &EntityRevisionConnection{Edges: []*EntityRevisionEdge{}}
+	conn := &NodeRevisionConnection{Edges: []*NodeRevisionEdge{}}
 	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
 		if hasCollectedField(ctx, totalCountField) ||
 			hasCollectedField(ctx, pageInfoField) {
-			count, err := er.Count(ctx)
+			count, err := nr.Count(ctx)
 			if err != nil {
 				return nil, err
 			}
@@ -366,15 +366,15 @@ func (er *EntityRevisionQuery) Paginate(
 	}
 
 	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
-		count, err := er.Clone().Count(ctx)
+		count, err := nr.Clone().Count(ctx)
 		if err != nil {
 			return nil, err
 		}
 		conn.TotalCount = count
 	}
 
-	er = pager.applyCursors(er, after, before)
-	er = pager.applyOrder(er, last != nil)
+	nr = pager.applyCursors(nr, after, before)
+	nr = pager.applyOrder(nr, last != nil)
 	var limit int
 	if first != nil {
 		limit = *first + 1
@@ -382,14 +382,14 @@ func (er *EntityRevisionQuery) Paginate(
 		limit = *last + 1
 	}
 	if limit > 0 {
-		er = er.Limit(limit)
+		nr = nr.Limit(limit)
 	}
 
 	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
-		er = er.collectField(graphql.GetOperationContext(ctx), *field)
+		nr = nr.collectField(graphql.GetOperationContext(ctx), *field)
 	}
 
-	nodes, err := er.All(ctx)
+	nodes, err := nr.All(ctx)
 	if err != nil || len(nodes) == 0 {
 		return conn, err
 	}
@@ -400,22 +400,22 @@ func (er *EntityRevisionQuery) Paginate(
 		nodes = nodes[:len(nodes)-1]
 	}
 
-	var nodeAt func(int) *EntityRevision
+	var nodeAt func(int) *NodeRevision
 	if last != nil {
 		n := len(nodes) - 1
-		nodeAt = func(i int) *EntityRevision {
+		nodeAt = func(i int) *NodeRevision {
 			return nodes[n-i]
 		}
 	} else {
-		nodeAt = func(i int) *EntityRevision {
+		nodeAt = func(i int) *NodeRevision {
 			return nodes[i]
 		}
 	}
 
-	conn.Edges = make([]*EntityRevisionEdge, len(nodes))
+	conn.Edges = make([]*NodeRevisionEdge, len(nodes))
 	for i := range nodes {
 		node := nodeAt(i)
-		conn.Edges[i] = &EntityRevisionEdge{
+		conn.Edges[i] = &NodeRevisionEdge{
 			Node:   node,
 			Cursor: pager.toCursor(node),
 		}
@@ -430,37 +430,37 @@ func (er *EntityRevisionQuery) Paginate(
 	return conn, nil
 }
 
-// EntityRevisionOrderField defines the ordering field of EntityRevision.
-type EntityRevisionOrderField struct {
+// NodeRevisionOrderField defines the ordering field of NodeRevision.
+type NodeRevisionOrderField struct {
 	field    string
-	toCursor func(*EntityRevision) Cursor
+	toCursor func(*NodeRevision) Cursor
 }
 
-// EntityRevisionOrder defines the ordering of EntityRevision.
-type EntityRevisionOrder struct {
-	Direction OrderDirection            `json:"direction"`
-	Field     *EntityRevisionOrderField `json:"field"`
+// NodeRevisionOrder defines the ordering of NodeRevision.
+type NodeRevisionOrder struct {
+	Direction OrderDirection          `json:"direction"`
+	Field     *NodeRevisionOrderField `json:"field"`
 }
 
-// DefaultEntityRevisionOrder is the default ordering of EntityRevision.
-var DefaultEntityRevisionOrder = &EntityRevisionOrder{
+// DefaultNodeRevisionOrder is the default ordering of NodeRevision.
+var DefaultNodeRevisionOrder = &NodeRevisionOrder{
 	Direction: OrderDirectionAsc,
-	Field: &EntityRevisionOrderField{
-		field: entityrevision.FieldID,
-		toCursor: func(er *EntityRevision) Cursor {
-			return Cursor{ID: er.ID}
+	Field: &NodeRevisionOrderField{
+		field: noderevision.FieldID,
+		toCursor: func(nr *NodeRevision) Cursor {
+			return Cursor{ID: nr.ID}
 		},
 	},
 }
 
-// ToEdge converts EntityRevision into EntityRevisionEdge.
-func (er *EntityRevision) ToEdge(order *EntityRevisionOrder) *EntityRevisionEdge {
+// ToEdge converts NodeRevision into NodeRevisionEdge.
+func (nr *NodeRevision) ToEdge(order *NodeRevisionOrder) *NodeRevisionEdge {
 	if order == nil {
-		order = DefaultEntityRevisionOrder
+		order = DefaultNodeRevisionOrder
 	}
-	return &EntityRevisionEdge{
-		Node:   er,
-		Cursor: order.Field.toCursor(er),
+	return &NodeRevisionEdge{
+		Node:   nr,
+		Cursor: order.Field.toCursor(nr),
 	}
 }
 

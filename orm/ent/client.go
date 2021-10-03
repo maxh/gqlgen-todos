@@ -10,7 +10,7 @@ import (
 	"github.com/maxh/gqlgen-todos/orm/ent/migrate"
 	"github.com/maxh/gqlgen-todos/qid"
 
-	"github.com/maxh/gqlgen-todos/orm/ent/entityrevision"
+	"github.com/maxh/gqlgen-todos/orm/ent/noderevision"
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
@@ -26,8 +26,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
-	// EntityRevision is the client for interacting with the EntityRevision builders.
-	EntityRevision *EntityRevisionClient
+	// NodeRevision is the client for interacting with the NodeRevision builders.
+	NodeRevision *NodeRevisionClient
 	// Organization is the client for interacting with the Organization builders.
 	Organization *OrganizationClient
 	// Tenant is the client for interacting with the Tenant builders.
@@ -49,7 +49,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
-	c.EntityRevision = NewEntityRevisionClient(c.config)
+	c.NodeRevision = NewNodeRevisionClient(c.config)
 	c.Organization = NewOrganizationClient(c.config)
 	c.Tenant = NewTenantClient(c.config)
 	c.Todo = NewTodoClient(c.config)
@@ -85,13 +85,13 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:            ctx,
-		config:         cfg,
-		EntityRevision: NewEntityRevisionClient(cfg),
-		Organization:   NewOrganizationClient(cfg),
-		Tenant:         NewTenantClient(cfg),
-		Todo:           NewTodoClient(cfg),
-		User:           NewUserClient(cfg),
+		ctx:          ctx,
+		config:       cfg,
+		NodeRevision: NewNodeRevisionClient(cfg),
+		Organization: NewOrganizationClient(cfg),
+		Tenant:       NewTenantClient(cfg),
+		Todo:         NewTodoClient(cfg),
+		User:         NewUserClient(cfg),
 	}, nil
 }
 
@@ -109,19 +109,19 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		config:         cfg,
-		EntityRevision: NewEntityRevisionClient(cfg),
-		Organization:   NewOrganizationClient(cfg),
-		Tenant:         NewTenantClient(cfg),
-		Todo:           NewTodoClient(cfg),
-		User:           NewUserClient(cfg),
+		config:       cfg,
+		NodeRevision: NewNodeRevisionClient(cfg),
+		Organization: NewOrganizationClient(cfg),
+		Tenant:       NewTenantClient(cfg),
+		Todo:         NewTodoClient(cfg),
+		User:         NewUserClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		EntityRevision.
+//		NodeRevision.
 //		Query().
 //		Count(ctx)
 //
@@ -144,91 +144,91 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.EntityRevision.Use(hooks...)
+	c.NodeRevision.Use(hooks...)
 	c.Organization.Use(hooks...)
 	c.Tenant.Use(hooks...)
 	c.Todo.Use(hooks...)
 	c.User.Use(hooks...)
 }
 
-// EntityRevisionClient is a client for the EntityRevision schema.
-type EntityRevisionClient struct {
+// NodeRevisionClient is a client for the NodeRevision schema.
+type NodeRevisionClient struct {
 	config
 }
 
-// NewEntityRevisionClient returns a client for the EntityRevision from the given config.
-func NewEntityRevisionClient(c config) *EntityRevisionClient {
-	return &EntityRevisionClient{config: c}
+// NewNodeRevisionClient returns a client for the NodeRevision from the given config.
+func NewNodeRevisionClient(c config) *NodeRevisionClient {
+	return &NodeRevisionClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `entityrevision.Hooks(f(g(h())))`.
-func (c *EntityRevisionClient) Use(hooks ...Hook) {
-	c.hooks.EntityRevision = append(c.hooks.EntityRevision, hooks...)
+// A call to `Use(f, g, h)` equals to `noderevision.Hooks(f(g(h())))`.
+func (c *NodeRevisionClient) Use(hooks ...Hook) {
+	c.hooks.NodeRevision = append(c.hooks.NodeRevision, hooks...)
 }
 
-// Create returns a create builder for EntityRevision.
-func (c *EntityRevisionClient) Create() *EntityRevisionCreate {
-	mutation := newEntityRevisionMutation(c.config, OpCreate)
-	return &EntityRevisionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a create builder for NodeRevision.
+func (c *NodeRevisionClient) Create() *NodeRevisionCreate {
+	mutation := newNodeRevisionMutation(c.config, OpCreate)
+	return &NodeRevisionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of EntityRevision entities.
-func (c *EntityRevisionClient) CreateBulk(builders ...*EntityRevisionCreate) *EntityRevisionCreateBulk {
-	return &EntityRevisionCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of NodeRevision entities.
+func (c *NodeRevisionClient) CreateBulk(builders ...*NodeRevisionCreate) *NodeRevisionCreateBulk {
+	return &NodeRevisionCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for EntityRevision.
-func (c *EntityRevisionClient) Update() *EntityRevisionUpdate {
-	mutation := newEntityRevisionMutation(c.config, OpUpdate)
-	return &EntityRevisionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for NodeRevision.
+func (c *NodeRevisionClient) Update() *NodeRevisionUpdate {
+	mutation := newNodeRevisionMutation(c.config, OpUpdate)
+	return &NodeRevisionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *EntityRevisionClient) UpdateOne(er *EntityRevision) *EntityRevisionUpdateOne {
-	mutation := newEntityRevisionMutation(c.config, OpUpdateOne, withEntityRevision(er))
-	return &EntityRevisionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *NodeRevisionClient) UpdateOne(nr *NodeRevision) *NodeRevisionUpdateOne {
+	mutation := newNodeRevisionMutation(c.config, OpUpdateOne, withNodeRevision(nr))
+	return &NodeRevisionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *EntityRevisionClient) UpdateOneID(id qid.ID) *EntityRevisionUpdateOne {
-	mutation := newEntityRevisionMutation(c.config, OpUpdateOne, withEntityRevisionID(id))
-	return &EntityRevisionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *NodeRevisionClient) UpdateOneID(id qid.ID) *NodeRevisionUpdateOne {
+	mutation := newNodeRevisionMutation(c.config, OpUpdateOne, withNodeRevisionID(id))
+	return &NodeRevisionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for EntityRevision.
-func (c *EntityRevisionClient) Delete() *EntityRevisionDelete {
-	mutation := newEntityRevisionMutation(c.config, OpDelete)
-	return &EntityRevisionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for NodeRevision.
+func (c *NodeRevisionClient) Delete() *NodeRevisionDelete {
+	mutation := newNodeRevisionMutation(c.config, OpDelete)
+	return &NodeRevisionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a delete builder for the given entity.
-func (c *EntityRevisionClient) DeleteOne(er *EntityRevision) *EntityRevisionDeleteOne {
-	return c.DeleteOneID(er.ID)
+func (c *NodeRevisionClient) DeleteOne(nr *NodeRevision) *NodeRevisionDeleteOne {
+	return c.DeleteOneID(nr.ID)
 }
 
 // DeleteOneID returns a delete builder for the given id.
-func (c *EntityRevisionClient) DeleteOneID(id qid.ID) *EntityRevisionDeleteOne {
-	builder := c.Delete().Where(entityrevision.ID(id))
+func (c *NodeRevisionClient) DeleteOneID(id qid.ID) *NodeRevisionDeleteOne {
+	builder := c.Delete().Where(noderevision.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &EntityRevisionDeleteOne{builder}
+	return &NodeRevisionDeleteOne{builder}
 }
 
-// Query returns a query builder for EntityRevision.
-func (c *EntityRevisionClient) Query() *EntityRevisionQuery {
-	return &EntityRevisionQuery{
+// Query returns a query builder for NodeRevision.
+func (c *NodeRevisionClient) Query() *NodeRevisionQuery {
+	return &NodeRevisionQuery{
 		config: c.config,
 	}
 }
 
-// Get returns a EntityRevision entity by its id.
-func (c *EntityRevisionClient) Get(ctx context.Context, id qid.ID) (*EntityRevision, error) {
-	return c.Query().Where(entityrevision.ID(id)).Only(ctx)
+// Get returns a NodeRevision entity by its id.
+func (c *NodeRevisionClient) Get(ctx context.Context, id qid.ID) (*NodeRevision, error) {
+	return c.Query().Where(noderevision.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *EntityRevisionClient) GetX(ctx context.Context, id qid.ID) *EntityRevision {
+func (c *NodeRevisionClient) GetX(ctx context.Context, id qid.ID) *NodeRevision {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -237,9 +237,9 @@ func (c *EntityRevisionClient) GetX(ctx context.Context, id qid.ID) *EntityRevis
 }
 
 // Hooks returns the client hooks.
-func (c *EntityRevisionClient) Hooks() []Hook {
-	hooks := c.hooks.EntityRevision
-	return append(hooks[:len(hooks):len(hooks)], entityrevision.Hooks[:]...)
+func (c *NodeRevisionClient) Hooks() []Hook {
+	hooks := c.hooks.NodeRevision
+	return append(hooks[:len(hooks):len(hooks)], noderevision.Hooks[:]...)
 }
 
 // OrganizationClient is a client for the Organization schema.

@@ -10,7 +10,7 @@ import (
 
 func AddRevision(next ent.Mutator) ent.Mutator {
 	return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-		if m.Type() == ent.TypeEntityRevision {
+		if m.Type() == ent.TypeNodeRevision {
 			// We don't want to store revisions for records for revisions themselves,
 			// otherwise we'll end up in an infinite loop.
 			return next.Mutate(ctx, m)
@@ -30,10 +30,10 @@ func AddRevision(next ent.Mutator) ent.Mutator {
 		id := entityId(m)
 		node := mutatedNode(ctx, m, client)
 		value := toNodeValue(node)
-		_, err = client.EntityRevision.Create().
-			SetEntityID(string(id)).
-			SetEntityRevision("456").
-			SetEntityValue(&value).
+		_, err = client.NodeRevision.Create().
+			SetNodeID(string(id)).
+			SetNodeRevision("456").
+			SetNodeValue(&value).
 			Save(ctx)
 		if err != nil {
 			return nil, err

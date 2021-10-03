@@ -10,7 +10,7 @@ import (
 	"entgo.io/contrib/entgql"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/hashicorp/go-multierror"
-	"github.com/maxh/gqlgen-todos/orm/ent/entityrevision"
+	"github.com/maxh/gqlgen-todos/orm/ent/noderevision"
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
@@ -45,15 +45,15 @@ type Edge struct {
 	IDs  []qid.ID `json:"ids,omitempty"`  // node ids (where this edge point to).
 }
 
-func (er *EntityRevision) Node(ctx context.Context) (node *Node, err error) {
+func (nr *NodeRevision) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
-		ID:     er.ID,
-		Type:   "EntityRevision",
+		ID:     nr.ID,
+		Type:   "NodeRevision",
 		Fields: make([]*Field, 7),
 		Edges:  make([]*Edge, 0),
 	}
 	var buf []byte
-	if buf, err = json.Marshal(er.CreatedAt); err != nil {
+	if buf, err = json.Marshal(nr.CreatedAt); err != nil {
 		return nil, err
 	}
 	node.Fields[0] = &Field{
@@ -61,7 +61,7 @@ func (er *EntityRevision) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "created_at",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(er.CreatedBy); err != nil {
+	if buf, err = json.Marshal(nr.CreatedBy); err != nil {
 		return nil, err
 	}
 	node.Fields[1] = &Field{
@@ -69,7 +69,7 @@ func (er *EntityRevision) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "created_by",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(er.UpdatedAt); err != nil {
+	if buf, err = json.Marshal(nr.UpdatedAt); err != nil {
 		return nil, err
 	}
 	node.Fields[2] = &Field{
@@ -77,7 +77,7 @@ func (er *EntityRevision) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "updated_at",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(er.UpdatedBy); err != nil {
+	if buf, err = json.Marshal(nr.UpdatedBy); err != nil {
 		return nil, err
 	}
 	node.Fields[3] = &Field{
@@ -85,28 +85,28 @@ func (er *EntityRevision) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "updated_by",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(er.EntityID); err != nil {
+	if buf, err = json.Marshal(nr.NodeID); err != nil {
 		return nil, err
 	}
 	node.Fields[4] = &Field{
 		Type:  "string",
-		Name:  "entity_id",
+		Name:  "node_id",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(er.EntityRevision); err != nil {
+	if buf, err = json.Marshal(nr.NodeRevision); err != nil {
 		return nil, err
 	}
 	node.Fields[5] = &Field{
 		Type:  "string",
-		Name:  "entity_revision",
+		Name:  "node_revision",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(er.EntityValue); err != nil {
+	if buf, err = json.Marshal(nr.NodeValue); err != nil {
 		return nil, err
 	}
 	node.Fields[6] = &Field{
-		Type:  "*nodevalue.EntityValue",
-		Name:  "entity_value",
+		Type:  "*nodevalue.NodeValue",
+		Name:  "node_value",
 		Value: string(buf),
 	}
 	return node, nil
@@ -461,10 +461,10 @@ func (c *Client) Noder(ctx context.Context, id qid.ID, opts ...NodeOption) (_ No
 
 func (c *Client) noder(ctx context.Context, table string, id qid.ID) (Noder, error) {
 	switch table {
-	case entityrevision.Table:
-		n, err := c.EntityRevision.Query().
-			Where(entityrevision.ID(id)).
-			CollectFields(ctx, "EntityRevision").
+	case noderevision.Table:
+		n, err := c.NodeRevision.Query().
+			Where(noderevision.ID(id)).
+			CollectFields(ctx, "NodeRevision").
 			Only(ctx)
 		if err != nil {
 			return nil, err
@@ -579,10 +579,10 @@ func (c *Client) noders(ctx context.Context, table string, ids []qid.ID) ([]Node
 		idmap[id] = append(idmap[id], &noders[i])
 	}
 	switch table {
-	case entityrevision.Table:
-		nodes, err := c.EntityRevision.Query().
-			Where(entityrevision.IDIn(ids...)).
-			CollectFields(ctx, "EntityRevision").
+	case noderevision.Table:
+		nodes, err := c.NodeRevision.Query().
+			Where(noderevision.IDIn(ids...)).
+			CollectFields(ctx, "NodeRevision").
 			All(ctx)
 		if err != nil {
 			return nil, err

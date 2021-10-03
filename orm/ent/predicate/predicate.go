@@ -6,8 +6,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// EntityRevision is the predicate function for entityrevision builders.
-type EntityRevision func(*sql.Selector)
+// NodeRevision is the predicate function for noderevision builders.
+type NodeRevision func(*sql.Selector)
 
 // Organization is the predicate function for organization builders.
 type Organization func(*sql.Selector)

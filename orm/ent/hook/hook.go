@@ -9,15 +9,15 @@ import (
 	"github.com/maxh/gqlgen-todos/orm/ent"
 )
 
-// The EntityRevisionFunc type is an adapter to allow the use of ordinary
-// function as EntityRevision mutator.
-type EntityRevisionFunc func(context.Context, *ent.EntityRevisionMutation) (ent.Value, error)
+// The NodeRevisionFunc type is an adapter to allow the use of ordinary
+// function as NodeRevision mutator.
+type NodeRevisionFunc func(context.Context, *ent.NodeRevisionMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f EntityRevisionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.EntityRevisionMutation)
+func (f NodeRevisionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.NodeRevisionMutation)
 	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EntityRevisionMutation", m)
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.NodeRevisionMutation", m)
 	}
 	return f(ctx, mv)
 }
