@@ -320,8 +320,8 @@ type Todo {
     text: String!
     done: Boolean!
     user: User!
-    createdBy: ID
-    updatedBy: ID
+    createdBy: ID!
+    updatedBy: ID!
 }
 
 type User {
@@ -986,11 +986,14 @@ func (ec *executionContext) _Todo_createdBy(ctx context.Context, field graphql.C
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.(qid.ID)
 	fc.Result = res
-	return ec.marshalOID2githubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋqidᚐID(ctx, field.Selections, res)
+	return ec.marshalNID2githubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋqidᚐID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Todo_updatedBy(ctx context.Context, field graphql.CollectedField, obj *ent.Todo) (ret graphql.Marshaler) {
@@ -1018,11 +1021,14 @@ func (ec *executionContext) _Todo_updatedBy(ctx context.Context, field graphql.C
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.(qid.ID)
 	fc.Result = res
-	return ec.marshalOID2githubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋqidᚐID(ctx, field.Selections, res)
+	return ec.marshalNID2githubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋqidᚐID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _User_id(ctx context.Context, field graphql.CollectedField, obj *ent.User) (ret graphql.Marshaler) {
@@ -2549,8 +2555,14 @@ func (ec *executionContext) _Todo(ctx context.Context, sel ast.SelectionSet, obj
 			})
 		case "createdBy":
 			out.Values[i] = ec._Todo_createdBy(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "updatedBy":
 			out.Values[i] = ec._Todo_updatedBy(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3328,16 +3340,6 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 		return graphql.Null
 	}
 	return graphql.MarshalBoolean(*v)
-}
-
-func (ec *executionContext) unmarshalOID2githubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋqidᚐID(ctx context.Context, v interface{}) (qid.ID, error) {
-	var res qid.ID
-	err := res.UnmarshalGQL(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalOID2githubᚗcomᚋmaxhᚋgqlgenᚑtodosᚋqidᚐID(ctx context.Context, sel ast.SelectionSet, v qid.ID) graphql.Marshaler {
-	return v
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {
