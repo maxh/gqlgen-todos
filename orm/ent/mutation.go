@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/maxh/gqlgen-todos/orm/ent/entityrevision"
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
 	"github.com/maxh/gqlgen-todos/orm/ent/predicate"
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
@@ -27,11 +28,675 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeOrganization = "Organization"
-	TypeTenant       = "Tenant"
-	TypeTodo         = "Todo"
-	TypeUser         = "User"
+	TypeEntityRevision = "EntityRevision"
+	TypeOrganization   = "Organization"
+	TypeTenant         = "Tenant"
+	TypeTodo           = "Todo"
+	TypeUser           = "User"
 )
+
+// EntityRevisionMutation represents an operation that mutates the EntityRevision nodes in the graph.
+type EntityRevisionMutation struct {
+	config
+	op              Op
+	typ             string
+	id              *qid.ID
+	created_at      *time.Time
+	created_by      *qid.ID
+	updated_at      *time.Time
+	updated_by      *qid.ID
+	entity_id       *string
+	entity_revision *string
+	entity_value    **interface{}
+	clearedFields   map[string]struct{}
+	done            bool
+	oldValue        func(context.Context) (*EntityRevision, error)
+	predicates      []predicate.EntityRevision
+}
+
+var _ ent.Mutation = (*EntityRevisionMutation)(nil)
+
+// entityrevisionOption allows management of the mutation configuration using functional options.
+type entityrevisionOption func(*EntityRevisionMutation)
+
+// newEntityRevisionMutation creates new mutation for the EntityRevision entity.
+func newEntityRevisionMutation(c config, op Op, opts ...entityrevisionOption) *EntityRevisionMutation {
+	m := &EntityRevisionMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeEntityRevision,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withEntityRevisionID sets the ID field of the mutation.
+func withEntityRevisionID(id qid.ID) entityrevisionOption {
+	return func(m *EntityRevisionMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *EntityRevision
+		)
+		m.oldValue = func(ctx context.Context) (*EntityRevision, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().EntityRevision.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withEntityRevision sets the old EntityRevision of the mutation.
+func withEntityRevision(node *EntityRevision) entityrevisionOption {
+	return func(m *EntityRevisionMutation) {
+		m.oldValue = func(context.Context) (*EntityRevision, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m EntityRevisionMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m EntityRevisionMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of EntityRevision entities.
+func (m *EntityRevisionMutation) SetID(id qid.ID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *EntityRevisionMutation) ID() (id qid.ID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *EntityRevisionMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *EntityRevisionMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the EntityRevision entity.
+// If the EntityRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EntityRevisionMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *EntityRevisionMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (m *EntityRevisionMutation) SetCreatedBy(q qid.ID) {
+	m.created_by = &q
+}
+
+// CreatedBy returns the value of the "created_by" field in the mutation.
+func (m *EntityRevisionMutation) CreatedBy() (r qid.ID, exists bool) {
+	v := m.created_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedBy returns the old "created_by" field's value of the EntityRevision entity.
+// If the EntityRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EntityRevisionMutation) OldCreatedBy(ctx context.Context) (v qid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedBy: %w", err)
+	}
+	return oldValue.CreatedBy, nil
+}
+
+// ClearCreatedBy clears the value of the "created_by" field.
+func (m *EntityRevisionMutation) ClearCreatedBy() {
+	m.created_by = nil
+	m.clearedFields[entityrevision.FieldCreatedBy] = struct{}{}
+}
+
+// CreatedByCleared returns if the "created_by" field was cleared in this mutation.
+func (m *EntityRevisionMutation) CreatedByCleared() bool {
+	_, ok := m.clearedFields[entityrevision.FieldCreatedBy]
+	return ok
+}
+
+// ResetCreatedBy resets all changes to the "created_by" field.
+func (m *EntityRevisionMutation) ResetCreatedBy() {
+	m.created_by = nil
+	delete(m.clearedFields, entityrevision.FieldCreatedBy)
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *EntityRevisionMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *EntityRevisionMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the EntityRevision entity.
+// If the EntityRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EntityRevisionMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *EntityRevisionMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetUpdatedBy sets the "updated_by" field.
+func (m *EntityRevisionMutation) SetUpdatedBy(q qid.ID) {
+	m.updated_by = &q
+}
+
+// UpdatedBy returns the value of the "updated_by" field in the mutation.
+func (m *EntityRevisionMutation) UpdatedBy() (r qid.ID, exists bool) {
+	v := m.updated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedBy returns the old "updated_by" field's value of the EntityRevision entity.
+// If the EntityRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EntityRevisionMutation) OldUpdatedBy(ctx context.Context) (v qid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedBy: %w", err)
+	}
+	return oldValue.UpdatedBy, nil
+}
+
+// ClearUpdatedBy clears the value of the "updated_by" field.
+func (m *EntityRevisionMutation) ClearUpdatedBy() {
+	m.updated_by = nil
+	m.clearedFields[entityrevision.FieldUpdatedBy] = struct{}{}
+}
+
+// UpdatedByCleared returns if the "updated_by" field was cleared in this mutation.
+func (m *EntityRevisionMutation) UpdatedByCleared() bool {
+	_, ok := m.clearedFields[entityrevision.FieldUpdatedBy]
+	return ok
+}
+
+// ResetUpdatedBy resets all changes to the "updated_by" field.
+func (m *EntityRevisionMutation) ResetUpdatedBy() {
+	m.updated_by = nil
+	delete(m.clearedFields, entityrevision.FieldUpdatedBy)
+}
+
+// SetEntityID sets the "entity_id" field.
+func (m *EntityRevisionMutation) SetEntityID(s string) {
+	m.entity_id = &s
+}
+
+// EntityID returns the value of the "entity_id" field in the mutation.
+func (m *EntityRevisionMutation) EntityID() (r string, exists bool) {
+	v := m.entity_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEntityID returns the old "entity_id" field's value of the EntityRevision entity.
+// If the EntityRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EntityRevisionMutation) OldEntityID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldEntityID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldEntityID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEntityID: %w", err)
+	}
+	return oldValue.EntityID, nil
+}
+
+// ResetEntityID resets all changes to the "entity_id" field.
+func (m *EntityRevisionMutation) ResetEntityID() {
+	m.entity_id = nil
+}
+
+// SetEntityRevision sets the "entity_revision" field.
+func (m *EntityRevisionMutation) SetEntityRevision(s string) {
+	m.entity_revision = &s
+}
+
+// EntityRevision returns the value of the "entity_revision" field in the mutation.
+func (m *EntityRevisionMutation) EntityRevision() (r string, exists bool) {
+	v := m.entity_revision
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEntityRevision returns the old "entity_revision" field's value of the EntityRevision entity.
+// If the EntityRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EntityRevisionMutation) OldEntityRevision(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldEntityRevision is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldEntityRevision requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEntityRevision: %w", err)
+	}
+	return oldValue.EntityRevision, nil
+}
+
+// ResetEntityRevision resets all changes to the "entity_revision" field.
+func (m *EntityRevisionMutation) ResetEntityRevision() {
+	m.entity_revision = nil
+}
+
+// SetEntityValue sets the "entity_value" field.
+func (m *EntityRevisionMutation) SetEntityValue(i *interface{}) {
+	m.entity_value = &i
+}
+
+// EntityValue returns the value of the "entity_value" field in the mutation.
+func (m *EntityRevisionMutation) EntityValue() (r *interface{}, exists bool) {
+	v := m.entity_value
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEntityValue returns the old "entity_value" field's value of the EntityRevision entity.
+// If the EntityRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EntityRevisionMutation) OldEntityValue(ctx context.Context) (v *interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldEntityValue is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldEntityValue requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEntityValue: %w", err)
+	}
+	return oldValue.EntityValue, nil
+}
+
+// ResetEntityValue resets all changes to the "entity_value" field.
+func (m *EntityRevisionMutation) ResetEntityValue() {
+	m.entity_value = nil
+}
+
+// Where appends a list predicates to the EntityRevisionMutation builder.
+func (m *EntityRevisionMutation) Where(ps ...predicate.EntityRevision) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *EntityRevisionMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (EntityRevision).
+func (m *EntityRevisionMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *EntityRevisionMutation) Fields() []string {
+	fields := make([]string, 0, 7)
+	if m.created_at != nil {
+		fields = append(fields, entityrevision.FieldCreatedAt)
+	}
+	if m.created_by != nil {
+		fields = append(fields, entityrevision.FieldCreatedBy)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, entityrevision.FieldUpdatedAt)
+	}
+	if m.updated_by != nil {
+		fields = append(fields, entityrevision.FieldUpdatedBy)
+	}
+	if m.entity_id != nil {
+		fields = append(fields, entityrevision.FieldEntityID)
+	}
+	if m.entity_revision != nil {
+		fields = append(fields, entityrevision.FieldEntityRevision)
+	}
+	if m.entity_value != nil {
+		fields = append(fields, entityrevision.FieldEntityValue)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *EntityRevisionMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case entityrevision.FieldCreatedAt:
+		return m.CreatedAt()
+	case entityrevision.FieldCreatedBy:
+		return m.CreatedBy()
+	case entityrevision.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case entityrevision.FieldUpdatedBy:
+		return m.UpdatedBy()
+	case entityrevision.FieldEntityID:
+		return m.EntityID()
+	case entityrevision.FieldEntityRevision:
+		return m.EntityRevision()
+	case entityrevision.FieldEntityValue:
+		return m.EntityValue()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *EntityRevisionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case entityrevision.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case entityrevision.FieldCreatedBy:
+		return m.OldCreatedBy(ctx)
+	case entityrevision.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case entityrevision.FieldUpdatedBy:
+		return m.OldUpdatedBy(ctx)
+	case entityrevision.FieldEntityID:
+		return m.OldEntityID(ctx)
+	case entityrevision.FieldEntityRevision:
+		return m.OldEntityRevision(ctx)
+	case entityrevision.FieldEntityValue:
+		return m.OldEntityValue(ctx)
+	}
+	return nil, fmt.Errorf("unknown EntityRevision field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *EntityRevisionMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case entityrevision.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case entityrevision.FieldCreatedBy:
+		v, ok := value.(qid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedBy(v)
+		return nil
+	case entityrevision.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case entityrevision.FieldUpdatedBy:
+		v, ok := value.(qid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedBy(v)
+		return nil
+	case entityrevision.FieldEntityID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEntityID(v)
+		return nil
+	case entityrevision.FieldEntityRevision:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEntityRevision(v)
+		return nil
+	case entityrevision.FieldEntityValue:
+		v, ok := value.(*interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEntityValue(v)
+		return nil
+	}
+	return fmt.Errorf("unknown EntityRevision field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *EntityRevisionMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *EntityRevisionMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *EntityRevisionMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown EntityRevision numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *EntityRevisionMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(entityrevision.FieldCreatedBy) {
+		fields = append(fields, entityrevision.FieldCreatedBy)
+	}
+	if m.FieldCleared(entityrevision.FieldUpdatedBy) {
+		fields = append(fields, entityrevision.FieldUpdatedBy)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *EntityRevisionMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *EntityRevisionMutation) ClearField(name string) error {
+	switch name {
+	case entityrevision.FieldCreatedBy:
+		m.ClearCreatedBy()
+		return nil
+	case entityrevision.FieldUpdatedBy:
+		m.ClearUpdatedBy()
+		return nil
+	}
+	return fmt.Errorf("unknown EntityRevision nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *EntityRevisionMutation) ResetField(name string) error {
+	switch name {
+	case entityrevision.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case entityrevision.FieldCreatedBy:
+		m.ResetCreatedBy()
+		return nil
+	case entityrevision.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case entityrevision.FieldUpdatedBy:
+		m.ResetUpdatedBy()
+		return nil
+	case entityrevision.FieldEntityID:
+		m.ResetEntityID()
+		return nil
+	case entityrevision.FieldEntityRevision:
+		m.ResetEntityRevision()
+		return nil
+	case entityrevision.FieldEntityValue:
+		m.ResetEntityValue()
+		return nil
+	}
+	return fmt.Errorf("unknown EntityRevision field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *EntityRevisionMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *EntityRevisionMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *EntityRevisionMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *EntityRevisionMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *EntityRevisionMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *EntityRevisionMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *EntityRevisionMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown EntityRevision unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *EntityRevisionMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown EntityRevision edge %s", name)
+}
 
 // OrganizationMutation represents an operation that mutates the Organization nodes in the graph.
 type OrganizationMutation struct {

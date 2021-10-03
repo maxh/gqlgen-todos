@@ -10,6 +10,7 @@ import (
 	"entgo.io/contrib/entgql"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/hashicorp/go-multierror"
+	"github.com/maxh/gqlgen-todos/orm/ent/entityrevision"
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
@@ -42,6 +43,73 @@ type Edge struct {
 	Type string   `json:"type,omitempty"` // edge type.
 	Name string   `json:"name,omitempty"` // edge name.
 	IDs  []qid.ID `json:"ids,omitempty"`  // node ids (where this edge point to).
+}
+
+func (er *EntityRevision) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     er.ID,
+		Type:   "EntityRevision",
+		Fields: make([]*Field, 7),
+		Edges:  make([]*Edge, 0),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(er.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(er.CreatedBy); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "qid.ID",
+		Name:  "created_by",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(er.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(er.UpdatedBy); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "qid.ID",
+		Name:  "updated_by",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(er.EntityID); err != nil {
+		return nil, err
+	}
+	node.Fields[4] = &Field{
+		Type:  "string",
+		Name:  "entity_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(er.EntityRevision); err != nil {
+		return nil, err
+	}
+	node.Fields[5] = &Field{
+		Type:  "string",
+		Name:  "entity_revision",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(er.EntityValue); err != nil {
+		return nil, err
+	}
+	node.Fields[6] = &Field{
+		Type:  "*interface {}",
+		Name:  "entity_value",
+		Value: string(buf),
+	}
+	return node, nil
 }
 
 func (o *Organization) Node(ctx context.Context) (node *Node, err error) {
@@ -393,6 +461,15 @@ func (c *Client) Noder(ctx context.Context, id qid.ID, opts ...NodeOption) (_ No
 
 func (c *Client) noder(ctx context.Context, table string, id qid.ID) (Noder, error) {
 	switch table {
+	case entityrevision.Table:
+		n, err := c.EntityRevision.Query().
+			Where(entityrevision.ID(id)).
+			CollectFields(ctx, "EntityRevision").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
 	case organization.Table:
 		n, err := c.Organization.Query().
 			Where(organization.ID(id)).
@@ -502,6 +579,19 @@ func (c *Client) noders(ctx context.Context, table string, ids []qid.ID) ([]Node
 		idmap[id] = append(idmap[id], &noders[i])
 	}
 	switch table {
+	case entityrevision.Table:
+		nodes, err := c.EntityRevision.Query().
+			Where(entityrevision.IDIn(ids...)).
+			CollectFields(ctx, "EntityRevision").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
 	case organization.Table:
 		nodes, err := c.Organization.Query().
 			Where(organization.IDIn(ids...)).

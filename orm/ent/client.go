@@ -10,6 +10,7 @@ import (
 	"github.com/maxh/gqlgen-todos/orm/ent/migrate"
 	"github.com/maxh/gqlgen-todos/qid"
 
+	"github.com/maxh/gqlgen-todos/orm/ent/entityrevision"
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
@@ -25,6 +26,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// EntityRevision is the client for interacting with the EntityRevision builders.
+	EntityRevision *EntityRevisionClient
 	// Organization is the client for interacting with the Organization builders.
 	Organization *OrganizationClient
 	// Tenant is the client for interacting with the Tenant builders.
@@ -46,6 +49,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.EntityRevision = NewEntityRevisionClient(c.config)
 	c.Organization = NewOrganizationClient(c.config)
 	c.Tenant = NewTenantClient(c.config)
 	c.Todo = NewTodoClient(c.config)
@@ -81,12 +85,13 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:          ctx,
-		config:       cfg,
-		Organization: NewOrganizationClient(cfg),
-		Tenant:       NewTenantClient(cfg),
-		Todo:         NewTodoClient(cfg),
-		User:         NewUserClient(cfg),
+		ctx:            ctx,
+		config:         cfg,
+		EntityRevision: NewEntityRevisionClient(cfg),
+		Organization:   NewOrganizationClient(cfg),
+		Tenant:         NewTenantClient(cfg),
+		Todo:           NewTodoClient(cfg),
+		User:           NewUserClient(cfg),
 	}, nil
 }
 
@@ -104,18 +109,19 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		config:       cfg,
-		Organization: NewOrganizationClient(cfg),
-		Tenant:       NewTenantClient(cfg),
-		Todo:         NewTodoClient(cfg),
-		User:         NewUserClient(cfg),
+		config:         cfg,
+		EntityRevision: NewEntityRevisionClient(cfg),
+		Organization:   NewOrganizationClient(cfg),
+		Tenant:         NewTenantClient(cfg),
+		Todo:           NewTodoClient(cfg),
+		User:           NewUserClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Organization.
+//		EntityRevision.
 //		Query().
 //		Count(ctx)
 //
@@ -138,10 +144,102 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.EntityRevision.Use(hooks...)
 	c.Organization.Use(hooks...)
 	c.Tenant.Use(hooks...)
 	c.Todo.Use(hooks...)
 	c.User.Use(hooks...)
+}
+
+// EntityRevisionClient is a client for the EntityRevision schema.
+type EntityRevisionClient struct {
+	config
+}
+
+// NewEntityRevisionClient returns a client for the EntityRevision from the given config.
+func NewEntityRevisionClient(c config) *EntityRevisionClient {
+	return &EntityRevisionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `entityrevision.Hooks(f(g(h())))`.
+func (c *EntityRevisionClient) Use(hooks ...Hook) {
+	c.hooks.EntityRevision = append(c.hooks.EntityRevision, hooks...)
+}
+
+// Create returns a create builder for EntityRevision.
+func (c *EntityRevisionClient) Create() *EntityRevisionCreate {
+	mutation := newEntityRevisionMutation(c.config, OpCreate)
+	return &EntityRevisionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EntityRevision entities.
+func (c *EntityRevisionClient) CreateBulk(builders ...*EntityRevisionCreate) *EntityRevisionCreateBulk {
+	return &EntityRevisionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EntityRevision.
+func (c *EntityRevisionClient) Update() *EntityRevisionUpdate {
+	mutation := newEntityRevisionMutation(c.config, OpUpdate)
+	return &EntityRevisionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EntityRevisionClient) UpdateOne(er *EntityRevision) *EntityRevisionUpdateOne {
+	mutation := newEntityRevisionMutation(c.config, OpUpdateOne, withEntityRevision(er))
+	return &EntityRevisionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EntityRevisionClient) UpdateOneID(id qid.ID) *EntityRevisionUpdateOne {
+	mutation := newEntityRevisionMutation(c.config, OpUpdateOne, withEntityRevisionID(id))
+	return &EntityRevisionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EntityRevision.
+func (c *EntityRevisionClient) Delete() *EntityRevisionDelete {
+	mutation := newEntityRevisionMutation(c.config, OpDelete)
+	return &EntityRevisionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *EntityRevisionClient) DeleteOne(er *EntityRevision) *EntityRevisionDeleteOne {
+	return c.DeleteOneID(er.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *EntityRevisionClient) DeleteOneID(id qid.ID) *EntityRevisionDeleteOne {
+	builder := c.Delete().Where(entityrevision.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EntityRevisionDeleteOne{builder}
+}
+
+// Query returns a query builder for EntityRevision.
+func (c *EntityRevisionClient) Query() *EntityRevisionQuery {
+	return &EntityRevisionQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a EntityRevision entity by its id.
+func (c *EntityRevisionClient) Get(ctx context.Context, id qid.ID) (*EntityRevision, error) {
+	return c.Query().Where(entityrevision.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EntityRevisionClient) GetX(ctx context.Context, id qid.ID) *EntityRevision {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *EntityRevisionClient) Hooks() []Hook {
+	hooks := c.hooks.EntityRevision
+	return append(hooks[:len(hooks):len(hooks)], entityrevision.Hooks[:]...)
 }
 
 // OrganizationClient is a client for the Organization schema.

@@ -9,6 +9,18 @@ import (
 )
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (er *EntityRevisionQuery) CollectFields(ctx context.Context, satisfies ...string) *EntityRevisionQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		er = er.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return er
+}
+
+func (er *EntityRevisionQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *EntityRevisionQuery {
+	return er
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
 func (o *OrganizationQuery) CollectFields(ctx context.Context, satisfies ...string) *OrganizationQuery {
 	if fc := graphql.GetFieldContext(ctx); fc != nil {
 		o = o.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)

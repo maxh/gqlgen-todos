@@ -12,6 +12,8 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// EntityRevision is the client for interacting with the EntityRevision builders.
+	EntityRevision *EntityRevisionClient
 	// Organization is the client for interacting with the Organization builders.
 	Organization *OrganizationClient
 	// Tenant is the client for interacting with the Tenant builders.
@@ -155,6 +157,7 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.EntityRevision = NewEntityRevisionClient(tx.config)
 	tx.Organization = NewOrganizationClient(tx.config)
 	tx.Tenant = NewTenantClient(tx.config)
 	tx.Todo = NewTodoClient(tx.config)
@@ -168,7 +171,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: Organization.QueryXXX(), the query will be executed
+// applies a query, for example: EntityRevision.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

@@ -6,6 +6,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/maxh/gqlgen-todos/orm/ent/entityrevision"
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
@@ -21,6 +22,47 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	entityrevisionMixin := schema.EntityRevision{}.Mixin()
+	entityrevision.Policy = privacy.NewPolicies(entityrevisionMixin[0], schema.EntityRevision{})
+	entityrevision.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := entityrevision.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	entityrevisionMixinHooks2 := entityrevisionMixin[2].Hooks()
+
+	entityrevision.Hooks[1] = entityrevisionMixinHooks2[0]
+	entityrevisionMixinFields1 := entityrevisionMixin[1].Fields()
+	_ = entityrevisionMixinFields1
+	entityrevisionMixinFields2 := entityrevisionMixin[2].Fields()
+	_ = entityrevisionMixinFields2
+	entityrevisionFields := schema.EntityRevision{}.Fields()
+	_ = entityrevisionFields
+	// entityrevisionDescCreatedAt is the schema descriptor for created_at field.
+	entityrevisionDescCreatedAt := entityrevisionMixinFields2[0].Descriptor()
+	// entityrevision.DefaultCreatedAt holds the default value on creation for the created_at field.
+	entityrevision.DefaultCreatedAt = entityrevisionDescCreatedAt.Default.(func() time.Time)
+	// entityrevisionDescUpdatedAt is the schema descriptor for updated_at field.
+	entityrevisionDescUpdatedAt := entityrevisionMixinFields2[2].Descriptor()
+	// entityrevision.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	entityrevision.DefaultUpdatedAt = entityrevisionDescUpdatedAt.Default.(func() time.Time)
+	// entityrevision.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	entityrevision.UpdateDefaultUpdatedAt = entityrevisionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// entityrevisionDescEntityID is the schema descriptor for entity_id field.
+	entityrevisionDescEntityID := entityrevisionFields[0].Descriptor()
+	// entityrevision.EntityIDValidator is a validator for the "entity_id" field. It is called by the builders before save.
+	entityrevision.EntityIDValidator = entityrevisionDescEntityID.Validators[0].(func(string) error)
+	// entityrevisionDescEntityRevision is the schema descriptor for entity_revision field.
+	entityrevisionDescEntityRevision := entityrevisionFields[1].Descriptor()
+	// entityrevision.EntityRevisionValidator is a validator for the "entity_revision" field. It is called by the builders before save.
+	entityrevision.EntityRevisionValidator = entityrevisionDescEntityRevision.Validators[0].(func(string) error)
+	// entityrevisionDescID is the schema descriptor for id field.
+	entityrevisionDescID := entityrevisionMixinFields1[0].Descriptor()
+	// entityrevision.DefaultID holds the default value on creation for the id field.
+	entityrevision.DefaultID = entityrevisionDescID.Default.(func() qid.ID)
 	organizationMixin := schema.Organization{}.Mixin()
 	organization.Policy = privacy.NewPolicies(organizationMixin[0], schema.Organization{})
 	organization.Hooks[0] = func(next ent.Mutator) ent.Mutator {

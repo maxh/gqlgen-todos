@@ -8,6 +8,7 @@ require (
 	github.com/99designs/gqlgen v0.14.0
 	github.com/go-chi/chi v3.3.2+incompatible
 	github.com/hashicorp/go-multierror v1.1.1
+	github.com/lib/pq v1.10.2
 	github.com/mattn/go-sqlite3 v1.14.8
 	github.com/oklog/ulid/v2 v2.0.2
 	github.com/vektah/gqlparser/v2 v2.2.0
@@ -23,7 +24,6 @@ require (
 	github.com/graphql-go/graphql v0.7.10-0.20210411022516-8a92e977c10b // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
-	github.com/lib/pq v1.10.2 // indirect
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/vmihailenco/tagparser v0.1.2 // indirect
