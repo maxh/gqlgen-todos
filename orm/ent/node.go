@@ -105,7 +105,7 @@ func (er *EntityRevision) Node(ctx context.Context) (node *Node, err error) {
 		return nil, err
 	}
 	node.Fields[6] = &Field{
-		Type:  "*interface {}",
+		Type:  "*util.EntityValue",
 		Name:  "entity_value",
 		Value: string(buf),
 	}

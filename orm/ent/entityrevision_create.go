@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/maxh/gqlgen-todos/orm/ent/entityrevision"
 	"github.com/maxh/gqlgen-todos/qid"
+	"github.com/maxh/gqlgen-todos/util"
 )
 
 // EntityRevisionCreate is the builder for creating a EntityRevision entity.
@@ -90,8 +91,8 @@ func (erc *EntityRevisionCreate) SetEntityRevision(s string) *EntityRevisionCrea
 }
 
 // SetEntityValue sets the "entity_value" field.
-func (erc *EntityRevisionCreate) SetEntityValue(i *interface{}) *EntityRevisionCreate {
-	erc.mutation.SetEntityValue(i)
+func (erc *EntityRevisionCreate) SetEntityValue(uv *util.EntityValue) *EntityRevisionCreate {
+	erc.mutation.SetEntityValue(uv)
 	return erc
 }
 

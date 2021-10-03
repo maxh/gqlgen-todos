@@ -20,7 +20,7 @@ func (EntityRevision) Fields() []ent.Field {
 		field.String("entity_revision").
 			NotEmpty().
 			Immutable(),
-		field.JSON("entity_value", &util.Any).
+		field.JSON("entity_value", &util.EntityValue{}).
 			Immutable(),
 	}
 }

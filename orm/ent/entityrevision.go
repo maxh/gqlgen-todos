@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/maxh/gqlgen-todos/orm/ent/entityrevision"
 	"github.com/maxh/gqlgen-todos/qid"
+	"github.com/maxh/gqlgen-todos/util"
 )
 
 // EntityRevision is the model entity for the EntityRevision schema.
@@ -31,7 +32,7 @@ type EntityRevision struct {
 	// EntityRevision holds the value of the "entity_revision" field.
 	EntityRevision string `json:"entity_revision,omitempty"`
 	// EntityValue holds the value of the "entity_value" field.
-	EntityValue *interface{} `json:"entity_value,omitempty"`
+	EntityValue *util.EntityValue `json:"entity_value,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.

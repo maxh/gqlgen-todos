@@ -1,0 +1,22 @@
+{{ define "mapping" }}
+
+{{ $pkg := base $.Config.Package }}
+{{ template "header" $ }}
+
+// TablesByResourceType maps qid resource types to table names.
+var TablesByResourceType = map[string]string{
+    {{- range $node := $.Nodes }}
+        {{- if $annotation := $node.Annotations.QID }}
+            "{{ $annotation.ResourceType }}": {{ $node.Package }}.Table,
+        {{- end }}
+    {{- end }}
+}
+
+// TablesByEntType maps qid resource types to table names.
+var TablesByEntType = map[string]string{
+    {{- range $node := $.Nodes }}
+        "{{ $node.Name }}": {{ $node.Package }}.Table,
+    {{- end }}
+}
+
+{{ end }}
