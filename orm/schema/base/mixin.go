@@ -7,13 +7,13 @@ import (
 	"github.com/maxh/gqlgen-todos/orm/rule"
 )
 
-// BaseMixin for all schemas in the graph.
-type BaseMixin struct {
+// Mixin for all schemas in the graph.
+type Mixin struct {
 	mixin.Schema
 }
 
 // Policy defines the privacy policy of the BaseMixin.
-func (BaseMixin) Policy() ent.Policy {
+func (Mixin) Policy() ent.Policy {
 	return privacy.Policy{
 		Mutation: privacy.MutationPolicy{
 			rule.DenyIfNoViewer(),

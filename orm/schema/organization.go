@@ -31,7 +31,7 @@ func (Organization) Edges() []ent.Edge {
 // Mixin of the Organization.
 func (Organization) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		base.BaseMixin{},
+		base.Mixin{},
 		qid.MixinWithPrefix("organization"),
 		TenantMixin{},
 		AuditMixin{},
