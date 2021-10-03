@@ -38,15 +38,15 @@ func (tc *TodoCreate) SetNillableCreatedAt(t *time.Time) *TodoCreate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (tc *TodoCreate) SetCreatedBy(s string) *TodoCreate {
-	tc.mutation.SetCreatedBy(s)
+func (tc *TodoCreate) SetCreatedBy(q qid.ID) *TodoCreate {
+	tc.mutation.SetCreatedBy(q)
 	return tc
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (tc *TodoCreate) SetNillableCreatedBy(s *string) *TodoCreate {
-	if s != nil {
-		tc.SetCreatedBy(*s)
+func (tc *TodoCreate) SetNillableCreatedBy(q *qid.ID) *TodoCreate {
+	if q != nil {
+		tc.SetCreatedBy(*q)
 	}
 	return tc
 }
@@ -66,15 +66,15 @@ func (tc *TodoCreate) SetNillableUpdatedAt(t *time.Time) *TodoCreate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (tc *TodoCreate) SetUpdatedBy(s string) *TodoCreate {
-	tc.mutation.SetUpdatedBy(s)
+func (tc *TodoCreate) SetUpdatedBy(q qid.ID) *TodoCreate {
+	tc.mutation.SetUpdatedBy(q)
 	return tc
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (tc *TodoCreate) SetNillableUpdatedBy(s *string) *TodoCreate {
-	if s != nil {
-		tc.SetUpdatedBy(*s)
+func (tc *TodoCreate) SetNillableUpdatedBy(q *qid.ID) *TodoCreate {
+	if q != nil {
+		tc.SetUpdatedBy(*q)
 	}
 	return tc
 }

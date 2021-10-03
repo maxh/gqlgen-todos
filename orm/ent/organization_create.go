@@ -38,15 +38,15 @@ func (oc *OrganizationCreate) SetNillableCreatedAt(t *time.Time) *OrganizationCr
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (oc *OrganizationCreate) SetCreatedBy(s string) *OrganizationCreate {
-	oc.mutation.SetCreatedBy(s)
+func (oc *OrganizationCreate) SetCreatedBy(q qid.ID) *OrganizationCreate {
+	oc.mutation.SetCreatedBy(q)
 	return oc
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (oc *OrganizationCreate) SetNillableCreatedBy(s *string) *OrganizationCreate {
-	if s != nil {
-		oc.SetCreatedBy(*s)
+func (oc *OrganizationCreate) SetNillableCreatedBy(q *qid.ID) *OrganizationCreate {
+	if q != nil {
+		oc.SetCreatedBy(*q)
 	}
 	return oc
 }
@@ -66,15 +66,15 @@ func (oc *OrganizationCreate) SetNillableUpdatedAt(t *time.Time) *OrganizationCr
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (oc *OrganizationCreate) SetUpdatedBy(s string) *OrganizationCreate {
-	oc.mutation.SetUpdatedBy(s)
+func (oc *OrganizationCreate) SetUpdatedBy(q qid.ID) *OrganizationCreate {
+	oc.mutation.SetUpdatedBy(q)
 	return oc
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (oc *OrganizationCreate) SetNillableUpdatedBy(s *string) *OrganizationCreate {
-	if s != nil {
-		oc.SetUpdatedBy(*s)
+func (oc *OrganizationCreate) SetNillableUpdatedBy(q *qid.ID) *OrganizationCreate {
+	if q != nil {
+		oc.SetUpdatedBy(*q)
 	}
 	return oc
 }

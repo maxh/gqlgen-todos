@@ -39,15 +39,15 @@ func (uc *UserCreate) SetNillableCreatedAt(t *time.Time) *UserCreate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (uc *UserCreate) SetCreatedBy(s string) *UserCreate {
-	uc.mutation.SetCreatedBy(s)
+func (uc *UserCreate) SetCreatedBy(q qid.ID) *UserCreate {
+	uc.mutation.SetCreatedBy(q)
 	return uc
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (uc *UserCreate) SetNillableCreatedBy(s *string) *UserCreate {
-	if s != nil {
-		uc.SetCreatedBy(*s)
+func (uc *UserCreate) SetNillableCreatedBy(q *qid.ID) *UserCreate {
+	if q != nil {
+		uc.SetCreatedBy(*q)
 	}
 	return uc
 }
@@ -67,15 +67,15 @@ func (uc *UserCreate) SetNillableUpdatedAt(t *time.Time) *UserCreate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (uc *UserCreate) SetUpdatedBy(s string) *UserCreate {
-	uc.mutation.SetUpdatedBy(s)
+func (uc *UserCreate) SetUpdatedBy(q qid.ID) *UserCreate {
+	uc.mutation.SetUpdatedBy(q)
 	return uc
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (uc *UserCreate) SetNillableUpdatedBy(s *string) *UserCreate {
-	if s != nil {
-		uc.SetUpdatedBy(*s)
+func (uc *UserCreate) SetNillableUpdatedBy(q *qid.ID) *UserCreate {
+	if q != nil {
+		uc.SetUpdatedBy(*q)
 	}
 	return uc
 }

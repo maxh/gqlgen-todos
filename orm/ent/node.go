@@ -64,7 +64,7 @@ func (o *Organization) Node(ctx context.Context) (node *Node, err error) {
 		return nil, err
 	}
 	node.Fields[1] = &Field{
-		Type:  "string",
+		Type:  "qid.ID",
 		Name:  "created_by",
 		Value: string(buf),
 	}
@@ -80,7 +80,7 @@ func (o *Organization) Node(ctx context.Context) (node *Node, err error) {
 		return nil, err
 	}
 	node.Fields[3] = &Field{
-		Type:  "string",
+		Type:  "qid.ID",
 		Name:  "updated_by",
 		Value: string(buf),
 	}
@@ -135,7 +135,7 @@ func (t *Tenant) Node(ctx context.Context) (node *Node, err error) {
 		return nil, err
 	}
 	node.Fields[1] = &Field{
-		Type:  "string",
+		Type:  "qid.ID",
 		Name:  "created_by",
 		Value: string(buf),
 	}
@@ -151,7 +151,7 @@ func (t *Tenant) Node(ctx context.Context) (node *Node, err error) {
 		return nil, err
 	}
 	node.Fields[3] = &Field{
-		Type:  "string",
+		Type:  "qid.ID",
 		Name:  "updated_by",
 		Value: string(buf),
 	}
@@ -186,7 +186,7 @@ func (t *Todo) Node(ctx context.Context) (node *Node, err error) {
 		return nil, err
 	}
 	node.Fields[1] = &Field{
-		Type:  "string",
+		Type:  "qid.ID",
 		Name:  "created_by",
 		Value: string(buf),
 	}
@@ -202,7 +202,7 @@ func (t *Todo) Node(ctx context.Context) (node *Node, err error) {
 		return nil, err
 	}
 	node.Fields[3] = &Field{
-		Type:  "string",
+		Type:  "qid.ID",
 		Name:  "updated_by",
 		Value: string(buf),
 	}
@@ -265,7 +265,7 @@ func (u *User) Node(ctx context.Context) (node *Node, err error) {
 		return nil, err
 	}
 	node.Fields[1] = &Field{
-		Type:  "string",
+		Type:  "qid.ID",
 		Name:  "created_by",
 		Value: string(buf),
 	}
@@ -281,7 +281,7 @@ func (u *User) Node(ctx context.Context) (node *Node, err error) {
 		return nil, err
 	}
 	node.Fields[3] = &Field{
-		Type:  "string",
+		Type:  "qid.ID",
 		Name:  "updated_by",
 		Value: string(buf),
 	}

@@ -32,15 +32,15 @@ func (ou *OrganizationUpdate) Where(ps ...predicate.Organization) *OrganizationU
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (ou *OrganizationUpdate) SetCreatedBy(s string) *OrganizationUpdate {
-	ou.mutation.SetCreatedBy(s)
+func (ou *OrganizationUpdate) SetCreatedBy(q qid.ID) *OrganizationUpdate {
+	ou.mutation.SetCreatedBy(q)
 	return ou
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (ou *OrganizationUpdate) SetNillableCreatedBy(s *string) *OrganizationUpdate {
-	if s != nil {
-		ou.SetCreatedBy(*s)
+func (ou *OrganizationUpdate) SetNillableCreatedBy(q *qid.ID) *OrganizationUpdate {
+	if q != nil {
+		ou.SetCreatedBy(*q)
 	}
 	return ou
 }
@@ -58,15 +58,15 @@ func (ou *OrganizationUpdate) SetUpdatedAt(t time.Time) *OrganizationUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (ou *OrganizationUpdate) SetUpdatedBy(s string) *OrganizationUpdate {
-	ou.mutation.SetUpdatedBy(s)
+func (ou *OrganizationUpdate) SetUpdatedBy(q qid.ID) *OrganizationUpdate {
+	ou.mutation.SetUpdatedBy(q)
 	return ou
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (ou *OrganizationUpdate) SetNillableUpdatedBy(s *string) *OrganizationUpdate {
-	if s != nil {
-		ou.SetUpdatedBy(*s)
+func (ou *OrganizationUpdate) SetNillableUpdatedBy(q *qid.ID) *OrganizationUpdate {
+	if q != nil {
+		ou.SetUpdatedBy(*q)
 	}
 	return ou
 }
@@ -399,15 +399,15 @@ type OrganizationUpdateOne struct {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (ouo *OrganizationUpdateOne) SetCreatedBy(s string) *OrganizationUpdateOne {
-	ouo.mutation.SetCreatedBy(s)
+func (ouo *OrganizationUpdateOne) SetCreatedBy(q qid.ID) *OrganizationUpdateOne {
+	ouo.mutation.SetCreatedBy(q)
 	return ouo
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (ouo *OrganizationUpdateOne) SetNillableCreatedBy(s *string) *OrganizationUpdateOne {
-	if s != nil {
-		ouo.SetCreatedBy(*s)
+func (ouo *OrganizationUpdateOne) SetNillableCreatedBy(q *qid.ID) *OrganizationUpdateOne {
+	if q != nil {
+		ouo.SetCreatedBy(*q)
 	}
 	return ouo
 }
@@ -425,15 +425,15 @@ func (ouo *OrganizationUpdateOne) SetUpdatedAt(t time.Time) *OrganizationUpdateO
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (ouo *OrganizationUpdateOne) SetUpdatedBy(s string) *OrganizationUpdateOne {
-	ouo.mutation.SetUpdatedBy(s)
+func (ouo *OrganizationUpdateOne) SetUpdatedBy(q qid.ID) *OrganizationUpdateOne {
+	ouo.mutation.SetUpdatedBy(q)
 	return ouo
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (ouo *OrganizationUpdateOne) SetNillableUpdatedBy(s *string) *OrganizationUpdateOne {
-	if s != nil {
-		ouo.SetUpdatedBy(*s)
+func (ouo *OrganizationUpdateOne) SetNillableUpdatedBy(q *qid.ID) *OrganizationUpdateOne {
+	if q != nil {
+		ouo.SetUpdatedBy(*q)
 	}
 	return ouo
 }

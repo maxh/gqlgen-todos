@@ -40,9 +40,9 @@ type OrganizationMutation struct {
 	typ           string
 	id            *qid.ID
 	created_at    *time.Time
-	created_by    *string
+	created_by    *qid.ID
 	updated_at    *time.Time
-	updated_by    *string
+	updated_by    *qid.ID
 	name          *string
 	clearedFields map[string]struct{}
 	tenant        *qid.ID
@@ -177,12 +177,12 @@ func (m *OrganizationMutation) ResetCreatedAt() {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (m *OrganizationMutation) SetCreatedBy(s string) {
-	m.created_by = &s
+func (m *OrganizationMutation) SetCreatedBy(q qid.ID) {
+	m.created_by = &q
 }
 
 // CreatedBy returns the value of the "created_by" field in the mutation.
-func (m *OrganizationMutation) CreatedBy() (r string, exists bool) {
+func (m *OrganizationMutation) CreatedBy() (r qid.ID, exists bool) {
 	v := m.created_by
 	if v == nil {
 		return
@@ -193,7 +193,7 @@ func (m *OrganizationMutation) CreatedBy() (r string, exists bool) {
 // OldCreatedBy returns the old "created_by" field's value of the Organization entity.
 // If the Organization object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *OrganizationMutation) OldCreatedBy(ctx context.Context) (v string, err error) {
+func (m *OrganizationMutation) OldCreatedBy(ctx context.Context) (v qid.ID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldCreatedBy is only allowed on UpdateOne operations")
 	}
@@ -262,12 +262,12 @@ func (m *OrganizationMutation) ResetUpdatedAt() {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (m *OrganizationMutation) SetUpdatedBy(s string) {
-	m.updated_by = &s
+func (m *OrganizationMutation) SetUpdatedBy(q qid.ID) {
+	m.updated_by = &q
 }
 
 // UpdatedBy returns the value of the "updated_by" field in the mutation.
-func (m *OrganizationMutation) UpdatedBy() (r string, exists bool) {
+func (m *OrganizationMutation) UpdatedBy() (r qid.ID, exists bool) {
 	v := m.updated_by
 	if v == nil {
 		return
@@ -278,7 +278,7 @@ func (m *OrganizationMutation) UpdatedBy() (r string, exists bool) {
 // OldUpdatedBy returns the old "updated_by" field's value of the Organization entity.
 // If the Organization object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *OrganizationMutation) OldUpdatedBy(ctx context.Context) (v string, err error) {
+func (m *OrganizationMutation) OldUpdatedBy(ctx context.Context) (v qid.ID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldUpdatedBy is only allowed on UpdateOne operations")
 	}
@@ -528,7 +528,7 @@ func (m *OrganizationMutation) SetField(name string, value ent.Value) error {
 		m.SetCreatedAt(v)
 		return nil
 	case organization.FieldCreatedBy:
-		v, ok := value.(string)
+		v, ok := value.(qid.ID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -542,7 +542,7 @@ func (m *OrganizationMutation) SetField(name string, value ent.Value) error {
 		m.SetUpdatedAt(v)
 		return nil
 	case organization.FieldUpdatedBy:
-		v, ok := value.(string)
+		v, ok := value.(qid.ID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -747,9 +747,9 @@ type TenantMutation struct {
 	typ           string
 	id            *qid.ID
 	created_at    *time.Time
-	created_by    *string
+	created_by    *qid.ID
 	updated_at    *time.Time
-	updated_by    *string
+	updated_by    *qid.ID
 	name          *string
 	clearedFields map[string]struct{}
 	done          bool
@@ -879,12 +879,12 @@ func (m *TenantMutation) ResetCreatedAt() {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (m *TenantMutation) SetCreatedBy(s string) {
-	m.created_by = &s
+func (m *TenantMutation) SetCreatedBy(q qid.ID) {
+	m.created_by = &q
 }
 
 // CreatedBy returns the value of the "created_by" field in the mutation.
-func (m *TenantMutation) CreatedBy() (r string, exists bool) {
+func (m *TenantMutation) CreatedBy() (r qid.ID, exists bool) {
 	v := m.created_by
 	if v == nil {
 		return
@@ -895,7 +895,7 @@ func (m *TenantMutation) CreatedBy() (r string, exists bool) {
 // OldCreatedBy returns the old "created_by" field's value of the Tenant entity.
 // If the Tenant object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TenantMutation) OldCreatedBy(ctx context.Context) (v string, err error) {
+func (m *TenantMutation) OldCreatedBy(ctx context.Context) (v qid.ID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldCreatedBy is only allowed on UpdateOne operations")
 	}
@@ -964,12 +964,12 @@ func (m *TenantMutation) ResetUpdatedAt() {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (m *TenantMutation) SetUpdatedBy(s string) {
-	m.updated_by = &s
+func (m *TenantMutation) SetUpdatedBy(q qid.ID) {
+	m.updated_by = &q
 }
 
 // UpdatedBy returns the value of the "updated_by" field in the mutation.
-func (m *TenantMutation) UpdatedBy() (r string, exists bool) {
+func (m *TenantMutation) UpdatedBy() (r qid.ID, exists bool) {
 	v := m.updated_by
 	if v == nil {
 		return
@@ -980,7 +980,7 @@ func (m *TenantMutation) UpdatedBy() (r string, exists bool) {
 // OldUpdatedBy returns the old "updated_by" field's value of the Tenant entity.
 // If the Tenant object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TenantMutation) OldUpdatedBy(ctx context.Context) (v string, err error) {
+func (m *TenantMutation) OldUpdatedBy(ctx context.Context) (v qid.ID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldUpdatedBy is only allowed on UpdateOne operations")
 	}
@@ -1137,7 +1137,7 @@ func (m *TenantMutation) SetField(name string, value ent.Value) error {
 		m.SetCreatedAt(v)
 		return nil
 	case tenant.FieldCreatedBy:
-		v, ok := value.(string)
+		v, ok := value.(qid.ID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1151,7 +1151,7 @@ func (m *TenantMutation) SetField(name string, value ent.Value) error {
 		m.SetUpdatedAt(v)
 		return nil
 	case tenant.FieldUpdatedBy:
-		v, ok := value.(string)
+		v, ok := value.(qid.ID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1302,9 +1302,9 @@ type TodoMutation struct {
 	typ           string
 	id            *qid.ID
 	created_at    *time.Time
-	created_by    *string
+	created_by    *qid.ID
 	updated_at    *time.Time
-	updated_by    *string
+	updated_by    *qid.ID
 	text          *string
 	_done         *bool
 	clearedFields map[string]struct{}
@@ -1439,12 +1439,12 @@ func (m *TodoMutation) ResetCreatedAt() {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (m *TodoMutation) SetCreatedBy(s string) {
-	m.created_by = &s
+func (m *TodoMutation) SetCreatedBy(q qid.ID) {
+	m.created_by = &q
 }
 
 // CreatedBy returns the value of the "created_by" field in the mutation.
-func (m *TodoMutation) CreatedBy() (r string, exists bool) {
+func (m *TodoMutation) CreatedBy() (r qid.ID, exists bool) {
 	v := m.created_by
 	if v == nil {
 		return
@@ -1455,7 +1455,7 @@ func (m *TodoMutation) CreatedBy() (r string, exists bool) {
 // OldCreatedBy returns the old "created_by" field's value of the Todo entity.
 // If the Todo object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TodoMutation) OldCreatedBy(ctx context.Context) (v string, err error) {
+func (m *TodoMutation) OldCreatedBy(ctx context.Context) (v qid.ID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldCreatedBy is only allowed on UpdateOne operations")
 	}
@@ -1524,12 +1524,12 @@ func (m *TodoMutation) ResetUpdatedAt() {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (m *TodoMutation) SetUpdatedBy(s string) {
-	m.updated_by = &s
+func (m *TodoMutation) SetUpdatedBy(q qid.ID) {
+	m.updated_by = &q
 }
 
 // UpdatedBy returns the value of the "updated_by" field in the mutation.
-func (m *TodoMutation) UpdatedBy() (r string, exists bool) {
+func (m *TodoMutation) UpdatedBy() (r qid.ID, exists bool) {
 	v := m.updated_by
 	if v == nil {
 		return
@@ -1540,7 +1540,7 @@ func (m *TodoMutation) UpdatedBy() (r string, exists bool) {
 // OldUpdatedBy returns the old "updated_by" field's value of the Todo entity.
 // If the Todo object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TodoMutation) OldUpdatedBy(ctx context.Context) (v string, err error) {
+func (m *TodoMutation) OldUpdatedBy(ctx context.Context) (v qid.ID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldUpdatedBy is only allowed on UpdateOne operations")
 	}
@@ -1818,7 +1818,7 @@ func (m *TodoMutation) SetField(name string, value ent.Value) error {
 		m.SetCreatedAt(v)
 		return nil
 	case todo.FieldCreatedBy:
-		v, ok := value.(string)
+		v, ok := value.(qid.ID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1832,7 +1832,7 @@ func (m *TodoMutation) SetField(name string, value ent.Value) error {
 		m.SetUpdatedAt(v)
 		return nil
 	case todo.FieldUpdatedBy:
-		v, ok := value.(string)
+		v, ok := value.(qid.ID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -2039,9 +2039,9 @@ type UserMutation struct {
 	typ                 string
 	id                  *qid.ID
 	created_at          *time.Time
-	created_by          *string
+	created_by          *qid.ID
 	updated_at          *time.Time
-	updated_by          *string
+	updated_by          *qid.ID
 	name                *string
 	clearedFields       map[string]struct{}
 	tenant              *qid.ID
@@ -2178,12 +2178,12 @@ func (m *UserMutation) ResetCreatedAt() {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (m *UserMutation) SetCreatedBy(s string) {
-	m.created_by = &s
+func (m *UserMutation) SetCreatedBy(q qid.ID) {
+	m.created_by = &q
 }
 
 // CreatedBy returns the value of the "created_by" field in the mutation.
-func (m *UserMutation) CreatedBy() (r string, exists bool) {
+func (m *UserMutation) CreatedBy() (r qid.ID, exists bool) {
 	v := m.created_by
 	if v == nil {
 		return
@@ -2194,7 +2194,7 @@ func (m *UserMutation) CreatedBy() (r string, exists bool) {
 // OldCreatedBy returns the old "created_by" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldCreatedBy(ctx context.Context) (v string, err error) {
+func (m *UserMutation) OldCreatedBy(ctx context.Context) (v qid.ID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldCreatedBy is only allowed on UpdateOne operations")
 	}
@@ -2263,12 +2263,12 @@ func (m *UserMutation) ResetUpdatedAt() {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (m *UserMutation) SetUpdatedBy(s string) {
-	m.updated_by = &s
+func (m *UserMutation) SetUpdatedBy(q qid.ID) {
+	m.updated_by = &q
 }
 
 // UpdatedBy returns the value of the "updated_by" field in the mutation.
-func (m *UserMutation) UpdatedBy() (r string, exists bool) {
+func (m *UserMutation) UpdatedBy() (r qid.ID, exists bool) {
 	v := m.updated_by
 	if v == nil {
 		return
@@ -2279,7 +2279,7 @@ func (m *UserMutation) UpdatedBy() (r string, exists bool) {
 // OldUpdatedBy returns the old "updated_by" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldUpdatedBy(ctx context.Context) (v string, err error) {
+func (m *UserMutation) OldUpdatedBy(ctx context.Context) (v qid.ID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldUpdatedBy is only allowed on UpdateOne operations")
 	}
@@ -2568,7 +2568,7 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		m.SetCreatedAt(v)
 		return nil
 	case user.FieldCreatedBy:
-		v, ok := value.(string)
+		v, ok := value.(qid.ID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -2582,7 +2582,7 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		m.SetUpdatedAt(v)
 		return nil
 	case user.FieldUpdatedBy:
-		v, ok := value.(string)
+		v, ok := value.(qid.ID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

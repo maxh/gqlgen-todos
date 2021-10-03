@@ -102,7 +102,7 @@ func CreatedAt(v time.Time) predicate.Todo {
 }
 
 // CreatedBy applies equality check predicate on the "created_by" field. It's identical to CreatedByEQ.
-func CreatedBy(v string) predicate.Todo {
+func CreatedBy(v qid.ID) predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldCreatedBy), v))
 	})
@@ -116,7 +116,7 @@ func UpdatedAt(v time.Time) predicate.Todo {
 }
 
 // UpdatedBy applies equality check predicate on the "updated_by" field. It's identical to UpdatedByEQ.
-func UpdatedBy(v string) predicate.Todo {
+func UpdatedBy(v qid.ID) predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldUpdatedBy), v))
 	})
@@ -213,21 +213,21 @@ func CreatedAtLTE(v time.Time) predicate.Todo {
 }
 
 // CreatedByEQ applies the EQ predicate on the "created_by" field.
-func CreatedByEQ(v string) predicate.Todo {
+func CreatedByEQ(v qid.ID) predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldCreatedBy), v))
 	})
 }
 
 // CreatedByNEQ applies the NEQ predicate on the "created_by" field.
-func CreatedByNEQ(v string) predicate.Todo {
+func CreatedByNEQ(v qid.ID) predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldCreatedBy), v))
 	})
 }
 
 // CreatedByIn applies the In predicate on the "created_by" field.
-func CreatedByIn(vs ...string) predicate.Todo {
+func CreatedByIn(vs ...qid.ID) predicate.Todo {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -244,7 +244,7 @@ func CreatedByIn(vs ...string) predicate.Todo {
 }
 
 // CreatedByNotIn applies the NotIn predicate on the "created_by" field.
-func CreatedByNotIn(vs ...string) predicate.Todo {
+func CreatedByNotIn(vs ...qid.ID) predicate.Todo {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -261,51 +261,54 @@ func CreatedByNotIn(vs ...string) predicate.Todo {
 }
 
 // CreatedByGT applies the GT predicate on the "created_by" field.
-func CreatedByGT(v string) predicate.Todo {
+func CreatedByGT(v qid.ID) predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldCreatedBy), v))
 	})
 }
 
 // CreatedByGTE applies the GTE predicate on the "created_by" field.
-func CreatedByGTE(v string) predicate.Todo {
+func CreatedByGTE(v qid.ID) predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldCreatedBy), v))
 	})
 }
 
 // CreatedByLT applies the LT predicate on the "created_by" field.
-func CreatedByLT(v string) predicate.Todo {
+func CreatedByLT(v qid.ID) predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldCreatedBy), v))
 	})
 }
 
 // CreatedByLTE applies the LTE predicate on the "created_by" field.
-func CreatedByLTE(v string) predicate.Todo {
+func CreatedByLTE(v qid.ID) predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldCreatedBy), v))
 	})
 }
 
 // CreatedByContains applies the Contains predicate on the "created_by" field.
-func CreatedByContains(v string) predicate.Todo {
+func CreatedByContains(v qid.ID) predicate.Todo {
+	vc := string(v)
 	return predicate.Todo(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldCreatedBy), v))
+		s.Where(sql.Contains(s.C(FieldCreatedBy), vc))
 	})
 }
 
 // CreatedByHasPrefix applies the HasPrefix predicate on the "created_by" field.
-func CreatedByHasPrefix(v string) predicate.Todo {
+func CreatedByHasPrefix(v qid.ID) predicate.Todo {
+	vc := string(v)
 	return predicate.Todo(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldCreatedBy), v))
+		s.Where(sql.HasPrefix(s.C(FieldCreatedBy), vc))
 	})
 }
 
 // CreatedByHasSuffix applies the HasSuffix predicate on the "created_by" field.
-func CreatedByHasSuffix(v string) predicate.Todo {
+func CreatedByHasSuffix(v qid.ID) predicate.Todo {
+	vc := string(v)
 	return predicate.Todo(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldCreatedBy), v))
+		s.Where(sql.HasSuffix(s.C(FieldCreatedBy), vc))
 	})
 }
 
@@ -324,16 +327,18 @@ func CreatedByNotNil() predicate.Todo {
 }
 
 // CreatedByEqualFold applies the EqualFold predicate on the "created_by" field.
-func CreatedByEqualFold(v string) predicate.Todo {
+func CreatedByEqualFold(v qid.ID) predicate.Todo {
+	vc := string(v)
 	return predicate.Todo(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldCreatedBy), v))
+		s.Where(sql.EqualFold(s.C(FieldCreatedBy), vc))
 	})
 }
 
 // CreatedByContainsFold applies the ContainsFold predicate on the "created_by" field.
-func CreatedByContainsFold(v string) predicate.Todo {
+func CreatedByContainsFold(v qid.ID) predicate.Todo {
+	vc := string(v)
 	return predicate.Todo(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldCreatedBy), v))
+		s.Where(sql.ContainsFold(s.C(FieldCreatedBy), vc))
 	})
 }
 
@@ -414,21 +419,21 @@ func UpdatedAtLTE(v time.Time) predicate.Todo {
 }
 
 // UpdatedByEQ applies the EQ predicate on the "updated_by" field.
-func UpdatedByEQ(v string) predicate.Todo {
+func UpdatedByEQ(v qid.ID) predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldUpdatedBy), v))
 	})
 }
 
 // UpdatedByNEQ applies the NEQ predicate on the "updated_by" field.
-func UpdatedByNEQ(v string) predicate.Todo {
+func UpdatedByNEQ(v qid.ID) predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldUpdatedBy), v))
 	})
 }
 
 // UpdatedByIn applies the In predicate on the "updated_by" field.
-func UpdatedByIn(vs ...string) predicate.Todo {
+func UpdatedByIn(vs ...qid.ID) predicate.Todo {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -445,7 +450,7 @@ func UpdatedByIn(vs ...string) predicate.Todo {
 }
 
 // UpdatedByNotIn applies the NotIn predicate on the "updated_by" field.
-func UpdatedByNotIn(vs ...string) predicate.Todo {
+func UpdatedByNotIn(vs ...qid.ID) predicate.Todo {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -462,51 +467,54 @@ func UpdatedByNotIn(vs ...string) predicate.Todo {
 }
 
 // UpdatedByGT applies the GT predicate on the "updated_by" field.
-func UpdatedByGT(v string) predicate.Todo {
+func UpdatedByGT(v qid.ID) predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldUpdatedBy), v))
 	})
 }
 
 // UpdatedByGTE applies the GTE predicate on the "updated_by" field.
-func UpdatedByGTE(v string) predicate.Todo {
+func UpdatedByGTE(v qid.ID) predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldUpdatedBy), v))
 	})
 }
 
 // UpdatedByLT applies the LT predicate on the "updated_by" field.
-func UpdatedByLT(v string) predicate.Todo {
+func UpdatedByLT(v qid.ID) predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldUpdatedBy), v))
 	})
 }
 
 // UpdatedByLTE applies the LTE predicate on the "updated_by" field.
-func UpdatedByLTE(v string) predicate.Todo {
+func UpdatedByLTE(v qid.ID) predicate.Todo {
 	return predicate.Todo(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldUpdatedBy), v))
 	})
 }
 
 // UpdatedByContains applies the Contains predicate on the "updated_by" field.
-func UpdatedByContains(v string) predicate.Todo {
+func UpdatedByContains(v qid.ID) predicate.Todo {
+	vc := string(v)
 	return predicate.Todo(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldUpdatedBy), v))
+		s.Where(sql.Contains(s.C(FieldUpdatedBy), vc))
 	})
 }
 
 // UpdatedByHasPrefix applies the HasPrefix predicate on the "updated_by" field.
-func UpdatedByHasPrefix(v string) predicate.Todo {
+func UpdatedByHasPrefix(v qid.ID) predicate.Todo {
+	vc := string(v)
 	return predicate.Todo(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldUpdatedBy), v))
+		s.Where(sql.HasPrefix(s.C(FieldUpdatedBy), vc))
 	})
 }
 
 // UpdatedByHasSuffix applies the HasSuffix predicate on the "updated_by" field.
-func UpdatedByHasSuffix(v string) predicate.Todo {
+func UpdatedByHasSuffix(v qid.ID) predicate.Todo {
+	vc := string(v)
 	return predicate.Todo(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldUpdatedBy), v))
+		s.Where(sql.HasSuffix(s.C(FieldUpdatedBy), vc))
 	})
 }
 
@@ -525,16 +533,18 @@ func UpdatedByNotNil() predicate.Todo {
 }
 
 // UpdatedByEqualFold applies the EqualFold predicate on the "updated_by" field.
-func UpdatedByEqualFold(v string) predicate.Todo {
+func UpdatedByEqualFold(v qid.ID) predicate.Todo {
+	vc := string(v)
 	return predicate.Todo(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldUpdatedBy), v))
+		s.Where(sql.EqualFold(s.C(FieldUpdatedBy), vc))
 	})
 }
 
 // UpdatedByContainsFold applies the ContainsFold predicate on the "updated_by" field.
-func UpdatedByContainsFold(v string) predicate.Todo {
+func UpdatedByContainsFold(v qid.ID) predicate.Todo {
+	vc := string(v)
 	return predicate.Todo(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldUpdatedBy), v))
+		s.Where(sql.ContainsFold(s.C(FieldUpdatedBy), vc))
 	})
 }
 

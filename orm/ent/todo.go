@@ -22,11 +22,11 @@ type Todo struct {
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// CreatedBy holds the value of the "created_by" field.
-	CreatedBy string `json:"created_by,omitempty"`
+	CreatedBy qid.ID `json:"created_by,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// UpdatedBy holds the value of the "updated_by" field.
-	UpdatedBy string `json:"updated_by,omitempty"`
+	UpdatedBy qid.ID `json:"updated_by,omitempty"`
 	// Text holds the value of the "text" field.
 	Text string `json:"text,omitempty"`
 	// Done holds the value of the "done" field.
@@ -82,11 +82,11 @@ func (*Todo) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case todo.FieldID:
+		case todo.FieldID, todo.FieldCreatedBy, todo.FieldUpdatedBy:
 			values[i] = new(qid.ID)
 		case todo.FieldDone:
 			values[i] = new(sql.NullBool)
-		case todo.FieldCreatedBy, todo.FieldUpdatedBy, todo.FieldText:
+		case todo.FieldText:
 			values[i] = new(sql.NullString)
 		case todo.FieldCreatedAt, todo.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -122,10 +122,10 @@ func (t *Todo) assignValues(columns []string, values []interface{}) error {
 				t.CreatedAt = value.Time
 			}
 		case todo.FieldCreatedBy:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*qid.ID); !ok {
 				return fmt.Errorf("unexpected type %T for field created_by", values[i])
-			} else if value.Valid {
-				t.CreatedBy = value.String
+			} else if value != nil {
+				t.CreatedBy = *value
 			}
 		case todo.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -134,10 +134,10 @@ func (t *Todo) assignValues(columns []string, values []interface{}) error {
 				t.UpdatedAt = value.Time
 			}
 		case todo.FieldUpdatedBy:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*qid.ID); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_by", values[i])
-			} else if value.Valid {
-				t.UpdatedBy = value.String
+			} else if value != nil {
+				t.UpdatedBy = *value
 			}
 		case todo.FieldText:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -206,11 +206,11 @@ func (t *Todo) String() string {
 	builder.WriteString(", created_at=")
 	builder.WriteString(t.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", created_by=")
-	builder.WriteString(t.CreatedBy)
+	builder.WriteString(fmt.Sprintf("%v", t.CreatedBy))
 	builder.WriteString(", updated_at=")
 	builder.WriteString(t.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_by=")
-	builder.WriteString(t.UpdatedBy)
+	builder.WriteString(fmt.Sprintf("%v", t.UpdatedBy))
 	builder.WriteString(", text=")
 	builder.WriteString(t.Text)
 	builder.WriteString(", done=")

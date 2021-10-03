@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/maxh/gqlgen-todos/orm/ent/predicate"
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
+	"github.com/maxh/gqlgen-todos/qid"
 )
 
 // TenantUpdate is the builder for updating Tenant entities.
@@ -28,15 +29,15 @@ func (tu *TenantUpdate) Where(ps ...predicate.Tenant) *TenantUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (tu *TenantUpdate) SetCreatedBy(s string) *TenantUpdate {
-	tu.mutation.SetCreatedBy(s)
+func (tu *TenantUpdate) SetCreatedBy(q qid.ID) *TenantUpdate {
+	tu.mutation.SetCreatedBy(q)
 	return tu
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (tu *TenantUpdate) SetNillableCreatedBy(s *string) *TenantUpdate {
-	if s != nil {
-		tu.SetCreatedBy(*s)
+func (tu *TenantUpdate) SetNillableCreatedBy(q *qid.ID) *TenantUpdate {
+	if q != nil {
+		tu.SetCreatedBy(*q)
 	}
 	return tu
 }
@@ -54,15 +55,15 @@ func (tu *TenantUpdate) SetUpdatedAt(t time.Time) *TenantUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (tu *TenantUpdate) SetUpdatedBy(s string) *TenantUpdate {
-	tu.mutation.SetUpdatedBy(s)
+func (tu *TenantUpdate) SetUpdatedBy(q qid.ID) *TenantUpdate {
+	tu.mutation.SetUpdatedBy(q)
 	return tu
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (tu *TenantUpdate) SetNillableUpdatedBy(s *string) *TenantUpdate {
-	if s != nil {
-		tu.SetUpdatedBy(*s)
+func (tu *TenantUpdate) SetNillableUpdatedBy(q *qid.ID) *TenantUpdate {
+	if q != nil {
+		tu.SetUpdatedBy(*q)
 	}
 	return tu
 }
@@ -247,15 +248,15 @@ type TenantUpdateOne struct {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (tuo *TenantUpdateOne) SetCreatedBy(s string) *TenantUpdateOne {
-	tuo.mutation.SetCreatedBy(s)
+func (tuo *TenantUpdateOne) SetCreatedBy(q qid.ID) *TenantUpdateOne {
+	tuo.mutation.SetCreatedBy(q)
 	return tuo
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (tuo *TenantUpdateOne) SetNillableCreatedBy(s *string) *TenantUpdateOne {
-	if s != nil {
-		tuo.SetCreatedBy(*s)
+func (tuo *TenantUpdateOne) SetNillableCreatedBy(q *qid.ID) *TenantUpdateOne {
+	if q != nil {
+		tuo.SetCreatedBy(*q)
 	}
 	return tuo
 }
@@ -273,15 +274,15 @@ func (tuo *TenantUpdateOne) SetUpdatedAt(t time.Time) *TenantUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (tuo *TenantUpdateOne) SetUpdatedBy(s string) *TenantUpdateOne {
-	tuo.mutation.SetUpdatedBy(s)
+func (tuo *TenantUpdateOne) SetUpdatedBy(q qid.ID) *TenantUpdateOne {
+	tuo.mutation.SetUpdatedBy(q)
 	return tuo
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (tuo *TenantUpdateOne) SetNillableUpdatedBy(s *string) *TenantUpdateOne {
-	if s != nil {
-		tuo.SetUpdatedBy(*s)
+func (tuo *TenantUpdateOne) SetNillableUpdatedBy(q *qid.ID) *TenantUpdateOne {
+	if q != nil {
+		tuo.SetUpdatedBy(*q)
 	}
 	return tuo
 }

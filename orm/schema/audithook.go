@@ -4,6 +4,7 @@ import (
 	"context"
 	"entgo.io/ent"
 	"fmt"
+	"github.com/maxh/gqlgen-todos/qid"
 	"github.com/maxh/gqlgen-todos/viewer"
 
 	"time"
@@ -17,12 +18,12 @@ func AuditHook(next ent.Mutator) ent.Mutator {
 	type AuditLogger interface {
 		SetCreatedAt(time.Time)
 		CreatedAt() (value time.Time, exists bool)
-		SetCreatedBy(string)
-		CreatedBy() (id string, exists bool)
+		SetCreatedBy(qid.ID)
+		CreatedBy() (id qid.ID, exists bool)
 		SetUpdatedAt(time.Time)
 		UpdatedAt() (value time.Time, exists bool)
-		SetUpdatedBy(string)
-		UpdatedBy() (id string, exists bool)
+		SetUpdatedBy(qid.ID)
+		UpdatedBy() (id qid.ID, exists bool)
 	}
 	return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 		ml, ok := m.(AuditLogger)
@@ -39,12 +40,12 @@ func AuditHook(next ent.Mutator) ent.Mutator {
 		case op.Is(ent.OpCreate):
 			ml.SetCreatedAt(time.Now())
 			if _, exists := ml.CreatedBy(); !exists {
-				ml.SetCreatedBy(usr.ID.String())
+				ml.SetCreatedBy(usr.ID)
 			}
 		case op.Is(ent.OpUpdateOne | ent.OpUpdate):
 			ml.SetUpdatedAt(time.Now())
 			if _, exists := ml.UpdatedBy(); !exists {
-				ml.SetUpdatedBy(usr.ID.String())
+				ml.SetUpdatedBy(usr.ID)
 			}
 		}
 		return next.Mutate(ctx, m)

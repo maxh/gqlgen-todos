@@ -33,15 +33,15 @@ func (uu *UserUpdate) Where(ps ...predicate.User) *UserUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (uu *UserUpdate) SetCreatedBy(s string) *UserUpdate {
-	uu.mutation.SetCreatedBy(s)
+func (uu *UserUpdate) SetCreatedBy(q qid.ID) *UserUpdate {
+	uu.mutation.SetCreatedBy(q)
 	return uu
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableCreatedBy(s *string) *UserUpdate {
-	if s != nil {
-		uu.SetCreatedBy(*s)
+func (uu *UserUpdate) SetNillableCreatedBy(q *qid.ID) *UserUpdate {
+	if q != nil {
+		uu.SetCreatedBy(*q)
 	}
 	return uu
 }
@@ -59,15 +59,15 @@ func (uu *UserUpdate) SetUpdatedAt(t time.Time) *UserUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (uu *UserUpdate) SetUpdatedBy(s string) *UserUpdate {
-	uu.mutation.SetUpdatedBy(s)
+func (uu *UserUpdate) SetUpdatedBy(q qid.ID) *UserUpdate {
+	uu.mutation.SetUpdatedBy(q)
 	return uu
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableUpdatedBy(s *string) *UserUpdate {
-	if s != nil {
-		uu.SetUpdatedBy(*s)
+func (uu *UserUpdate) SetNillableUpdatedBy(q *qid.ID) *UserUpdate {
+	if q != nil {
+		uu.SetUpdatedBy(*q)
 	}
 	return uu
 }
@@ -455,15 +455,15 @@ type UserUpdateOne struct {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (uuo *UserUpdateOne) SetCreatedBy(s string) *UserUpdateOne {
-	uuo.mutation.SetCreatedBy(s)
+func (uuo *UserUpdateOne) SetCreatedBy(q qid.ID) *UserUpdateOne {
+	uuo.mutation.SetCreatedBy(q)
 	return uuo
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableCreatedBy(s *string) *UserUpdateOne {
-	if s != nil {
-		uuo.SetCreatedBy(*s)
+func (uuo *UserUpdateOne) SetNillableCreatedBy(q *qid.ID) *UserUpdateOne {
+	if q != nil {
+		uuo.SetCreatedBy(*q)
 	}
 	return uuo
 }
@@ -481,15 +481,15 @@ func (uuo *UserUpdateOne) SetUpdatedAt(t time.Time) *UserUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (uuo *UserUpdateOne) SetUpdatedBy(s string) *UserUpdateOne {
-	uuo.mutation.SetUpdatedBy(s)
+func (uuo *UserUpdateOne) SetUpdatedBy(q qid.ID) *UserUpdateOne {
+	uuo.mutation.SetUpdatedBy(q)
 	return uuo
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableUpdatedBy(s *string) *UserUpdateOne {
-	if s != nil {
-		uuo.SetUpdatedBy(*s)
+func (uuo *UserUpdateOne) SetNillableUpdatedBy(q *qid.ID) *UserUpdateOne {
+	if q != nil {
+		uuo.SetUpdatedBy(*q)
 	}
 	return uuo
 }

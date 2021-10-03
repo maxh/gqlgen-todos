@@ -32,15 +32,15 @@ func (tu *TodoUpdate) Where(ps ...predicate.Todo) *TodoUpdate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (tu *TodoUpdate) SetCreatedBy(s string) *TodoUpdate {
-	tu.mutation.SetCreatedBy(s)
+func (tu *TodoUpdate) SetCreatedBy(q qid.ID) *TodoUpdate {
+	tu.mutation.SetCreatedBy(q)
 	return tu
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (tu *TodoUpdate) SetNillableCreatedBy(s *string) *TodoUpdate {
-	if s != nil {
-		tu.SetCreatedBy(*s)
+func (tu *TodoUpdate) SetNillableCreatedBy(q *qid.ID) *TodoUpdate {
+	if q != nil {
+		tu.SetCreatedBy(*q)
 	}
 	return tu
 }
@@ -58,15 +58,15 @@ func (tu *TodoUpdate) SetUpdatedAt(t time.Time) *TodoUpdate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (tu *TodoUpdate) SetUpdatedBy(s string) *TodoUpdate {
-	tu.mutation.SetUpdatedBy(s)
+func (tu *TodoUpdate) SetUpdatedBy(q qid.ID) *TodoUpdate {
+	tu.mutation.SetUpdatedBy(q)
 	return tu
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (tu *TodoUpdate) SetNillableUpdatedBy(s *string) *TodoUpdate {
-	if s != nil {
-		tu.SetUpdatedBy(*s)
+func (tu *TodoUpdate) SetNillableUpdatedBy(q *qid.ID) *TodoUpdate {
+	if q != nil {
+		tu.SetUpdatedBy(*q)
 	}
 	return tu
 }
@@ -390,15 +390,15 @@ type TodoUpdateOne struct {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (tuo *TodoUpdateOne) SetCreatedBy(s string) *TodoUpdateOne {
-	tuo.mutation.SetCreatedBy(s)
+func (tuo *TodoUpdateOne) SetCreatedBy(q qid.ID) *TodoUpdateOne {
+	tuo.mutation.SetCreatedBy(q)
 	return tuo
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (tuo *TodoUpdateOne) SetNillableCreatedBy(s *string) *TodoUpdateOne {
-	if s != nil {
-		tuo.SetCreatedBy(*s)
+func (tuo *TodoUpdateOne) SetNillableCreatedBy(q *qid.ID) *TodoUpdateOne {
+	if q != nil {
+		tuo.SetCreatedBy(*q)
 	}
 	return tuo
 }
@@ -416,15 +416,15 @@ func (tuo *TodoUpdateOne) SetUpdatedAt(t time.Time) *TodoUpdateOne {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (tuo *TodoUpdateOne) SetUpdatedBy(s string) *TodoUpdateOne {
-	tuo.mutation.SetUpdatedBy(s)
+func (tuo *TodoUpdateOne) SetUpdatedBy(q qid.ID) *TodoUpdateOne {
+	tuo.mutation.SetUpdatedBy(q)
 	return tuo
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (tuo *TodoUpdateOne) SetNillableUpdatedBy(s *string) *TodoUpdateOne {
-	if s != nil {
-		tuo.SetUpdatedBy(*s)
+func (tuo *TodoUpdateOne) SetNillableUpdatedBy(q *qid.ID) *TodoUpdateOne {
+	if q != nil {
+		tuo.SetUpdatedBy(*q)
 	}
 	return tuo
 }

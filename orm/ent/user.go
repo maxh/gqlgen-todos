@@ -22,11 +22,11 @@ type User struct {
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// CreatedBy holds the value of the "created_by" field.
-	CreatedBy string `json:"created_by,omitempty"`
+	CreatedBy qid.ID `json:"created_by,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// UpdatedBy holds the value of the "updated_by" field.
-	UpdatedBy string `json:"updated_by,omitempty"`
+	UpdatedBy qid.ID `json:"updated_by,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -91,9 +91,9 @@ func (*User) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldID:
+		case user.FieldID, user.FieldCreatedBy, user.FieldUpdatedBy:
 			values[i] = new(qid.ID)
-		case user.FieldCreatedBy, user.FieldUpdatedBy, user.FieldName:
+		case user.FieldName:
 			values[i] = new(sql.NullString)
 		case user.FieldCreatedAt, user.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -129,10 +129,10 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 				u.CreatedAt = value.Time
 			}
 		case user.FieldCreatedBy:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*qid.ID); !ok {
 				return fmt.Errorf("unexpected type %T for field created_by", values[i])
-			} else if value.Valid {
-				u.CreatedBy = value.String
+			} else if value != nil {
+				u.CreatedBy = *value
 			}
 		case user.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -141,10 +141,10 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 				u.UpdatedAt = value.Time
 			}
 		case user.FieldUpdatedBy:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*qid.ID); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_by", values[i])
-			} else if value.Valid {
-				u.UpdatedBy = value.String
+			} else if value != nil {
+				u.UpdatedBy = *value
 			}
 		case user.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -212,11 +212,11 @@ func (u *User) String() string {
 	builder.WriteString(", created_at=")
 	builder.WriteString(u.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", created_by=")
-	builder.WriteString(u.CreatedBy)
+	builder.WriteString(fmt.Sprintf("%v", u.CreatedBy))
 	builder.WriteString(", updated_at=")
 	builder.WriteString(u.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_by=")
-	builder.WriteString(u.UpdatedBy)
+	builder.WriteString(fmt.Sprintf("%v", u.UpdatedBy))
 	builder.WriteString(", name=")
 	builder.WriteString(u.Name)
 	builder.WriteByte(')')

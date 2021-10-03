@@ -36,15 +36,15 @@ func (tc *TenantCreate) SetNillableCreatedAt(t *time.Time) *TenantCreate {
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (tc *TenantCreate) SetCreatedBy(s string) *TenantCreate {
-	tc.mutation.SetCreatedBy(s)
+func (tc *TenantCreate) SetCreatedBy(q qid.ID) *TenantCreate {
+	tc.mutation.SetCreatedBy(q)
 	return tc
 }
 
 // SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (tc *TenantCreate) SetNillableCreatedBy(s *string) *TenantCreate {
-	if s != nil {
-		tc.SetCreatedBy(*s)
+func (tc *TenantCreate) SetNillableCreatedBy(q *qid.ID) *TenantCreate {
+	if q != nil {
+		tc.SetCreatedBy(*q)
 	}
 	return tc
 }
@@ -64,15 +64,15 @@ func (tc *TenantCreate) SetNillableUpdatedAt(t *time.Time) *TenantCreate {
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (tc *TenantCreate) SetUpdatedBy(s string) *TenantCreate {
-	tc.mutation.SetUpdatedBy(s)
+func (tc *TenantCreate) SetUpdatedBy(q qid.ID) *TenantCreate {
+	tc.mutation.SetUpdatedBy(q)
 	return tc
 }
 
 // SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
-func (tc *TenantCreate) SetNillableUpdatedBy(s *string) *TenantCreate {
-	if s != nil {
-		tc.SetUpdatedBy(*s)
+func (tc *TenantCreate) SetNillableUpdatedBy(q *qid.ID) *TenantCreate {
+	if q != nil {
+		tc.SetUpdatedBy(*q)
 	}
 	return tc
 }
