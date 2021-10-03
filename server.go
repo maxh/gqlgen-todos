@@ -6,10 +6,13 @@ import (
 	"fmt"
 	"github.com/maxh/gqlgen-todos/auth"
 	"github.com/maxh/gqlgen-todos/orm/ent"
+	"github.com/maxh/gqlgen-todos/orm/ent/migrate"
+	"github.com/maxh/gqlgen-todos/util"
 	"github.com/maxh/gqlgen-todos/viewer"
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
@@ -28,7 +31,9 @@ func main() {
 	if port == "" {
 		port = defaultPort
 	}
-	client, err := ent.Open("postgres", "host=localhost port=5432 user=postgres dbname=gqlgen_todos_dev password=postgres sslmode=disable")
+	client, err := ent.Open(
+		"postgres",
+		"host=localhost port=5432 user=postgres dbname=gqlgen_todos_dev password=postgres sslmode=disable")
 	//client, err := ent.Open(
 	//	"sqlite3",
 	//	"file:ent?mode=memory&cache=shared&_fk=1",
@@ -36,7 +41,33 @@ func main() {
 	if err != nil {
 		log.Fatal("opening ent client", err)
 	}
-	if err := client.Schema.Create(context.Background()); err != nil {
+
+	client.Use(func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if m.Type() == ent.TypeEntityRevision {
+				return next.Mutate(ctx, m)
+			}
+			start := time.Now()
+			defer func() {
+				log.Printf("Op=%s\tType=%s\tTime=%s\tConcreteType=%T\n", m.Op(), m.Type(), time.Since(start), m)
+			}()
+
+			er, err := client.EntityRevision.Create().
+				SetEntityID("123").
+				SetEntityRevision("456").
+				SetEntityValue(&util.Any).
+				Save(ctx)
+			if err != nil {
+				log.Printf("error creating rev", err)
+			}
+			log.Printf("created er", er)
+
+			return next.Mutate(ctx, m)
+		})
+	})
+
+	if err := client.Schema.Create(context.Background(), migrate.WithDropIndex(true),
+		migrate.WithDropColumn(true)); err != nil {
 		log.Fatal("running schema migration", err)
 	}
 

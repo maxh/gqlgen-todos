@@ -5,13 +5,12 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/maxh/gqlgen-todos/orm/schema/base"
 	"github.com/maxh/gqlgen-todos/orm/schema/qid"
+	"github.com/maxh/gqlgen-todos/util"
 )
 
 type EntityRevision struct {
 	ent.Schema
 }
-
-var Any interface{}
 
 func (EntityRevision) Fields() []ent.Field {
 	return []ent.Field{
@@ -21,7 +20,7 @@ func (EntityRevision) Fields() []ent.Field {
 		field.String("entity_revision").
 			NotEmpty().
 			Immutable(),
-		field.JSON("entity_value", &Any).
+		field.JSON("entity_value", &util.Any).
 			Immutable(),
 	}
 }

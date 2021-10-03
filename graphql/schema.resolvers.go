@@ -21,6 +21,7 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input gql.CreateTodoI
 	if err != nil {
 		log.Fatal("unable to get tenant", err)
 	}
+
 	created, err := client.Todo.
 		Create().
 		SetUserID(input.UserID).
