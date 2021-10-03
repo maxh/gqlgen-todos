@@ -18,7 +18,7 @@ func AddRevision(next ent.Mutator) ent.Mutator {
 
 		client := ent.FromContext(ctx)
 
-		// Apply the mutation _before_ saving the audit.
+		// Apply the mutation _before_ saving the revision.
 		// (Other hooks may change the node before persistence, and we only want to save
 		// the "final" revision from this transaction in the revisions table.)
 		v, err := next.Mutate(ctx, m)
@@ -32,7 +32,7 @@ func AddRevision(next ent.Mutator) ent.Mutator {
 		value := toNodeValue(node)
 		_, err = client.NodeRevision.Create().
 			SetNodeID(string(id)).
-			SetNodeRevision("456").
+			SetNodeRevision("456"). // TODO set revision number
 			SetNodeValue(&value).
 			Save(ctx)
 		if err != nil {
