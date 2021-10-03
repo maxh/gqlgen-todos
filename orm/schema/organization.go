@@ -4,6 +4,8 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"github.com/maxh/gqlgen-todos/orm/schema/base"
+	"github.com/maxh/gqlgen-todos/orm/schema/qid"
 )
 
 // Organization holds the schema definition for the Organization entity.
@@ -29,8 +31,8 @@ func (Organization) Edges() []ent.Edge {
 // Mixin of the Organization.
 func (Organization) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		BaseMixin{},
-		QidMixinWithPrefix("organization"),
+		base.BaseMixin{},
+		qid.MixinWithPrefix("organization"),
 		TenantMixin{},
 	}
 }

@@ -15,7 +15,7 @@ func main() {
 	templates := entgql.AllTemplates
 	templates = append(templates, gen.MustParse(
 		gen.NewTemplate("qidmap.tmpl").
-			ParseFiles("./schema/template/qidmap.tmpl")),
+			ParseFiles("./schema/qid/template/qidmap.tmpl")),
 	)
 	ex, err := entgql.NewExtension()
 	if err != nil {

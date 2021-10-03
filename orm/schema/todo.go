@@ -4,6 +4,8 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"github.com/maxh/gqlgen-todos/orm/schema/base"
+	"github.com/maxh/gqlgen-todos/orm/schema/qid"
 )
 
 // Todo holds the schema definition for the Todo entity.
@@ -24,8 +26,8 @@ func (Todo) Fields() []ent.Field {
 // Mixin of the Todo.
 func (Todo) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		BaseMixin{},
-		QidMixinWithPrefix("todo"),
+		base.BaseMixin{},
+		qid.MixinWithPrefix("todo"),
 		TenantMixin{},
 	}
 }

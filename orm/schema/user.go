@@ -4,6 +4,8 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"github.com/maxh/gqlgen-todos/orm/schema/base"
+	"github.com/maxh/gqlgen-todos/orm/schema/qid"
 )
 
 // User holds the schema definition for the User entity.
@@ -22,8 +24,8 @@ func (User) Fields() []ent.Field {
 // Mixin of the User.
 func (User) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		BaseMixin{},
-		QidMixinWithPrefix("user"),
+		base.BaseMixin{},
+		qid.MixinWithPrefix("user"),
 		TenantMixin{},
 	}
 }

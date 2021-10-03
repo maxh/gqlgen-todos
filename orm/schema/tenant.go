@@ -7,6 +7,9 @@ package schema
 import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
+	"github.com/maxh/gqlgen-todos/orm/schema/qid"
+
+	"github.com/maxh/gqlgen-todos/orm/schema/base"
 )
 
 // Tenant holds the schema definition for the Tenant entity.
@@ -17,8 +20,8 @@ type Tenant struct {
 // Mixin of the Tenant schema.
 func (Tenant) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		BaseMixin{},
-		QidMixinWithPrefix("tenant"),
+		base.BaseMixin{},
+		qid.MixinWithPrefix("tenant"),
 	}
 }
 
