@@ -2,15 +2,11 @@ package revision
 
 import (
 	"context"
+	"github.com/maxh/gqlgen-todos/nodevalue"
 	"github.com/maxh/gqlgen-todos/orm/ent"
 	"github.com/maxh/gqlgen-todos/qid"
-	"github.com/maxh/gqlgen-todos/util"
 	"strconv"
 )
-
-type EntityRevisioner interface {
-	ID() (value qid.ID, exists bool)
-}
 
 func AddRevision(next ent.Mutator) ent.Mutator {
 	return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
@@ -33,7 +29,7 @@ func AddRevision(next ent.Mutator) ent.Mutator {
 
 		id := entityId(m)
 		node := mutatedNode(ctx, m, client)
-		value := entityValue(node)
+		value := toNodeValue(node)
 		_, err = client.EntityRevision.Create().
 			SetEntityID(string(id)).
 			SetEntityRevision("456").
@@ -47,8 +43,8 @@ func AddRevision(next ent.Mutator) ent.Mutator {
 	})
 }
 
-func entityValue(node *ent.Node) util.EntityValue {
-	fieldMap := util.FieldMap{}
+func toNodeValue(node *ent.Node) nodevalue.NodeValue {
+	fieldMap := nodevalue.FieldMap{}
 	for _, f := range node.Fields {
 		st, err := strconv.Unquote(f.Value)
 		if err != nil {
@@ -58,11 +54,11 @@ func entityValue(node *ent.Node) util.EntityValue {
 		}
 		fieldMap[f.Name] = st
 	}
-	edgeMap := util.EdgeMap{}
+	edgeMap := nodevalue.EdgeMap{}
 	for _, e := range node.Edges {
 		edgeMap[e.Name] = e.IDs
 	}
-	value := util.EntityValue{
+	value := nodevalue.NodeValue{
 		Fields: fieldMap,
 		Edges:  edgeMap,
 	}
@@ -89,8 +85,12 @@ func mutatedNode(ctx context.Context, m ent.Mutation, client *ent.Client) *ent.N
 	return node
 }
 
+type IDer interface {
+	ID() (value qid.ID, exists bool)
+}
+
 func entityId(m ent.Mutation) qid.ID {
-	rev, ok := m.(EntityRevisioner)
+	rev, ok := m.(IDer)
 	if !ok {
 		panic("no id method on mutated node")
 	}

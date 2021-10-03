@@ -22,8 +22,8 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
-	entityrevisionMixin := schema.EntityRevision{}.Mixin()
-	entityrevision.Policy = privacy.NewPolicies(entityrevisionMixin[0], schema.EntityRevision{})
+	entityrevisionMixin := schema.NodeRevision{}.Mixin()
+	entityrevision.Policy = privacy.NewPolicies(entityrevisionMixin[0], schema.NodeRevision{})
 	entityrevision.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := entityrevision.Policy.EvalMutation(ctx, m); err != nil {
@@ -39,7 +39,7 @@ func init() {
 	_ = entityrevisionMixinFields1
 	entityrevisionMixinFields2 := entityrevisionMixin[2].Fields()
 	_ = entityrevisionMixinFields2
-	entityrevisionFields := schema.EntityRevision{}.Fields()
+	entityrevisionFields := schema.NodeRevision{}.Fields()
 	_ = entityrevisionFields
 	// entityrevisionDescCreatedAt is the schema descriptor for created_at field.
 	entityrevisionDescCreatedAt := entityrevisionMixinFields2[0].Descriptor()

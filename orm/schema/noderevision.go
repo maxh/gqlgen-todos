@@ -3,32 +3,32 @@ package schema
 import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
+	"github.com/maxh/gqlgen-todos/nodevalue"
 	"github.com/maxh/gqlgen-todos/orm/schema/base"
 	"github.com/maxh/gqlgen-todos/orm/schema/qid"
-	"github.com/maxh/gqlgen-todos/util"
 )
 
-type EntityRevision struct {
+type NodeRevision struct {
 	ent.Schema
 }
 
-func (EntityRevision) Fields() []ent.Field {
+func (NodeRevision) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("entity_id").
+		field.String("node_id").
 			NotEmpty().
 			Immutable(),
-		field.String("entity_revision").
+		field.String("node_revision").
 			NotEmpty().
 			Immutable(),
-		field.JSON("entity_value", &util.EntityValue{}).
+		field.JSON("node_value", &nodevalue.NodeValue{}).
 			Immutable(),
 	}
 }
 
-func (EntityRevision) Mixin() []ent.Mixin {
+func (NodeRevision) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		base.Mixin{},
-		qid.MixinWithPrefix("entity_revision"),
+		qid.MixinWithPrefix("node_revision"),
 		AuditMixin{},
 	}
 }

@@ -15,7 +15,7 @@ import (
 	"github.com/maxh/gqlgen-todos/orm/ent/todo"
 	"github.com/maxh/gqlgen-todos/orm/ent/user"
 	"github.com/maxh/gqlgen-todos/qid"
-	"github.com/maxh/gqlgen-todos/util"
+	"github.com/maxh/gqlgen-todos/nodevalue"
 
 	"entgo.io/ent"
 )
@@ -48,7 +48,7 @@ type EntityRevisionMutation struct {
 	updated_by      *qid.ID
 	entity_id       *string
 	entity_revision *string
-	entity_value    **util.EntityValue
+	entity_value    **nodevalue.NodeValue
 	clearedFields   map[string]struct{}
 	done            bool
 	oldValue        func(context.Context) (*EntityRevision, error)
@@ -383,12 +383,12 @@ func (m *EntityRevisionMutation) ResetEntityRevision() {
 }
 
 // SetEntityValue sets the "entity_value" field.
-func (m *EntityRevisionMutation) SetEntityValue(uv *util.EntityValue) {
+func (m *EntityRevisionMutation) SetEntityValue(uv *nodevalue.NodeValue) {
 	m.entity_value = &uv
 }
 
 // EntityValue returns the value of the "entity_value" field in the mutation.
-func (m *EntityRevisionMutation) EntityValue() (r *util.EntityValue, exists bool) {
+func (m *EntityRevisionMutation) EntityValue() (r *nodevalue.NodeValue, exists bool) {
 	v := m.entity_value
 	if v == nil {
 		return
@@ -399,7 +399,7 @@ func (m *EntityRevisionMutation) EntityValue() (r *util.EntityValue, exists bool
 // OldEntityValue returns the old "entity_value" field's value of the EntityRevision entity.
 // If the EntityRevision object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EntityRevisionMutation) OldEntityValue(ctx context.Context) (v *util.EntityValue, err error) {
+func (m *EntityRevisionMutation) OldEntityValue(ctx context.Context) (v *nodevalue.NodeValue, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldEntityValue is only allowed on UpdateOne operations")
 	}
@@ -556,7 +556,7 @@ func (m *EntityRevisionMutation) SetField(name string, value ent.Value) error {
 		m.SetEntityRevision(v)
 		return nil
 	case entityrevision.FieldEntityValue:
-		v, ok := value.(*util.EntityValue)
+		v, ok := value.(*nodevalue.NodeValue)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
