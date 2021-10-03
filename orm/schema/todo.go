@@ -29,6 +29,7 @@ func (Todo) Mixin() []ent.Mixin {
 		base.BaseMixin{},
 		qid.MixinWithPrefix("todo"),
 		TenantMixin{},
+		AuditMixin{},
 	}
 }
 

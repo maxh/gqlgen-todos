@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
@@ -18,6 +19,14 @@ type Todo struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID qid.ID `json:"id,omitempty"`
+	// CreatedAt holds the value of the "created_at" field.
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// CreatedBy holds the value of the "created_by" field.
+	CreatedBy string `json:"created_by,omitempty"`
+	// UpdatedAt holds the value of the "updated_at" field.
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// UpdatedBy holds the value of the "updated_by" field.
+	UpdatedBy string `json:"updated_by,omitempty"`
 	// Text holds the value of the "text" field.
 	Text string `json:"text,omitempty"`
 	// Done holds the value of the "done" field.
@@ -77,8 +86,10 @@ func (*Todo) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(qid.ID)
 		case todo.FieldDone:
 			values[i] = new(sql.NullBool)
-		case todo.FieldText:
+		case todo.FieldCreatedBy, todo.FieldUpdatedBy, todo.FieldText:
 			values[i] = new(sql.NullString)
+		case todo.FieldCreatedAt, todo.FieldUpdatedAt:
+			values[i] = new(sql.NullTime)
 		case todo.ForeignKeys[0]: // todo_tenant
 			values[i] = &sql.NullScanner{S: new(qid.ID)}
 		case todo.ForeignKeys[1]: // user_todos
@@ -103,6 +114,30 @@ func (t *Todo) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
 				t.ID = *value
+			}
+		case todo.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				t.CreatedAt = value.Time
+			}
+		case todo.FieldCreatedBy:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field created_by", values[i])
+			} else if value.Valid {
+				t.CreatedBy = value.String
+			}
+		case todo.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				t.UpdatedAt = value.Time
+			}
+		case todo.FieldUpdatedBy:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_by", values[i])
+			} else if value.Valid {
+				t.UpdatedBy = value.String
 			}
 		case todo.FieldText:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -168,6 +203,14 @@ func (t *Todo) String() string {
 	var builder strings.Builder
 	builder.WriteString("Todo(")
 	builder.WriteString(fmt.Sprintf("id=%v", t.ID))
+	builder.WriteString(", created_at=")
+	builder.WriteString(t.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", created_by=")
+	builder.WriteString(t.CreatedBy)
+	builder.WriteString(", updated_at=")
+	builder.WriteString(t.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", updated_by=")
+	builder.WriteString(t.UpdatedBy)
 	builder.WriteString(", text=")
 	builder.WriteString(t.Text)
 	builder.WriteString(", done=")

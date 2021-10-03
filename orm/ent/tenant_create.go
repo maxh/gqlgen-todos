@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -18,6 +19,62 @@ type TenantCreate struct {
 	config
 	mutation *TenantMutation
 	hooks    []Hook
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (tc *TenantCreate) SetCreatedAt(t time.Time) *TenantCreate {
+	tc.mutation.SetCreatedAt(t)
+	return tc
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (tc *TenantCreate) SetNillableCreatedAt(t *time.Time) *TenantCreate {
+	if t != nil {
+		tc.SetCreatedAt(*t)
+	}
+	return tc
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (tc *TenantCreate) SetCreatedBy(s string) *TenantCreate {
+	tc.mutation.SetCreatedBy(s)
+	return tc
+}
+
+// SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
+func (tc *TenantCreate) SetNillableCreatedBy(s *string) *TenantCreate {
+	if s != nil {
+		tc.SetCreatedBy(*s)
+	}
+	return tc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (tc *TenantCreate) SetUpdatedAt(t time.Time) *TenantCreate {
+	tc.mutation.SetUpdatedAt(t)
+	return tc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (tc *TenantCreate) SetNillableUpdatedAt(t *time.Time) *TenantCreate {
+	if t != nil {
+		tc.SetUpdatedAt(*t)
+	}
+	return tc
+}
+
+// SetUpdatedBy sets the "updated_by" field.
+func (tc *TenantCreate) SetUpdatedBy(s string) *TenantCreate {
+	tc.mutation.SetUpdatedBy(s)
+	return tc
+}
+
+// SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
+func (tc *TenantCreate) SetNillableUpdatedBy(s *string) *TenantCreate {
+	if s != nil {
+		tc.SetUpdatedBy(*s)
+	}
+	return tc
 }
 
 // SetName sets the "name" field.
@@ -113,6 +170,20 @@ func (tc *TenantCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (tc *TenantCreate) defaults() error {
+	if _, ok := tc.mutation.CreatedAt(); !ok {
+		if tenant.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized tenant.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
+		v := tenant.DefaultCreatedAt()
+		tc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := tc.mutation.UpdatedAt(); !ok {
+		if tenant.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized tenant.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
+		v := tenant.DefaultUpdatedAt()
+		tc.mutation.SetUpdatedAt(v)
+	}
 	if _, ok := tc.mutation.ID(); !ok {
 		if tenant.DefaultID == nil {
 			return fmt.Errorf("ent: uninitialized tenant.DefaultID (forgotten import ent/runtime?)")
@@ -125,6 +196,12 @@ func (tc *TenantCreate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (tc *TenantCreate) check() error {
+	if _, ok := tc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+	}
+	if _, ok := tc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+	}
 	if _, ok := tc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
 	}
@@ -164,6 +241,38 @@ func (tc *TenantCreate) createSpec() (*Tenant, *sqlgraph.CreateSpec) {
 	if id, ok := tc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
+	}
+	if value, ok := tc.mutation.CreatedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: tenant.FieldCreatedAt,
+		})
+		_node.CreatedAt = value
+	}
+	if value, ok := tc.mutation.CreatedBy(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: tenant.FieldCreatedBy,
+		})
+		_node.CreatedBy = value
+	}
+	if value, ok := tc.mutation.UpdatedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: tenant.FieldUpdatedAt,
+		})
+		_node.UpdatedAt = value
+	}
+	if value, ok := tc.mutation.UpdatedBy(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: tenant.FieldUpdatedBy,
+		})
+		_node.UpdatedBy = value
 	}
 	if value, ok := tc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

@@ -2,6 +2,7 @@ package viewer
 
 import (
 	"context"
+	"errors"
 	"github.com/maxh/gqlgen-todos/orm/ent"
 )
 
@@ -17,17 +18,19 @@ const (
 
 // Viewer describes the query/mutation viewer-context.
 type Viewer interface {
-	Admin() bool    // If viewer is admin.
-	Tenant() string // Tenant name.
+	IsAdmin() bool   // If viewer is admin.
+	Tenant() string  // Tenant name.
+	User() *ent.User // User name.
 }
 
 // UserViewer describes a user-viewer.
 type UserViewer struct {
+	U    *ent.User
 	T    *ent.Tenant
 	Role Role // Attached roles.
 }
 
-func (v UserViewer) Admin() bool {
+func (v UserViewer) IsAdmin() bool {
 	return v.Role&Admin != 0
 }
 
@@ -38,7 +41,23 @@ func (v UserViewer) Tenant() string {
 	return ""
 }
 
+func (v UserViewer) User() *ent.User {
+	if v.U != nil {
+		return v.U
+	}
+	return nil
+}
+
 type ctxKey struct{}
+
+// UserFromContext returns the Viewer stored in a context.
+func UserFromContext(ctx context.Context) (*ent.User, error) {
+	v, _ := ctx.Value(ctxKey{}).(Viewer)
+	if v.User() == nil {
+		return nil, errors.New("no user in context")
+	}
+	return v.User(), nil
+}
 
 // FromContext returns the Viewer stored in a context.
 func FromContext(ctx context.Context) Viewer {

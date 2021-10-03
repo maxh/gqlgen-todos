@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -20,6 +21,62 @@ type OrganizationCreate struct {
 	config
 	mutation *OrganizationMutation
 	hooks    []Hook
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (oc *OrganizationCreate) SetCreatedAt(t time.Time) *OrganizationCreate {
+	oc.mutation.SetCreatedAt(t)
+	return oc
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (oc *OrganizationCreate) SetNillableCreatedAt(t *time.Time) *OrganizationCreate {
+	if t != nil {
+		oc.SetCreatedAt(*t)
+	}
+	return oc
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (oc *OrganizationCreate) SetCreatedBy(s string) *OrganizationCreate {
+	oc.mutation.SetCreatedBy(s)
+	return oc
+}
+
+// SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
+func (oc *OrganizationCreate) SetNillableCreatedBy(s *string) *OrganizationCreate {
+	if s != nil {
+		oc.SetCreatedBy(*s)
+	}
+	return oc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (oc *OrganizationCreate) SetUpdatedAt(t time.Time) *OrganizationCreate {
+	oc.mutation.SetUpdatedAt(t)
+	return oc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (oc *OrganizationCreate) SetNillableUpdatedAt(t *time.Time) *OrganizationCreate {
+	if t != nil {
+		oc.SetUpdatedAt(*t)
+	}
+	return oc
+}
+
+// SetUpdatedBy sets the "updated_by" field.
+func (oc *OrganizationCreate) SetUpdatedBy(s string) *OrganizationCreate {
+	oc.mutation.SetUpdatedBy(s)
+	return oc
+}
+
+// SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
+func (oc *OrganizationCreate) SetNillableUpdatedBy(s *string) *OrganizationCreate {
+	if s != nil {
+		oc.SetUpdatedBy(*s)
+	}
+	return oc
 }
 
 // SetName sets the "name" field.
@@ -149,6 +206,20 @@ func (oc *OrganizationCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (oc *OrganizationCreate) defaults() error {
+	if _, ok := oc.mutation.CreatedAt(); !ok {
+		if organization.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized organization.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
+		v := organization.DefaultCreatedAt()
+		oc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := oc.mutation.UpdatedAt(); !ok {
+		if organization.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized organization.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
+		v := organization.DefaultUpdatedAt()
+		oc.mutation.SetUpdatedAt(v)
+	}
 	if _, ok := oc.mutation.Name(); !ok {
 		v := organization.DefaultName
 		oc.mutation.SetName(v)
@@ -165,6 +236,12 @@ func (oc *OrganizationCreate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (oc *OrganizationCreate) check() error {
+	if _, ok := oc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+	}
+	if _, ok := oc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+	}
 	if _, ok := oc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
 	}
@@ -202,6 +279,38 @@ func (oc *OrganizationCreate) createSpec() (*Organization, *sqlgraph.CreateSpec)
 	if id, ok := oc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
+	}
+	if value, ok := oc.mutation.CreatedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: organization.FieldCreatedAt,
+		})
+		_node.CreatedAt = value
+	}
+	if value, ok := oc.mutation.CreatedBy(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: organization.FieldCreatedBy,
+		})
+		_node.CreatedBy = value
+	}
+	if value, ok := oc.mutation.UpdatedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: organization.FieldUpdatedAt,
+		})
+		_node.UpdatedAt = value
+	}
+	if value, ok := oc.mutation.UpdatedBy(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: organization.FieldUpdatedBy,
+		})
+		_node.UpdatedBy = value
 	}
 	if value, ok := oc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

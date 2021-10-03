@@ -55,11 +55,11 @@ func (u ID) MarshalGQL(w io.Writer) {
 // Scan implements the Scanner interface.
 func (u *ID) Scan(src interface{}) error {
 	if src == nil {
-		return fmt.Errorf("pulid: expected a value")
+		return fmt.Errorf("qid: expected a value")
 	}
 	s, ok := src.(string)
 	if !ok {
-		return fmt.Errorf("pulid: expected a string")
+		return fmt.Errorf("qid: expected a string")
 	}
 	*u = ID(s)
 	return nil
@@ -68,4 +68,8 @@ func (u *ID) Scan(src interface{}) error {
 // Value implements the driver Valuer interface.
 func (u ID) Value() (driver.Value, error) {
 	return string(u), nil
+}
+
+func (u ID) String() string {
+	return string(u)
 }

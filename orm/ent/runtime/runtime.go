@@ -4,6 +4,7 @@ package runtime
 
 import (
 	"context"
+	"time"
 
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
@@ -30,10 +31,25 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
+	organizationMixinHooks3 := organizationMixin[3].Hooks()
+
+	organization.Hooks[1] = organizationMixinHooks3[0]
 	organizationMixinFields1 := organizationMixin[1].Fields()
 	_ = organizationMixinFields1
+	organizationMixinFields3 := organizationMixin[3].Fields()
+	_ = organizationMixinFields3
 	organizationFields := schema.Organization{}.Fields()
 	_ = organizationFields
+	// organizationDescCreatedAt is the schema descriptor for created_at field.
+	organizationDescCreatedAt := organizationMixinFields3[0].Descriptor()
+	// organization.DefaultCreatedAt holds the default value on creation for the created_at field.
+	organization.DefaultCreatedAt = organizationDescCreatedAt.Default.(func() time.Time)
+	// organizationDescUpdatedAt is the schema descriptor for updated_at field.
+	organizationDescUpdatedAt := organizationMixinFields3[2].Descriptor()
+	// organization.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	organization.DefaultUpdatedAt = organizationDescUpdatedAt.Default.(func() time.Time)
+	// organization.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	organization.UpdateDefaultUpdatedAt = organizationDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// organizationDescName is the schema descriptor for name field.
 	organizationDescName := organizationFields[0].Descriptor()
 	// organization.DefaultName holds the default value on creation for the name field.
@@ -52,10 +68,25 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
+	tenantMixinHooks2 := tenantMixin[2].Hooks()
+
+	tenant.Hooks[1] = tenantMixinHooks2[0]
 	tenantMixinFields1 := tenantMixin[1].Fields()
 	_ = tenantMixinFields1
+	tenantMixinFields2 := tenantMixin[2].Fields()
+	_ = tenantMixinFields2
 	tenantFields := schema.Tenant{}.Fields()
 	_ = tenantFields
+	// tenantDescCreatedAt is the schema descriptor for created_at field.
+	tenantDescCreatedAt := tenantMixinFields2[0].Descriptor()
+	// tenant.DefaultCreatedAt holds the default value on creation for the created_at field.
+	tenant.DefaultCreatedAt = tenantDescCreatedAt.Default.(func() time.Time)
+	// tenantDescUpdatedAt is the schema descriptor for updated_at field.
+	tenantDescUpdatedAt := tenantMixinFields2[2].Descriptor()
+	// tenant.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	tenant.DefaultUpdatedAt = tenantDescUpdatedAt.Default.(func() time.Time)
+	// tenant.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	tenant.UpdateDefaultUpdatedAt = tenantDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// tenantDescName is the schema descriptor for name field.
 	tenantDescName := tenantFields[0].Descriptor()
 	// tenant.NameValidator is a validator for the "name" field. It is called by the builders before save.
@@ -74,10 +105,25 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
+	todoMixinHooks3 := todoMixin[3].Hooks()
+
+	todo.Hooks[1] = todoMixinHooks3[0]
 	todoMixinFields1 := todoMixin[1].Fields()
 	_ = todoMixinFields1
+	todoMixinFields3 := todoMixin[3].Fields()
+	_ = todoMixinFields3
 	todoFields := schema.Todo{}.Fields()
 	_ = todoFields
+	// todoDescCreatedAt is the schema descriptor for created_at field.
+	todoDescCreatedAt := todoMixinFields3[0].Descriptor()
+	// todo.DefaultCreatedAt holds the default value on creation for the created_at field.
+	todo.DefaultCreatedAt = todoDescCreatedAt.Default.(func() time.Time)
+	// todoDescUpdatedAt is the schema descriptor for updated_at field.
+	todoDescUpdatedAt := todoMixinFields3[2].Descriptor()
+	// todo.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	todo.DefaultUpdatedAt = todoDescUpdatedAt.Default.(func() time.Time)
+	// todo.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	todo.UpdateDefaultUpdatedAt = todoDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// todoDescText is the schema descriptor for text field.
 	todoDescText := todoFields[0].Descriptor()
 	// todo.DefaultText holds the default value on creation for the text field.
@@ -100,10 +146,25 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
+	userMixinHooks3 := userMixin[3].Hooks()
+
+	user.Hooks[1] = userMixinHooks3[0]
 	userMixinFields1 := userMixin[1].Fields()
 	_ = userMixinFields1
+	userMixinFields3 := userMixin[3].Fields()
+	_ = userMixinFields3
 	userFields := schema.User{}.Fields()
 	_ = userFields
+	// userDescCreatedAt is the schema descriptor for created_at field.
+	userDescCreatedAt := userMixinFields3[0].Descriptor()
+	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
+	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
+	// userDescUpdatedAt is the schema descriptor for updated_at field.
+	userDescUpdatedAt := userMixinFields3[2].Descriptor()
+	// user.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() time.Time)
+	// user.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	user.UpdateDefaultUpdatedAt = userDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// userDescName is the schema descriptor for name field.
 	userDescName := userFields[0].Descriptor()
 	// user.DefaultName holds the default value on creation for the name field.

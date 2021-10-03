@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -20,6 +21,62 @@ type TodoCreate struct {
 	config
 	mutation *TodoMutation
 	hooks    []Hook
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (tc *TodoCreate) SetCreatedAt(t time.Time) *TodoCreate {
+	tc.mutation.SetCreatedAt(t)
+	return tc
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (tc *TodoCreate) SetNillableCreatedAt(t *time.Time) *TodoCreate {
+	if t != nil {
+		tc.SetCreatedAt(*t)
+	}
+	return tc
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (tc *TodoCreate) SetCreatedBy(s string) *TodoCreate {
+	tc.mutation.SetCreatedBy(s)
+	return tc
+}
+
+// SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
+func (tc *TodoCreate) SetNillableCreatedBy(s *string) *TodoCreate {
+	if s != nil {
+		tc.SetCreatedBy(*s)
+	}
+	return tc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (tc *TodoCreate) SetUpdatedAt(t time.Time) *TodoCreate {
+	tc.mutation.SetUpdatedAt(t)
+	return tc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (tc *TodoCreate) SetNillableUpdatedAt(t *time.Time) *TodoCreate {
+	if t != nil {
+		tc.SetUpdatedAt(*t)
+	}
+	return tc
+}
+
+// SetUpdatedBy sets the "updated_by" field.
+func (tc *TodoCreate) SetUpdatedBy(s string) *TodoCreate {
+	tc.mutation.SetUpdatedBy(s)
+	return tc
+}
+
+// SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
+func (tc *TodoCreate) SetNillableUpdatedBy(s *string) *TodoCreate {
+	if s != nil {
+		tc.SetUpdatedBy(*s)
+	}
+	return tc
 }
 
 // SetText sets the "text" field.
@@ -167,6 +224,20 @@ func (tc *TodoCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (tc *TodoCreate) defaults() error {
+	if _, ok := tc.mutation.CreatedAt(); !ok {
+		if todo.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized todo.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
+		v := todo.DefaultCreatedAt()
+		tc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := tc.mutation.UpdatedAt(); !ok {
+		if todo.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized todo.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
+		v := todo.DefaultUpdatedAt()
+		tc.mutation.SetUpdatedAt(v)
+	}
 	if _, ok := tc.mutation.Text(); !ok {
 		v := todo.DefaultText
 		tc.mutation.SetText(v)
@@ -187,6 +258,12 @@ func (tc *TodoCreate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (tc *TodoCreate) check() error {
+	if _, ok := tc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+	}
+	if _, ok := tc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+	}
 	if _, ok := tc.mutation.Text(); !ok {
 		return &ValidationError{Name: "text", err: errors.New(`ent: missing required field "text"`)}
 	}
@@ -227,6 +304,38 @@ func (tc *TodoCreate) createSpec() (*Todo, *sqlgraph.CreateSpec) {
 	if id, ok := tc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
+	}
+	if value, ok := tc.mutation.CreatedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: todo.FieldCreatedAt,
+		})
+		_node.CreatedAt = value
+	}
+	if value, ok := tc.mutation.CreatedBy(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: todo.FieldCreatedBy,
+		})
+		_node.CreatedBy = value
+	}
+	if value, ok := tc.mutation.UpdatedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: todo.FieldUpdatedAt,
+		})
+		_node.UpdatedAt = value
+	}
+	if value, ok := tc.mutation.UpdatedBy(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: todo.FieldUpdatedBy,
+		})
+		_node.UpdatedBy = value
 	}
 	if value, ok := tc.mutation.Text(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

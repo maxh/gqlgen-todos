@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/maxh/gqlgen-todos/orm/ent/organization"
@@ -17,6 +18,14 @@ type Organization struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID qid.ID `json:"id,omitempty"`
+	// CreatedAt holds the value of the "created_at" field.
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// CreatedBy holds the value of the "created_by" field.
+	CreatedBy string `json:"created_by,omitempty"`
+	// UpdatedAt holds the value of the "updated_at" field.
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// UpdatedBy holds the value of the "updated_by" field.
+	UpdatedBy string `json:"updated_by,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -66,8 +75,10 @@ func (*Organization) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case organization.FieldID:
 			values[i] = new(qid.ID)
-		case organization.FieldName:
+		case organization.FieldCreatedBy, organization.FieldUpdatedBy, organization.FieldName:
 			values[i] = new(sql.NullString)
+		case organization.FieldCreatedAt, organization.FieldUpdatedAt:
+			values[i] = new(sql.NullTime)
 		case organization.ForeignKeys[0]: // organization_tenant
 			values[i] = &sql.NullScanner{S: new(qid.ID)}
 		default:
@@ -90,6 +101,30 @@ func (o *Organization) assignValues(columns []string, values []interface{}) erro
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
 				o.ID = *value
+			}
+		case organization.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				o.CreatedAt = value.Time
+			}
+		case organization.FieldCreatedBy:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field created_by", values[i])
+			} else if value.Valid {
+				o.CreatedBy = value.String
+			}
+		case organization.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				o.UpdatedAt = value.Time
+			}
+		case organization.FieldUpdatedBy:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_by", values[i])
+			} else if value.Valid {
+				o.UpdatedBy = value.String
 			}
 		case organization.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -142,6 +177,14 @@ func (o *Organization) String() string {
 	var builder strings.Builder
 	builder.WriteString("Organization(")
 	builder.WriteString(fmt.Sprintf("id=%v", o.ID))
+	builder.WriteString(", created_at=")
+	builder.WriteString(o.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", created_by=")
+	builder.WriteString(o.CreatedBy)
+	builder.WriteString(", updated_at=")
+	builder.WriteString(o.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", updated_by=")
+	builder.WriteString(o.UpdatedBy)
 	builder.WriteString(", name=")
 	builder.WriteString(o.Name)
 	builder.WriteByte(')')

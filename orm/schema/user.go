@@ -27,6 +27,7 @@ func (User) Mixin() []ent.Mixin {
 		base.BaseMixin{},
 		qid.MixinWithPrefix("user"),
 		TenantMixin{},
+		AuditMixin{},
 	}
 }
 

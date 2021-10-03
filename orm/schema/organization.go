@@ -34,5 +34,6 @@ func (Organization) Mixin() []ent.Mixin {
 		base.BaseMixin{},
 		qid.MixinWithPrefix("organization"),
 		TenantMixin{},
+		AuditMixin{},
 	}
 }

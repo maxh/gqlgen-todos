@@ -3,6 +3,8 @@
 package organization
 
 import (
+	"time"
+
 	"entgo.io/ent"
 	"github.com/maxh/gqlgen-todos/qid"
 )
@@ -12,6 +14,14 @@ const (
 	Label = "organization"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldCreatedAt holds the string denoting the created_at field in the database.
+	FieldCreatedAt = "created_at"
+	// FieldCreatedBy holds the string denoting the created_by field in the database.
+	FieldCreatedBy = "created_by"
+	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
+	FieldUpdatedAt = "updated_at"
+	// FieldUpdatedBy holds the string denoting the updated_by field in the database.
+	FieldUpdatedBy = "updated_by"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// EdgeTenant holds the string denoting the tenant edge name in mutations.
@@ -39,6 +49,10 @@ const (
 // Columns holds all SQL columns for organization fields.
 var Columns = []string{
 	FieldID,
+	FieldCreatedAt,
+	FieldCreatedBy,
+	FieldUpdatedAt,
+	FieldUpdatedBy,
 	FieldName,
 }
 
@@ -70,8 +84,14 @@ func ValidColumn(column string) bool {
 //	import _ "github.com/maxh/gqlgen-todos/orm/ent/runtime"
 //
 var (
-	Hooks  [1]ent.Hook
+	Hooks  [2]ent.Hook
 	Policy ent.Policy
+	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
+	DefaultCreatedAt func() time.Time
+	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
+	DefaultUpdatedAt func() time.Time
+	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
+	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultName holds the default value on creation for the "name" field.
 	DefaultName string
 	// DefaultID holds the default value on creation for the "id" field.

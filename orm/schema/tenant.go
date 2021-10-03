@@ -22,6 +22,7 @@ func (Tenant) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		base.BaseMixin{},
 		qid.MixinWithPrefix("tenant"),
+		AuditMixin{},
 	}
 }
 

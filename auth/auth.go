@@ -57,6 +57,7 @@ func Middleware(client *ent.Client) func(http.Handler) http.Handler {
 			}
 
 			ctx = viewer.NewContext(ctx, viewer.UserViewer{
+				U:    user,
 				T:    t,
 				Role: viewer.Admin,
 			})

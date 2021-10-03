@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/maxh/gqlgen-todos/orm/ent/tenant"
@@ -16,6 +17,14 @@ type Tenant struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID qid.ID `json:"id,omitempty"`
+	// CreatedAt holds the value of the "created_at" field.
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// CreatedBy holds the value of the "created_by" field.
+	CreatedBy string `json:"created_by,omitempty"`
+	// UpdatedAt holds the value of the "updated_at" field.
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// UpdatedBy holds the value of the "updated_by" field.
+	UpdatedBy string `json:"updated_by,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 }
@@ -27,8 +36,10 @@ func (*Tenant) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case tenant.FieldID:
 			values[i] = new(qid.ID)
-		case tenant.FieldName:
+		case tenant.FieldCreatedBy, tenant.FieldUpdatedBy, tenant.FieldName:
 			values[i] = new(sql.NullString)
+		case tenant.FieldCreatedAt, tenant.FieldUpdatedAt:
+			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Tenant", columns[i])
 		}
@@ -49,6 +60,30 @@ func (t *Tenant) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
 				t.ID = *value
+			}
+		case tenant.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				t.CreatedAt = value.Time
+			}
+		case tenant.FieldCreatedBy:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field created_by", values[i])
+			} else if value.Valid {
+				t.CreatedBy = value.String
+			}
+		case tenant.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				t.UpdatedAt = value.Time
+			}
+		case tenant.FieldUpdatedBy:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_by", values[i])
+			} else if value.Valid {
+				t.UpdatedBy = value.String
 			}
 		case tenant.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -84,6 +119,14 @@ func (t *Tenant) String() string {
 	var builder strings.Builder
 	builder.WriteString("Tenant(")
 	builder.WriteString(fmt.Sprintf("id=%v", t.ID))
+	builder.WriteString(", created_at=")
+	builder.WriteString(t.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", created_by=")
+	builder.WriteString(t.CreatedBy)
+	builder.WriteString(", updated_at=")
+	builder.WriteString(t.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", updated_by=")
+	builder.WriteString(t.UpdatedBy)
 	builder.WriteString(", name=")
 	builder.WriteString(t.Name)
 	builder.WriteByte(')')

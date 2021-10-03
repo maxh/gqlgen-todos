@@ -5,6 +5,7 @@ package ent
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -26,6 +27,52 @@ func (tu *TenantUpdate) Where(ps ...predicate.Tenant) *TenantUpdate {
 	return tu
 }
 
+// SetCreatedBy sets the "created_by" field.
+func (tu *TenantUpdate) SetCreatedBy(s string) *TenantUpdate {
+	tu.mutation.SetCreatedBy(s)
+	return tu
+}
+
+// SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
+func (tu *TenantUpdate) SetNillableCreatedBy(s *string) *TenantUpdate {
+	if s != nil {
+		tu.SetCreatedBy(*s)
+	}
+	return tu
+}
+
+// ClearCreatedBy clears the value of the "created_by" field.
+func (tu *TenantUpdate) ClearCreatedBy() *TenantUpdate {
+	tu.mutation.ClearCreatedBy()
+	return tu
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (tu *TenantUpdate) SetUpdatedAt(t time.Time) *TenantUpdate {
+	tu.mutation.SetUpdatedAt(t)
+	return tu
+}
+
+// SetUpdatedBy sets the "updated_by" field.
+func (tu *TenantUpdate) SetUpdatedBy(s string) *TenantUpdate {
+	tu.mutation.SetUpdatedBy(s)
+	return tu
+}
+
+// SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
+func (tu *TenantUpdate) SetNillableUpdatedBy(s *string) *TenantUpdate {
+	if s != nil {
+		tu.SetUpdatedBy(*s)
+	}
+	return tu
+}
+
+// ClearUpdatedBy clears the value of the "updated_by" field.
+func (tu *TenantUpdate) ClearUpdatedBy() *TenantUpdate {
+	tu.mutation.ClearUpdatedBy()
+	return tu
+}
+
 // SetName sets the "name" field.
 func (tu *TenantUpdate) SetName(s string) *TenantUpdate {
 	tu.mutation.SetName(s)
@@ -43,6 +90,9 @@ func (tu *TenantUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
+	if err := tu.defaults(); err != nil {
+		return 0, err
+	}
 	if len(tu.hooks) == 0 {
 		if err = tu.check(); err != nil {
 			return 0, err
@@ -97,6 +147,18 @@ func (tu *TenantUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (tu *TenantUpdate) defaults() error {
+	if _, ok := tu.mutation.UpdatedAt(); !ok {
+		if tenant.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized tenant.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
+		v := tenant.UpdateDefaultUpdatedAt()
+		tu.mutation.SetUpdatedAt(v)
+	}
+	return nil
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (tu *TenantUpdate) check() error {
 	if v, ok := tu.mutation.Name(); ok {
@@ -125,6 +187,39 @@ func (tu *TenantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
+	if value, ok := tu.mutation.CreatedBy(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: tenant.FieldCreatedBy,
+		})
+	}
+	if tu.mutation.CreatedByCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: tenant.FieldCreatedBy,
+		})
+	}
+	if value, ok := tu.mutation.UpdatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: tenant.FieldUpdatedAt,
+		})
+	}
+	if value, ok := tu.mutation.UpdatedBy(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: tenant.FieldUpdatedBy,
+		})
+	}
+	if tu.mutation.UpdatedByCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: tenant.FieldUpdatedBy,
+		})
+	}
 	if value, ok := tu.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -151,6 +246,52 @@ type TenantUpdateOne struct {
 	mutation *TenantMutation
 }
 
+// SetCreatedBy sets the "created_by" field.
+func (tuo *TenantUpdateOne) SetCreatedBy(s string) *TenantUpdateOne {
+	tuo.mutation.SetCreatedBy(s)
+	return tuo
+}
+
+// SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
+func (tuo *TenantUpdateOne) SetNillableCreatedBy(s *string) *TenantUpdateOne {
+	if s != nil {
+		tuo.SetCreatedBy(*s)
+	}
+	return tuo
+}
+
+// ClearCreatedBy clears the value of the "created_by" field.
+func (tuo *TenantUpdateOne) ClearCreatedBy() *TenantUpdateOne {
+	tuo.mutation.ClearCreatedBy()
+	return tuo
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (tuo *TenantUpdateOne) SetUpdatedAt(t time.Time) *TenantUpdateOne {
+	tuo.mutation.SetUpdatedAt(t)
+	return tuo
+}
+
+// SetUpdatedBy sets the "updated_by" field.
+func (tuo *TenantUpdateOne) SetUpdatedBy(s string) *TenantUpdateOne {
+	tuo.mutation.SetUpdatedBy(s)
+	return tuo
+}
+
+// SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
+func (tuo *TenantUpdateOne) SetNillableUpdatedBy(s *string) *TenantUpdateOne {
+	if s != nil {
+		tuo.SetUpdatedBy(*s)
+	}
+	return tuo
+}
+
+// ClearUpdatedBy clears the value of the "updated_by" field.
+func (tuo *TenantUpdateOne) ClearUpdatedBy() *TenantUpdateOne {
+	tuo.mutation.ClearUpdatedBy()
+	return tuo
+}
+
 // SetName sets the "name" field.
 func (tuo *TenantUpdateOne) SetName(s string) *TenantUpdateOne {
 	tuo.mutation.SetName(s)
@@ -175,6 +316,9 @@ func (tuo *TenantUpdateOne) Save(ctx context.Context) (*Tenant, error) {
 		err  error
 		node *Tenant
 	)
+	if err := tuo.defaults(); err != nil {
+		return nil, err
+	}
 	if len(tuo.hooks) == 0 {
 		if err = tuo.check(); err != nil {
 			return nil, err
@@ -229,6 +373,18 @@ func (tuo *TenantUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (tuo *TenantUpdateOne) defaults() error {
+	if _, ok := tuo.mutation.UpdatedAt(); !ok {
+		if tenant.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized tenant.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
+		v := tenant.UpdateDefaultUpdatedAt()
+		tuo.mutation.SetUpdatedAt(v)
+	}
+	return nil
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (tuo *TenantUpdateOne) check() error {
 	if v, ok := tuo.mutation.Name(); ok {
@@ -273,6 +429,39 @@ func (tuo *TenantUpdateOne) sqlSave(ctx context.Context) (_node *Tenant, err err
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := tuo.mutation.CreatedBy(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: tenant.FieldCreatedBy,
+		})
+	}
+	if tuo.mutation.CreatedByCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: tenant.FieldCreatedBy,
+		})
+	}
+	if value, ok := tuo.mutation.UpdatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: tenant.FieldUpdatedAt,
+		})
+	}
+	if value, ok := tuo.mutation.UpdatedBy(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: tenant.FieldUpdatedBy,
+		})
+	}
+	if tuo.mutation.UpdatedByCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: tenant.FieldUpdatedBy,
+		})
 	}
 	if value, ok := tuo.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{

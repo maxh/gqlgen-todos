@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -27,6 +28,52 @@ type OrganizationUpdate struct {
 // Where appends a list predicates to the OrganizationUpdate builder.
 func (ou *OrganizationUpdate) Where(ps ...predicate.Organization) *OrganizationUpdate {
 	ou.mutation.Where(ps...)
+	return ou
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (ou *OrganizationUpdate) SetCreatedBy(s string) *OrganizationUpdate {
+	ou.mutation.SetCreatedBy(s)
+	return ou
+}
+
+// SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
+func (ou *OrganizationUpdate) SetNillableCreatedBy(s *string) *OrganizationUpdate {
+	if s != nil {
+		ou.SetCreatedBy(*s)
+	}
+	return ou
+}
+
+// ClearCreatedBy clears the value of the "created_by" field.
+func (ou *OrganizationUpdate) ClearCreatedBy() *OrganizationUpdate {
+	ou.mutation.ClearCreatedBy()
+	return ou
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (ou *OrganizationUpdate) SetUpdatedAt(t time.Time) *OrganizationUpdate {
+	ou.mutation.SetUpdatedAt(t)
+	return ou
+}
+
+// SetUpdatedBy sets the "updated_by" field.
+func (ou *OrganizationUpdate) SetUpdatedBy(s string) *OrganizationUpdate {
+	ou.mutation.SetUpdatedBy(s)
+	return ou
+}
+
+// SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
+func (ou *OrganizationUpdate) SetNillableUpdatedBy(s *string) *OrganizationUpdate {
+	if s != nil {
+		ou.SetUpdatedBy(*s)
+	}
+	return ou
+}
+
+// ClearUpdatedBy clears the value of the "updated_by" field.
+func (ou *OrganizationUpdate) ClearUpdatedBy() *OrganizationUpdate {
+	ou.mutation.ClearUpdatedBy()
 	return ou
 }
 
@@ -108,6 +155,9 @@ func (ou *OrganizationUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
+	if err := ou.defaults(); err != nil {
+		return 0, err
+	}
 	if len(ou.hooks) == 0 {
 		if err = ou.check(); err != nil {
 			return 0, err
@@ -162,6 +212,18 @@ func (ou *OrganizationUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (ou *OrganizationUpdate) defaults() error {
+	if _, ok := ou.mutation.UpdatedAt(); !ok {
+		if organization.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized organization.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
+		v := organization.UpdateDefaultUpdatedAt()
+		ou.mutation.SetUpdatedAt(v)
+	}
+	return nil
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (ou *OrganizationUpdate) check() error {
 	if _, ok := ou.mutation.TenantID(); ou.mutation.TenantCleared() && !ok {
@@ -187,6 +249,39 @@ func (ou *OrganizationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := ou.mutation.CreatedBy(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: organization.FieldCreatedBy,
+		})
+	}
+	if ou.mutation.CreatedByCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: organization.FieldCreatedBy,
+		})
+	}
+	if value, ok := ou.mutation.UpdatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: organization.FieldUpdatedAt,
+		})
+	}
+	if value, ok := ou.mutation.UpdatedBy(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: organization.FieldUpdatedBy,
+		})
+	}
+	if ou.mutation.UpdatedByCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: organization.FieldUpdatedBy,
+		})
 	}
 	if value, ok := ou.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -303,6 +398,52 @@ type OrganizationUpdateOne struct {
 	mutation *OrganizationMutation
 }
 
+// SetCreatedBy sets the "created_by" field.
+func (ouo *OrganizationUpdateOne) SetCreatedBy(s string) *OrganizationUpdateOne {
+	ouo.mutation.SetCreatedBy(s)
+	return ouo
+}
+
+// SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
+func (ouo *OrganizationUpdateOne) SetNillableCreatedBy(s *string) *OrganizationUpdateOne {
+	if s != nil {
+		ouo.SetCreatedBy(*s)
+	}
+	return ouo
+}
+
+// ClearCreatedBy clears the value of the "created_by" field.
+func (ouo *OrganizationUpdateOne) ClearCreatedBy() *OrganizationUpdateOne {
+	ouo.mutation.ClearCreatedBy()
+	return ouo
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (ouo *OrganizationUpdateOne) SetUpdatedAt(t time.Time) *OrganizationUpdateOne {
+	ouo.mutation.SetUpdatedAt(t)
+	return ouo
+}
+
+// SetUpdatedBy sets the "updated_by" field.
+func (ouo *OrganizationUpdateOne) SetUpdatedBy(s string) *OrganizationUpdateOne {
+	ouo.mutation.SetUpdatedBy(s)
+	return ouo
+}
+
+// SetNillableUpdatedBy sets the "updated_by" field if the given value is not nil.
+func (ouo *OrganizationUpdateOne) SetNillableUpdatedBy(s *string) *OrganizationUpdateOne {
+	if s != nil {
+		ouo.SetUpdatedBy(*s)
+	}
+	return ouo
+}
+
+// ClearUpdatedBy clears the value of the "updated_by" field.
+func (ouo *OrganizationUpdateOne) ClearUpdatedBy() *OrganizationUpdateOne {
+	ouo.mutation.ClearUpdatedBy()
+	return ouo
+}
+
 // SetName sets the "name" field.
 func (ouo *OrganizationUpdateOne) SetName(s string) *OrganizationUpdateOne {
 	ouo.mutation.SetName(s)
@@ -388,6 +529,9 @@ func (ouo *OrganizationUpdateOne) Save(ctx context.Context) (*Organization, erro
 		err  error
 		node *Organization
 	)
+	if err := ouo.defaults(); err != nil {
+		return nil, err
+	}
 	if len(ouo.hooks) == 0 {
 		if err = ouo.check(); err != nil {
 			return nil, err
@@ -442,6 +586,18 @@ func (ouo *OrganizationUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (ouo *OrganizationUpdateOne) defaults() error {
+	if _, ok := ouo.mutation.UpdatedAt(); !ok {
+		if organization.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized organization.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
+		v := organization.UpdateDefaultUpdatedAt()
+		ouo.mutation.SetUpdatedAt(v)
+	}
+	return nil
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (ouo *OrganizationUpdateOne) check() error {
 	if _, ok := ouo.mutation.TenantID(); ouo.mutation.TenantCleared() && !ok {
@@ -484,6 +640,39 @@ func (ouo *OrganizationUpdateOne) sqlSave(ctx context.Context) (_node *Organizat
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := ouo.mutation.CreatedBy(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: organization.FieldCreatedBy,
+		})
+	}
+	if ouo.mutation.CreatedByCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: organization.FieldCreatedBy,
+		})
+	}
+	if value, ok := ouo.mutation.UpdatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: organization.FieldUpdatedAt,
+		})
+	}
+	if value, ok := ouo.mutation.UpdatedBy(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: organization.FieldUpdatedBy,
+		})
+	}
+	if ouo.mutation.UpdatedByCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: organization.FieldUpdatedBy,
+		})
 	}
 	if value, ok := ouo.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{

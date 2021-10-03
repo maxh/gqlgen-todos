@@ -304,6 +304,8 @@ type Todo {
     text: String!
     done: Boolean!
     user: User!
+    #    createdBy: ID!
+    #    updatedBy: ID!
 }
 
 type User {
