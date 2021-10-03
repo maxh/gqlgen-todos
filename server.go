@@ -16,6 +16,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/maxh/gqlgen-todos/graphql"
 
+	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 	_ "github.com/maxh/gqlgen-todos/orm/ent/runtime"
 )
@@ -27,10 +28,11 @@ func main() {
 	if port == "" {
 		port = defaultPort
 	}
-	client, err := ent.Open(
-		"sqlite3",
-		"file:ent?mode=memory&cache=shared&_fk=1",
-	)
+	client, err := ent.Open("postgres", "host=localhost port=5432 user=postgres dbname=gqlgen_todos_dev password=postgres sslmode=disable")
+	//client, err := ent.Open(
+	//	"sqlite3",
+	//	"file:ent?mode=memory&cache=shared&_fk=1",
+	//)
 	if err != nil {
 		log.Fatal("opening ent client", err)
 	}
