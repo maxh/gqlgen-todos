@@ -10,6 +10,9 @@ import (
 
 func AddRevision(next ent.Mutator) ent.Mutator {
 	return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+		// TODO: assert mutation is in a transaction
+		// Mutation.Tx
+
 		if m.Type() == ent.TypeNodeRevision {
 			// We don't want to store revisions for records for revisions themselves,
 			// otherwise we'll end up in an infinite loop.
