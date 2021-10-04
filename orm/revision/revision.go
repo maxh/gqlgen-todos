@@ -77,6 +77,7 @@ func mutatedNode(ctx context.Context, m ent.Mutation, client *ent.Client) *ent.N
 	noder, err := client.Noder(ctx, id, ent.WithFixedNodeType(tableName))
 
 	// At this point, we expect the node to exist in the transaction context.
+	// TODO: what about deletes?
 	if err != nil {
 		panic(err)
 	}
